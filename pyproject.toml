@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "bootstrap-stat"
+version = "0.2.3"
+description = "Bootstrap method for standard errors, confidence intervals, and more!"
+authors = ["Bob Wilson <bob@convexanalytics.com>"]
+
+readme = "README.md"
+keywords = ["statistics", "nonparametric", "machine learning"]
+
+[tool.poetry.dependencies]
+python = ">=3.7"
+numpy = ">=1.17"
+scipy = ">=1.3"
+pandas = ">=0.25.1"
+pathos = ">=0.2.5"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.1"
+pytest-cov = "^2.7"
+black = {version = "^18.3-alpha.0", allow-prereleases = true}
+statsmodels = "^0.10.1"
+sphinx = "^2.2"
+
+[tool.black]
+line-length = 79
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
