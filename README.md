@@ -1,4 +1,4 @@
-# Bootstrap-stat
+# bootstrap-stat
 
 Methods relating to the Bootstrap.
 
@@ -67,8 +67,8 @@ practical examples.
 
 ```
 >>> import numpy as np
->>> from bootstrap-stat import bootstrap-stat as bp
->>> from bootstrap-stat import datasets as d
+>>> from bootstrap_stat import bootstrap_stat as bp
+>>> from bootstrap_stat import datasets as d
 >>>
 >>> df = d.law_data()
 >>> print(df)
@@ -108,7 +108,7 @@ cases, the entire population is not available.
 
 To use the bootrap method, we need to specify the statistic as well as
 the dataset. Specifically, we need to be able to sample with
-replacement from the Empirical Distribution. `bootstrap-stat` has a class
+replacement from the Empirical Distribution. `bootstrap_stat` has a class
 facilitating just that.
 
 ```
