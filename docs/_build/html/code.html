@@ -1,0 +1,1315 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Documentation for bootstrap-stat &#8212; bootstrap-stat v0.2.3 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Welcome to bootstrap-stat’s documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-bootstrap_stat">
+<span id="documentation-for-bootstrap-stat"></span><h1>Documentation for bootstrap-stat<a class="headerlink" href="#module-bootstrap_stat" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="bootstrap_stat.EmpiricalDistribution">
+<em class="property">class </em><code class="sig-prename descclassname">bootstrap_stat.</code><code class="sig-name descname">EmpiricalDistribution</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span><a class="headerlink" href="#bootstrap_stat.EmpiricalDistribution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Empirical Distribution</p>
+<p>The Empirical Distribution puts probability 1/n on each of n
+observations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>array_like</em><em> or </em><em>pandas DataFrame</em>) – The data.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="bootstrap_stat.EmpiricalDistribution.calculate_parameter">
+<code class="sig-name descname">calculate_parameter</code><span class="sig-paren">(</span><em class="sig-param">t</em><span class="sig-paren">)</span><a class="headerlink" href="#bootstrap_stat.EmpiricalDistribution.calculate_parameter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate a parameter of the distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>t</strong> (<em>function</em>) – Function to be applied to dataset. If using an n-Sample
+Distribution, t should take as input a tuple of data sets
+of the appropriate size.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>tF</strong> – Parameter of distribution.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="bootstrap_stat.EmpiricalDistribution.sample">
+<code class="sig-name descname">sample</code><span class="sig-paren">(</span><em class="sig-param">size=None</em>, <em class="sig-param">return_indices=False</em>, <em class="sig-param">reset_index=True</em><span class="sig-paren">)</span><a class="headerlink" href="#bootstrap_stat.EmpiricalDistribution.sample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sample from the empirical distribution</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>size</strong> (<em>int</em><em> or </em><em>tuple of ints</em><em>, </em><em>optional</em>) – Output shape. If None (default), samples the same number
+of points as the original dataset.</p></li>
+<li><p><strong>return_indices</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If True, return the indices of the data points
+sampled. Defaults to False.</p></li>
+<li><p><strong>reset_index</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If True (default), reset the index. Applies only to data
+frames. This is usually what we would want to do, except
+for debugging perhaps.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>samples</strong> (<em>ndarray or pandas DataFrame</em>) – IID samples from the empirical distribution.</p></li>
+<li><p><strong>ind</strong> (<em>ndarray</em>) – Indices of samples chosen. Only returned if
+<cite>return_indices</cite> is True.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bootstrap_stat.MultiSampleEmpiricalDistribution">
+<em class="property">class </em><code class="sig-prename descclassname">bootstrap_stat.</code><code class="sig-name descname">MultiSampleEmpiricalDistribution</code><span class="sig-paren">(</span><em class="sig-param">datasets</em><span class="sig-paren">)</span><a class="headerlink" href="#bootstrap_stat.MultiSampleEmpiricalDistribution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Multi-Sample Empirical Distribution</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>datasets</strong> (<em>tuple of arrays</em><em> or </em><em>pandas DataFrames.</em>) – Observed data sets.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Suppose we observe</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}x_i \sim F, i=1,...,m\\y_j \sim G, j=1,...,n\end{aligned}\end{align} \]</div>
+<p>Then <span class="math notranslate nohighlight">\(P = (\hat{F}, \hat{G})\)</span> is the probabilistic mechanism
+consisting of the two empirical distributions <span class="math notranslate nohighlight">\(F\)</span> and
+<span class="math notranslate nohighlight">\(G\)</span>. Sampling from <span class="math notranslate nohighlight">\(P\)</span> amounts to sampling <span class="math notranslate nohighlight">\(m\)</span>
+points IID from <span class="math notranslate nohighlight">\(\hat{F}\)</span>, and <span class="math notranslate nohighlight">\(n\)</span> points IID from
+<span class="math notranslate nohighlight">\(\hat{G}\)</span>. This is called the Two Sample Empirical
+Distribution, and comes up a lot in A/B testing. The
+generalization to more than two samples is obvious.</p>
+<p>Because of some of the implementation details of the bootstrap
+methods, we use tuples for everything. So when initializing, be
+sure to wrap the different datasets in a tuple. Samples will
+themselves be tuples, etc. See the function documentation below
+for details and examples.</p>
+<p>This is a relatively thin wrapper around the regular
+EmpiricalDistribution: we just create a distinct
+EmpiricalDistribution for each dataset, and use that for sampling.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dist</span> <span class="o">=</span> <span class="n">EmpiricalDistribution</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dist</span><span class="o">.</span><span class="n">sample</span><span class="p">()</span>
+<span class="go">[1, 2, 1]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data_a</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data_b</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">data_a</span><span class="p">,</span> <span class="n">data_b</span><span class="p">)</span>  <span class="c1"># Note tuple</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dist</span> <span class="o">=</span> <span class="n">MultiSampleEmpiricalDistribution</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">sample</span><span class="p">()</span>  <span class="c1"># Can de-tuple directly</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
+<span class="go">[2, 2, 3]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span>
+<span class="go">[4, 6, 4]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ab</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">sample</span><span class="p">()</span>  <span class="c1"># Or indirectly, which is often more useful</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ab</span>
+<span class="go">[array([2, 2, 3]), array([4, 6, 4])]</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="bootstrap_stat.MultiSampleEmpiricalDistribution.calculate_parameter">
+<code class="sig-name descname">calculate_parameter</code><span class="sig-paren">(</span><em class="sig-param">t</em><span class="sig-paren">)</span><a class="headerlink" href="#bootstrap_stat.MultiSampleEmpiricalDistribution.calculate_parameter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate a parameter of the distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>t</strong> (<em>function</em>) – Function to be applied to dataset. Should take as input a
+tuple of data sets of the appropriate size.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>tF</strong> – Parameter of distribution.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Suppose we are in the Two-Sample case and have two empirical
+distributions, <span class="math notranslate nohighlight">\(\hat{F}\)</span> and <span class="math notranslate nohighlight">\(\hat{G}\)</span>, and we
+want to calculate the difference in means of these
+distributions. We might do something like:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data_a</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data_b</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">data_a</span><span class="p">,</span> <span class="n">data_b</span><span class="p">)</span>  <span class="c1"># Note tuple</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dist</span> <span class="o">=</span> <span class="n">MultiSampleEmpiricalDistribution</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">parameter</span><span class="p">(</span><span class="n">ab</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">ab</span>  <span class="c1"># Note de-tupling</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dist</span><span class="o">.</span><span class="n">calculate_parameter</span><span class="p">(</span><span class="n">parameter</span><span class="p">)</span>
+<span class="go">3.0</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="bootstrap_stat.MultiSampleEmpiricalDistribution.sample">
+<code class="sig-name descname">sample</code><span class="sig-paren">(</span><em class="sig-param">size=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bootstrap_stat.MultiSampleEmpiricalDistribution.sample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sample from the empirical distribution</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>size</strong> (<em>tuple of ints</em><em>, </em><em>optional</em>) – Number of samples to be drawn from each
+EmpiricalDistribution. If None (default), samples the same
+numbers of points as the original datasets.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>samples</strong> – IID samples from the empirical distributions.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple of ndarray or pandas DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="bootstrap_stat.abcnon_interval">
+<code class="sig-prename descclassname">bootstrap_stat.</code><code class="sig-name descname">abcnon_interval</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">stat</em>, <em class="sig-param">alpha=0.05</em>, <em class="sig-param">eps=0.001</em>, <em class="sig-param">influence_components=None</em>, <em class="sig-param">second_derivatives=None</em>, <em class="sig-param">return_influence_components=False</em>, <em class="sig-param">num_threads=1</em><span class="sig-paren">)</span><a class="headerlink" href="#bootstrap_stat.abcnon_interval" title="Permalink to this definition">¶</a></dt>
+<dd><p>ABC Confidence Intervals</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>array_like</em><em> or </em><em>pandas DataFrame</em>) – The data, used to evaluate the observed statistic and compute
+influence components.</p></li>
+<li><p><strong>stat</strong> (<em>function</em>) – The statistic. Should take <cite>x</cite> and a resampling vector as
+input. See Notes.</p></li>
+<li><p><strong>alpha</strong> (<em>float</em><em> or </em><em>array of floats</em><em>, </em><em>optional</em>) – Number controlling the size of the interval. That is, this
+function will return a 100(1 - 2 * <cite>alpha</cite>)% confidence
+interval. Defaults to 0.05. Alternatively, the user can pass
+an array of floats in (0, 1). In that case, the return value
+will be a tuple of confidence points. See Notes.</p></li>
+<li><p><strong>influence_components</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Influence components. See Notes.</p></li>
+<li><p><strong>second_derivatives</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Vector of second derivatives. See Notes.</p></li>
+<li><p><strong>return_influence_components</strong> (<em>boolean</em><em>, </em><em>optional</em>) – Specifies whether to return the influence components and
+second derivatives. Defaults to False.</p></li>
+<li><p><strong>num_threads</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of threads to use for multicore processing. Defaults to
+1, meaning all calculations will be done in a single
+thread. Set to -1 to use all available cores.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>ci_low, ci_high</strong> (<em>float</em>) – Lower and upper bounds on a 100(1 - 2 * <cite>alpha</cite>)% confidence
+interval on theta.</p></li>
+<li><p><strong>influence_components</strong> (<em>array_like</em>) – Vector of influence components. Only returned if
+<cite>return_influence_components</cite> is True.</p></li>
+<li><p><strong>second_derivatives</strong> (<em>array_like</em>) – Vector of second_derivatives. Only returned if
+<cite>return_influence_components</cite> is True.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Approximate Bootstrap Confidence (ABC) intervals require the
+statistic to be expressed in resampling form. See [ET93, S14.4]
+for details. It only applies to statistics which are smooth
+functions of the data. A notable example where ABC does not apply
+is the sample median.</p>
+<p>ABC works in terms of the derivatives and second derivatives of
+the statistic with respect to the data. In some cases, analytical
+forms are possible. In that case, the caller may wish to calculate
+them externally to this function and pass them in. The default
+behavior is to calculate them using a finite difference method.</p>
+<p>When we want to compute multiple confidence points, we can reuse
+many of the calculations. For example, if we want to compute a 90%
+confidence interval <em>and</em> a 99% confidence interval, we would
+specify <cite>alpha</cite> = [0.005, 0.05, 0.95, 0.995] and read off the
+appropriate return values. This would be much faster than multiple
+calls to this function. (The recurring cost is 1 call to <cite>stat</cite>
+for each additional point specified.) This in turn facilitates
+using these intervals for achieved significance levels,
+effectively by inverting the interval having endpoint 0. See the
+ASL functions for how this might be done.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="bootstrap_stat.bcanon_asl">
+<code class="sig-prename descclassname">bootstrap_stat.</code><code class="sig-name descname">bcanon_asl</code><span class="sig-paren">(</span><em class="sig-param">dist</em>, <em class="sig-param">stat</em>, <em class="sig-param">x</em>, <em class="sig-param">theta_0=0</em>, <em class="sig-param">B=1000</em>, <em class="sig-param">size=None</em>, <em class="sig-param">return_samples=False</em>, <em class="sig-param">theta_star=None</em>, <em class="sig-param">theta_hat=None</em>, <em class="sig-param">jv=None</em>, <em class="sig-param">two_sided=False</em>, <em class="sig-param">num_threads=1</em><span class="sig-paren">)</span><a class="headerlink" href="#bootstrap_stat.bcanon_asl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Achieved Significance Level, bcanon method</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dist</strong> (<a class="reference internal" href="#bootstrap_stat.EmpiricalDistribution" title="bootstrap_stat.EmpiricalDistribution"><em>EmpiricalDistribution</em></a>) – The empirical distribution.</p></li>
+<li><p><strong>stat</strong> (<em>function</em>) – The test statistic.</p></li>
+<li><p><strong>x</strong> (<em>array_like</em><em> or </em><em>pandas DataFrame</em><em> or </em><em>tuple</em>) – The data, used to evaluate the observed statistic and compute
+jackknife values.</p></li>
+<li><p><strong>theta_0</strong> (<em>float</em><em>, </em><em>optional</em>) – The mean of the test statistic under the null
+hypothesis. Defaults to 0.</p></li>
+<li><p><strong>B</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of bootstrap samples.</p></li>
+<li><p><strong>size</strong> (<em>int</em><em> or </em><em>tuple of ints</em><em>, </em><em>optional</em>) – Size to pass for generating samples from the alternative
+distribution. Defaults to None.</p></li>
+<li><p><strong>return_samples</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If True, return the bootstrapped statistic or jackknife
+values. Defaults to False.</p></li>
+<li><p><strong>theta_star</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Bootstrapped statistic values. Can be passed if they have
+already been calculated, which will speed this up
+considerably.</p></li>
+<li><p><strong>theta_hat</strong> (<em>float</em><em>, </em><em>optional</em>) – Observed statistic. Can be passed if it has already been
+calculated, which will speed this up slightly.</p></li>
+<li><p><strong>jv</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Jackknife values. Can be passed if they have already been
+calculated, which will speed this up considerably.</p></li>
+<li><p><strong>two_sided</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If True, computes a two-sided significance value. If False
+(default), only a one-sided value is returned. Support for
+two-sided tests is <em>experimental</em>. Use with caution!</p></li>
+<li><p><strong>num_threads</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of threads to use for multicore processing. Defaults to
+1, meaning all calculations will be done in a single
+thread. Set to -1 to use all available cores.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>asl</strong> (<em>float</em>) – Achieved significance level, the probability of an outcome at
+least as extreme as that actually observed under the null
+hypothesis; aka the p-value.</p></li>
+<li><p><strong>theta_star</strong> (<em>ndarray</em>) – Array of bootstrapped statistic values. Only returned if
+<cite>return_samples</cite> is True.</p></li>
+<li><p><strong>jv</strong> (<em>ndarray</em>) – Jackknife values. Only returned if <cite>return_samples</cite> is True.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="bootstrap_stat.bcanon_interval">
+<code class="sig-prename descclassname">bootstrap_stat.</code><code class="sig-name descname">bcanon_interval</code><span class="sig-paren">(</span><em class="sig-param">dist</em>, <em class="sig-param">stat</em>, <em class="sig-param">x</em>, <em class="sig-param">alpha=0.05</em>, <em class="sig-param">B=1000</em>, <em class="sig-param">size=None</em>, <em class="sig-param">return_samples=False</em>, <em class="sig-param">theta_star=None</em>, <em class="sig-param">theta_hat=None</em>, <em class="sig-param">jv=None</em>, <em class="sig-param">num_threads=1</em><span class="sig-paren">)</span><a class="headerlink" href="#bootstrap_stat.bcanon_interval" title="Permalink to this definition">¶</a></dt>
+<dd><p>BCa Confidence Intervals</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dist</strong> (<a class="reference internal" href="#bootstrap_stat.EmpiricalDistribution" title="bootstrap_stat.EmpiricalDistribution"><em>EmpiricalDistribution</em></a>) – The empirical distribution.</p></li>
+<li><p><strong>stat</strong> (<em>function</em>) – The statistic.</p></li>
+<li><p><strong>x</strong> (<em>array_like</em><em> or </em><em>pandas DataFrame</em><em> or </em><em>tuple</em>) – The data, used to evaluate the observed statistic and compute
+jackknife values.</p></li>
+<li><p><strong>alpha</strong> (<em>float</em><em>, </em><em>optional</em>) – Number controlling the size of the interval. That is, this
+function will return a 100(1-2*`alpha`)% confidence
+interval. Defaults to 0.05.</p></li>
+<li><p><strong>B</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of bootstrap samples. Defaults to 1000.</p></li>
+<li><p><strong>size</strong> (<em>int</em><em> or </em><em>tuple of ints</em><em>, </em><em>optional</em>) – Size to pass for generating samples from the distribution.
+Defaults to None, indicating the samples will be the same size
+as the original dataset.</p></li>
+<li><p><strong>return_samples</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If True, return the bootstrapped statistic values. Defaults to False.</p></li>
+<li><p><strong>theta_star</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Bootstrapped statistic values. Can be passed if they have
+already been calculated, which will speed this up
+considerably.</p></li>
+<li><p><strong>theta_hat</strong> (<em>float</em><em>, </em><em>optional</em>) – Observed statistic. Can be passed if it has already been
+calculated, which will speed this up slightly.</p></li>
+<li><p><strong>jv</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Jackknife values. Can be passed if they have already been
+calculated, which will speed this up considerably.</p></li>
+<li><p><strong>num_threads</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of threads to use for multicore processing. Defaults to
+1, meaning all calculations will be done in a single
+thread. Set to -1 to use all available cores.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>ci_low, ci_high</strong> (<em>float</em>) – Lower and upper bounds on a 100(1-2*`alpha`)% confidence
+interval on theta.</p></li>
+<li><p><strong>theta_star</strong> (<em>ndarray</em>) – Array of bootstrapped statistic values. Only returned if
+<cite>return_samples</cite> is True.</p></li>
+<li><p><strong>jv</strong> (<em>ndarray</em>) – Jackknife values. Only returned if <cite>return_samples</cite> is True.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="bootstrap_stat.better_bootstrap_bias">
+<code class="sig-prename descclassname">bootstrap_stat.</code><code class="sig-name descname">better_bootstrap_bias</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">stat</em>, <em class="sig-param">B=400</em>, <em class="sig-param">return_samples=False</em>, <em class="sig-param">num_threads=1</em><span class="sig-paren">)</span><a class="headerlink" href="#bootstrap_stat.better_bootstrap_bias" title="Permalink to this definition">¶</a></dt>
+<dd><p>Better bootstrap bias.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>array_like</em><em> or </em><em>pandas DataFrame</em>) – The data.</p></li>
+<li><p><strong>stat</strong> (<em>function</em>) – The statistic. Should take <cite>x</cite> and a resampling vector as
+input. See Notes.</p></li>
+<li><p><strong>B</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of bootstrap samples. Defaults to 400.</p></li>
+<li><p><strong>return_samples</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If True, return the bootstrapped statistic values. Defaults to False.</p></li>
+<li><p><strong>num_threads</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of threads to use for multicore processing. Defaults to
+1, meaning all calculations will be done in a single
+thread. Set to -1 to use all available cores.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>bias</strong> (<em>float</em>) – Estimate of bias.</p></li>
+<li><p><strong>theta_star</strong> (<em>ndarray</em>) – Array of bootstrapped statistic values. Only returned if
+<cite>return_samples</cite> is True.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The “better” bootstrap bias estimate is only applicable when
+<cite>stat</cite> is a plug-in statistic for the parameter being estimated,
+that is, having the form <span class="math notranslate nohighlight">\(t(\hat{F})\)</span>, where <span class="math notranslate nohighlight">\(\hat{F}\)</span>
+is the empirical distribution. Notable situations where this
+assumption does not hold include robust statistics like using the
+alpha-trimmed mean, since that is not the plug-in statistic for
+the mean. In cases like that, just use the “worse” <cite>bias</cite>
+function. The advantage of the “better” bootstrap bias estimate is
+faster convergence.  Whereas using <cite>B</cite> = 400 is typically adequate
+here, it can take thousands of bootstrap samples to give an
+accurate estimate in the “worse” <cite>bias</cite> function.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="bootstrap_stat.bias">
+<code class="sig-prename descclassname">bootstrap_stat.</code><code class="sig-name descname">bias</code><span class="sig-paren">(</span><em class="sig-param">dist</em>, <em class="sig-param">stat</em>, <em class="sig-param">t</em>, <em class="sig-param">B=200</em>, <em class="sig-param">return_samples=False</em>, <em class="sig-param">theta_star=None</em>, <em class="sig-param">num_threads=1</em><span class="sig-paren">)</span><a class="headerlink" href="#bootstrap_stat.bias" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimate of bias</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dist</strong> (<a class="reference internal" href="#bootstrap_stat.EmpiricalDistribution" title="bootstrap_stat.EmpiricalDistribution"><em>EmpiricalDistribution</em></a>) – The empirical distribution.</p></li>
+<li><p><strong>stat</strong> (<em>function</em>) – The statistic for which we wish to calculate the bias.</p></li>
+<li><p><strong>t</strong> (<em>function</em>) – Function to be applied to empirical distribution function.</p></li>
+<li><p><strong>B</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of bootstrap samples. Defaults to 200.</p></li>
+<li><p><strong>return_samples</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If True, return the bootstrapped statistic values. Defaults to False.</p></li>
+<li><p><strong>theta_star</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Bootstrapped statistic values. Can be passed if they have
+already been calculated, which will speed this up
+considerably.</p></li>
+<li><p><strong>num_threads</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of threads to use for multicore processing. Defaults to
+1, meaning all calculations will be done in a single
+thread. Set to -1 to use all available cores.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>bias</strong> (<em>float</em>) – Estimate of bias.</p></li>
+<li><p><strong>theta_star</strong> (<em>ndarray</em>) – Array of bootstrapped statistic values. Only returned if
+<cite>return_samples</cite> is True.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="bootstrap_stat.bias_corrected">
+<code class="sig-prename descclassname">bootstrap_stat.</code><code class="sig-name descname">bias_corrected</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">stat</em>, <em class="sig-param">method='better_bootstrap_bias'</em>, <em class="sig-param">dist=None</em>, <em class="sig-param">t=None</em>, <em class="sig-param">B=None</em>, <em class="sig-param">return_samples=False</em>, <em class="sig-param">theta_star=None</em>, <em class="sig-param">jv=None</em>, <em class="sig-param">num_threads=1</em><span class="sig-paren">)</span><a class="headerlink" href="#bootstrap_stat.bias_corrected" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bias-corrected estimator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>array_like</em><em> or </em><em>pandas DataFrame</em>) – The data.</p></li>
+<li><p><strong>stat</strong> (<em>function</em>) – The statistic. For use with “bias” and “jackknife” methods,
+should take a dataset as the input. For use with the
+“better_bootstrap_bias” method, it should take the dataset and
+a resampling vector as input. See the documentation in the
+better_bootstrap_bias function for details.</p></li>
+<li><p><strong>method</strong> (<em>[</em><em>&quot;better_bootstrap_bias&quot;</em><em>, </em><em>&quot;bias&quot;</em><em>, </em><em>&quot;jackknife&quot;</em><em>]</em>) – The method by which we correct for bias. Defaults to
+“better_bootstrap_bias”.</p></li>
+<li><p><strong>dist</strong> (<a class="reference internal" href="#bootstrap_stat.EmpiricalDistribution" title="bootstrap_stat.EmpiricalDistribution"><em>EmpiricalDistribution</em></a>) – The empirical distribution. Required when method == “bias”.</p></li>
+<li><p><strong>t</strong> (<em>function</em>) – Function to be applied to empirical distribution
+function. Required when method == “bias”.</p></li>
+<li><p><strong>B</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of bootstrap samples. Required when method == “bias” or
+“better_bootstrap_bias”. Defaults to 400 when method ==
+“better_bootstrap_bias” or 4000 when method == “bias”.</p></li>
+<li><p><strong>return_samples</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If True, return the bootstrapped statistic or jackknife
+values. Defaults to False.</p></li>
+<li><p><strong>theta_star</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Bootstrapped statistic values. Can be passed if they have
+already been calculated, which will speed this up
+considerably. Only used when method == “bias”.</p></li>
+<li><p><strong>jv</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Jackknife values. Can be passed if they have already been
+calculated, which will speed this up considerably. Only used
+when method == “jackknife”.</p></li>
+<li><p><strong>num_threads</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of threads to use for multicore processing. Defaults to
+1, meaning all calculations will be done in a single
+thread. Set to -1 to use all available cores.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>theta_bar</strong> (<em>float</em>) – The bias-corrected estimator.</p></li>
+<li><p><strong>theta_star</strong> (<em>ndarray</em>) – Array of bootstrapped statistic values. Only returned if
+<cite>return_samples</cite> is True and method is either “bias” or
+“better_bootstrap_bias”.</p></li>
+<li><p><strong>jv</strong> (<em>ndarray</em>) – Jackknife values. Only returned if <cite>return_samples</cite> is True
+and method == “jackknife”.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Per [ET93, S10.6], bias-corrected estimators tend to have much
+higher variance than the non-corrected version. This should be
+assessed, for example, using the bootstrap to directly estimate
+the standard error of the corrected and uncorrected estimators.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="bootstrap_stat.bootstrap_asl">
+<code class="sig-prename descclassname">bootstrap_stat.</code><code class="sig-name descname">bootstrap_asl</code><span class="sig-paren">(</span><em class="sig-param">dist</em>, <em class="sig-param">stat</em>, <em class="sig-param">x</em>, <em class="sig-param">B=1000</em>, <em class="sig-param">size=None</em>, <em class="sig-param">return_samples=False</em>, <em class="sig-param">theta_star=None</em>, <em class="sig-param">theta_hat=None</em>, <em class="sig-param">two_sided=False</em>, <em class="sig-param">num_threads=1</em><span class="sig-paren">)</span><a class="headerlink" href="#bootstrap_stat.bootstrap_asl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Achieved Significance Level, general bootstrap method</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dist</strong> (<a class="reference internal" href="#bootstrap_stat.EmpiricalDistribution" title="bootstrap_stat.EmpiricalDistribution"><em>EmpiricalDistribution</em></a>) – The empirical distribution.</p></li>
+<li><p><strong>stat</strong> (<em>function</em>) – The test statistic.</p></li>
+<li><p><strong>x</strong> (<em>array_like</em><em> or </em><em>pandas DataFrame</em><em> or </em><em>tuple</em>) – The data. It isn’t used for anything, so the caller can pass
+None if the data are not available, but it is here for
+consistency across asl routines.</p></li>
+<li><p><strong>B</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of bootstrap samples. Defaults to 1000.</p></li>
+<li><p><strong>size</strong> (<em>int</em><em> or </em><em>tuple of ints</em><em>, </em><em>optional</em>) – Size to pass for generating samples from the alternative
+distribution. Defaults to None.</p></li>
+<li><p><strong>return_samples</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If True, return the bootstrapped statistic or jackknife
+values. Defaults to False.</p></li>
+<li><p><strong>theta_star</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Bootstrapped statistic values. Can be passed if they have
+already been calculated, which will speed this up
+considerably.</p></li>
+<li><p><strong>theta_hat</strong> (<em>float</em><em>, </em><em>optional</em>) – Observed statistic. Can be passed if it has already been
+calculated, which will speed this up slightly.</p></li>
+<li><p><strong>two_sided</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If True, computes a two-sided significance value. If False
+(default), only a one-sided value is returned. Support for
+two-sided tests is <em>experimental</em>. Use with caution!</p></li>
+<li><p><strong>num_threads</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of threads to use for multicore processing. Defaults to
+1, meaning all calculations will be done in a single
+thread. Set to -1 to use all available cores.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>asl</strong> (<em>float</em>) – Achieved significance level, the probability of an outcome at
+least as extreme as that actually observed under the null
+hypothesis; aka the p-value.</p></li>
+<li><p><strong>theta_star</strong> (<em>ndarray</em>) – Array of bootstrapped statistic values. Only returned if
+<cite>return_samples</cite> is True.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="bootstrap_stat.bootstrap_power">
+<code class="sig-prename descclassname">bootstrap_stat.</code><code class="sig-name descname">bootstrap_power</code><span class="sig-paren">(</span><em class="sig-param">alt_dist</em>, <em class="sig-param">null_dist</em>, <em class="sig-param">stat</em>, <em class="sig-param">asl=&lt;function bootstrap_asl&gt;</em>, <em class="sig-param">alpha=0.05</em>, <em class="sig-param">size=None</em>, <em class="sig-param">P=100</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bootstrap_stat.bootstrap_power" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bootstrap Power</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alt_dist</strong> (<a class="reference internal" href="#bootstrap_stat.EmpiricalDistribution" title="bootstrap_stat.EmpiricalDistribution"><em>EmpiricalDistribution</em></a>) – Distribution under the alternative hypothesis.</p></li>
+<li><p><strong>null_dist</strong> (<em>class</em>) – Class corresponding to the null distribution. See Notes.</p></li>
+<li><p><strong>stat</strong> (<em>function</em>) – Function that computes the test statistic.</p></li>
+<li><p><strong>asl</strong> (<em>function</em><em>, </em><em>optional</em>) – Function that computes an achieved significance
+level. Defaults to bootstrap_asl.</p></li>
+<li><p><strong>alpha</strong> (<em>float</em><em>, </em><em>optional</em>) – Desired Type-I error rate. Defaults to 0.05.</p></li>
+<li><p><strong>size</strong> (<em>int</em><em> or </em><em>tuple of ints</em><em>, </em><em>optional</em>) – Size to pass for generating samples from the alternative
+distribution. Defaults to None.</p></li>
+<li><p><strong>P</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of Monte Carlo simulations to run for the purposes of
+calculating power. Defaults to 100.</p></li>
+<li><p><strong>kwargs</strong> (<em>optional</em>) – Other keyword arguments to pass to <cite>asl</cite>, such as the number
+of bootstrap samples to use.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>pwr</strong> – The fraction of Monte Carlo simulations in which the null
+hypothesis was rejected.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Perhaps the most confusing aspect of this function is that there
+are two distribution passed as input, and they are of a different
+form. The <cite>alt_dist</cite> should be passed as an instance of an
+EmpiricalDistribution or a subclass thereof. We use this parameter
+to generate samples from that distribution. We then need to
+generate an EmpiricalDistribution from that sample, for which we
+need the <em>class</em> corresponding to the null distribution, not an
+instance thereof. I recognize this is confusing!</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="bootstrap_stat.bootstrap_samples">
+<code class="sig-prename descclassname">bootstrap_stat.</code><code class="sig-name descname">bootstrap_samples</code><span class="sig-paren">(</span><em class="sig-param">dist</em>, <em class="sig-param">stat</em>, <em class="sig-param">B</em>, <em class="sig-param">size=None</em>, <em class="sig-param">jackknife=False</em>, <em class="sig-param">num_threads=1</em><span class="sig-paren">)</span><a class="headerlink" href="#bootstrap_stat.bootstrap_samples" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate bootstrap samples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dist</strong> (<a class="reference internal" href="#bootstrap_stat.EmpiricalDistribution" title="bootstrap_stat.EmpiricalDistribution"><em>EmpiricalDistribution</em></a>) – The empirical distribution.</p></li>
+<li><p><strong>stat</strong> (<em>function</em><em> or </em><em>dict_like</em>) – The statistic or statistics for which we wish to calculate the
+standard error. If you want to compute different statistics on
+the same bootstrap samples, specify as a dictionary having
+functions as values.</p></li>
+<li><p><strong>B</strong> (<em>int</em>) – Number of bootstrap samples.</p></li>
+<li><p><strong>size</strong> (<em>int</em><em> or </em><em>tuple of ints</em><em>, </em><em>optional</em>) – Size to pass for generating samples. Defaults to None.</p></li>
+<li><p><strong>jackknife</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If True, returns an array of jackknife bootstrap statistics
+(see the <cite>jackknife_array</cite> return value). Defaults to False.</p></li>
+<li><p><strong>num_threads</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of threads to use for multicore processing. Defaults to
+1, meaning all calculations will be done in a single
+thread. Set to -1 to use all available cores.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>theta_star</strong> (<em>ndarray or dictionary</em>) – Array of bootstrapped statistic values. When multiple
+statistics are being calculated on the same bootstrap samples,
+the return value will be a dictionary having keys the same as
+<cite>stat</cite> and values an ndarray for each statistic.</p></li>
+<li><p><strong>jackknife_array</strong> (<em>ndarray</em>) – Array of n arrays or dicts, where n is the number of elements
+of the original dataset upon which the empirical distribution
+is based. Each element of this array is in turn either an
+array or dict according to <cite>stat</cite>. If <cite>stat</cite> is just a single
+function, it will be an array, otherwise a dict. The ith
+element of the inner array will be those bootstrap statistics
+corresponding to samples not including the ith value from the
+original dataset. (For jackknifing, only samples not including
+the ith datapoint can be used for inferences involving the ith
+point.) See [ET93, S19.4] for details. Only returned if
+<cite>jackknife</cite> is True.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="bootstrap_stat.calibrate_interval">
+<code class="sig-prename descclassname">bootstrap_stat.</code><code class="sig-name descname">calibrate_interval</code><span class="sig-paren">(</span><em class="sig-param">dist</em>, <em class="sig-param">stat</em>, <em class="sig-param">x</em>, <em class="sig-param">theta_hat</em>, <em class="sig-param">alpha=0.05</em>, <em class="sig-param">B=1000</em>, <em class="sig-param">return_confidence_points=False</em>, <em class="sig-param">num_threads=1</em><span class="sig-paren">)</span><a class="headerlink" href="#bootstrap_stat.calibrate_interval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calibrated confidence interval</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dist</strong> (<a class="reference internal" href="#bootstrap_stat.EmpiricalDistribution" title="bootstrap_stat.EmpiricalDistribution"><em>EmpiricalDistribution</em></a>) – The empirical distribution.</p></li>
+<li><p><strong>stat</strong> (<em>function</em>) – The statistic.</p></li>
+<li><p><strong>x</strong> (<em>array_like</em><em> or </em><em>pandas DataFrame</em><em> or </em><em>tuple</em>) – The data.</p></li>
+<li><p><strong>theta_hat</strong> (<em>float</em>) – Observed statistic.</p></li>
+<li><p><strong>alpha</strong> (<em>float</em><em>, </em><em>optional</em>) – Number controlling the size of the interval. That is, this
+function will return a 100(1-2*`alpha`)% confidence
+interval. Defaults to 0.05.</p></li>
+<li><p><strong>B</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of bootstrap samples. Defaults to 1000.</p></li>
+<li><p><strong>return_confidence_points</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If True, returns the estimated confidence points have the
+desired coverage. Defaults to False.</p></li>
+<li><p><strong>num_threads</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of threads to use for multicore processing. Defaults to
+1, meaning all calculations will be done in a single
+thread. Set to -1 to use all available cores.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>ci_low, ci_high</strong> (<em>float</em>) – Lower and upper bounds on a 100(1-2*`alpha`)% confidence
+interval on theta.</p></li>
+<li><p><strong>lmbda_low, lmbda_high</strong> (<em>float</em>) – The estimated confidence points having the desired
+coverage. For example, if the interval has the nominal
+coverage, then lmbda_low would be <cite>alpha</cite> and lmbda_high would
+be 1 - <cite>alpha</cite>.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>While we can in principle calibrate any type of confidence
+interval, in most instances that results in a “double
+bootstrap”. For this reason, only ABC intervals are currently
+supported. Moreover, from my limited experience calibration seems
+pretty finicky. I would consider this function to be illustrative
+but experimental. See [ET93, S18] for details.</p>
+<p>We compute the observed coverage for a range of points around the
+nominal <cite>alpha</cite> and 1-<cite>alpha</cite>. Then we fit a smoother (loess) to
+these data and invert to find the confidence point, lmbda, having
+the desired coverage.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="bootstrap_stat.infinitesimal_jackknife">
+<code class="sig-prename descclassname">bootstrap_stat.</code><code class="sig-name descname">infinitesimal_jackknife</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">stat</em>, <em class="sig-param">eps=0.001</em>, <em class="sig-param">influence_components=None</em>, <em class="sig-param">return_influence_components=False</em>, <em class="sig-param">num_threads=1</em><span class="sig-paren">)</span><a class="headerlink" href="#bootstrap_stat.infinitesimal_jackknife" title="Permalink to this definition">¶</a></dt>
+<dd><p>Infinitesimal Jackknife</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>array_like</em><em> or </em><em>pandas DataFrame</em><em> or </em><em>tuple</em>) – The data. If tuple. interpretation is as a MultiSample
+distribution, like in A/B testing.</p></li>
+<li><p><strong>stat</strong> (<em>function</em>) – The statistic. Should take <cite>x</cite> and a resampling vector as
+input. See Notes.</p></li>
+<li><p><strong>eps</strong> (<em>float</em><em>, </em><em>optional</em>) – Epsilon for limit calculation. Defaults to 1e-3.</p></li>
+<li><p><strong>influence_components</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Influence components. See Notes.</p></li>
+<li><p><strong>return_influence_components</strong> (<em>boolean</em><em>, </em><em>optional</em>) – Specifies whether to return the influence components. Defaults
+to False.</p></li>
+<li><p><strong>num_threads</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of threads to use for multicore processing. Defaults to
+1, meaning all calculations will be done in a single
+thread. Set to -1 to use all available cores.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>se</strong> (<em>float</em>) – The standard error.</p></li>
+<li><p><strong>influence_components</strong> (<em>array_like</em>) – The influence components. Only returned if
+<cite>return_influence_components</cite> is True.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The infinitesimal jackknife requires the statistic to be expressed
+in “resampling form”. See [ET93, S21] for details. The ith
+influence component is a type of derivative of the statistic with
+respect to the ith observation. This is computed by a finite
+difference method: we simply evaluate the statistic putting a
+little extra weight (<cite>eps</cite>) on the ith observation, minus the
+statistic evaluated on the original dataset, divided by <cite>eps</cite>.</p>
+<p>In some cases, there is an analytical formula for the influence
+components. In these cases, it would be better for the caller to
+compute the influence components elsewhere and simply pass them to
+this function.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="bootstrap_stat.jackknife_bias">
+<code class="sig-prename descclassname">bootstrap_stat.</code><code class="sig-name descname">jackknife_bias</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">stat</em>, <em class="sig-param">return_samples=False</em>, <em class="sig-param">jv=None</em>, <em class="sig-param">num_threads=1</em><span class="sig-paren">)</span><a class="headerlink" href="#bootstrap_stat.jackknife_bias" title="Permalink to this definition">¶</a></dt>
+<dd><p>Jackknife estimate of bias.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>array_like</em><em> or </em><em>pandas DataFrame</em>) – The data.</p></li>
+<li><p><strong>stat</strong> (<em>function</em>) – The statistic.</p></li>
+<li><p><strong>return_samples</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If True, return the jackknife values. Defaults to False.</p></li>
+<li><p><strong>jv</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Jackknife values. Can be passed if they have already been
+calculated, which will speed this up considerably.</p></li>
+<li><p><strong>num_threads</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of threads to use for multicore processing. Defaults to
+1, meaning all calculations will be done in a single
+thread. Set to -1 to use all available cores.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>bias</strong> (<em>float</em>) – Estimate of bias.</p></li>
+<li><p><strong>jv</strong> (<em>ndarray</em>) – Jackknife values. Only returned if <cite>return_samples</cite> is True.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The jackknife estimate of bias is only applicable when <cite>stat</cite> is a
+plug-in statistic, that is, having the form <span class="math notranslate nohighlight">\(t(\hat{F})\)</span>,
+where <span class="math notranslate nohighlight">\(\hat{F}\)</span> is the empirical distribution. Moreover, it
+is only applicable when <cite>t</cite> is a smooth function. Notable
+exceptions include the median. The jackknife cannot be used to
+estimate the bias of non-smooth estimators. See [EF93, S10.5] for
+details.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="bootstrap_stat.jackknife_standard_error">
+<code class="sig-prename descclassname">bootstrap_stat.</code><code class="sig-name descname">jackknife_standard_error</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">stat</em>, <em class="sig-param">return_samples=False</em>, <em class="sig-param">jv=None</em>, <em class="sig-param">num_threads=1</em><span class="sig-paren">)</span><a class="headerlink" href="#bootstrap_stat.jackknife_standard_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Jackknife estimate of standard error.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>array_like</em><em> or </em><em>pandas DataFrame</em><em> or </em><em>tuple</em>) – The data. If tuple. interpretation is as a MultiSample
+distribution, like in A/B testing.</p></li>
+<li><p><strong>stat</strong> (<em>function</em>) – The statistic.</p></li>
+<li><p><strong>return_samples</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If True, return the jackknife values. Defaults to False.</p></li>
+<li><p><strong>jv</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Jackknife values. Can be passed if they have already been
+calculated, which will speed this up considerably.</p></li>
+<li><p><strong>num_threads</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of threads to use for multicore processing. Defaults to
+1, meaning all calculations will be done in a single
+thread. Set to -1 to use all available cores.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>se</strong> (<em>float</em>) – The standard error.</p></li>
+<li><p><strong>jv</strong> (<em>ndarray</em>) – Jackknife values. Only returned if <cite>return_samples</cite> is True.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The jackknife estimate of standard error is only applicable when
+<cite>stat</cite> is a plug-in statistic, that is, having the form
+<span class="math notranslate nohighlight">\(t(\hat{F})\)</span>, where <span class="math notranslate nohighlight">\(\hat{F}\)</span> is the empirical
+distribution. Moreover, it is only applicable when t is a smooth
+function. Notable exceptions include the median. The jackknife
+cannot be used to estimate the standard error of non-smooth
+estimators. See [EF93, S10.6]</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="bootstrap_stat.jackknife_values">
+<code class="sig-prename descclassname">bootstrap_stat.</code><code class="sig-name descname">jackknife_values</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">stat</em>, <em class="sig-param">sample=None</em>, <em class="sig-param">num_threads=1</em><span class="sig-paren">)</span><a class="headerlink" href="#bootstrap_stat.jackknife_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute jackknife values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>array_like</em><em> or </em><em>pandas DataFrame</em><em> or </em><em>tuple of arrays/DataFrames.</em>) – The data.</p></li>
+<li><p><strong>stat</strong> (<em>function</em>) – The statistic.</p></li>
+<li><p><strong>sample</strong> (<em>int</em><em>, </em><em>optional</em>) – When Jackknifing a multi-sample distribution, like for an A/B
+test, we generate one set of jackknife values for each
+sample. The caller should specify which sample for which
+jackknife values should be generated, calling this function
+once for each sample.</p></li>
+<li><p><strong>num_threads</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of threads to use for multicore processing. Defaults to
+1, meaning all calculations will be done in a single
+thread. Set to -1 to use all available cores.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>jv</strong> – The jackknife values.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The jackknife values consist of the statistic applied to a
+collection of datasets derived from the original by holding out
+each observation in turn. For example, let x1 be the dataset
+corresponding to x, but with the first datapoint removed. The
+first jackknife value is simply stat(x1).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="bootstrap_stat.loess">
+<code class="sig-prename descclassname">bootstrap_stat.</code><code class="sig-name descname">loess</code><span class="sig-paren">(</span><em class="sig-param">z0</em>, <em class="sig-param">z</em>, <em class="sig-param">y</em>, <em class="sig-param">alpha</em>, <em class="sig-param">sided='both'</em><span class="sig-paren">)</span><a class="headerlink" href="#bootstrap_stat.loess" title="Permalink to this definition">¶</a></dt>
+<dd><p>Locally estimated scatterplot smoothing</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z0</strong> (<em>float</em>) – Test point</p></li>
+<li><p><strong>z</strong> (<em>array_like</em>) – Endogenous variables.</p></li>
+<li><p><strong>y</strong> (<em>array_like</em>) – Exogenous variables.</p></li>
+<li><p><strong>alpha</strong> (<em>float</em>) – Smoothing parameter, governing how many points to include in
+the local fit. Should be between 0 and 1, with higher
+values corresponding to more smoothing.</p></li>
+<li><p><strong>sided</strong> (<em>[</em><em>&quot;both&quot;</em><em>, </em><em>&quot;trailing&quot;</em><em>, </em><em>&quot;leading&quot;</em><em>]</em><em>, </em><em>optional</em>) – Dictates what side(s) of z0 can be used to create the
+smooth. With the default behavior (“both”), points both before
+and after z0 can be used. If “trailing” is specified, only
+points less than or equal to z0 may be used to perform the
+smooth. If “leading” is specified, only points greater than or
+equal to z0 may be used. This is intended to support time
+series methods where we only want to do trailing averages.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>y_smoothed</strong> – The smoothed estimate of the exogenous variable evaluated at
+z0.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="bootstrap_stat.multithreaded_bootstrap_samples">
+<code class="sig-prename descclassname">bootstrap_stat.</code><code class="sig-name descname">multithreaded_bootstrap_samples</code><span class="sig-paren">(</span><em class="sig-param">dist</em>, <em class="sig-param">stat</em>, <em class="sig-param">B</em>, <em class="sig-param">size=None</em>, <em class="sig-param">jackknife=False</em>, <em class="sig-param">num_threads=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#bootstrap_stat.multithreaded_bootstrap_samples" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate bootstrap samples in parallel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dist</strong> (<a class="reference internal" href="#bootstrap_stat.EmpiricalDistribution" title="bootstrap_stat.EmpiricalDistribution"><em>EmpiricalDistribution</em></a>) – The empirical distribution.</p></li>
+<li><p><strong>stat</strong> (<em>function</em><em> or </em><em>dict_like</em>) – The statistic or statistics for which we wish to calculate the
+standard error. If you want to compute different statistics on
+the same bootstrap samples, specify as a dictionary having
+functions as values.</p></li>
+<li><p><strong>B</strong> (<em>int</em>) – Number of bootstrap samples.</p></li>
+<li><p><strong>size</strong> (<em>int</em><em> or </em><em>tuple of ints</em><em>, </em><em>optional</em>) – Size to pass for generating samples. Defaults to None.</p></li>
+<li><p><strong>num_threads</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of threads to use. Defaults to the number of available
+CPUs.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>theta_star</strong> – Array of bootstrapped statistic values. When multiple
+statistics are being calculated on the same bootstrap samples,
+the return value will be a dictionary having keys the same as
+<cite>stat</cite> and values an ndarray for each statistic.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray or dictionary</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Jackknifing is not currently supported.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="bootstrap_stat.percentile_asl">
+<code class="sig-prename descclassname">bootstrap_stat.</code><code class="sig-name descname">percentile_asl</code><span class="sig-paren">(</span><em class="sig-param">dist</em>, <em class="sig-param">stat</em>, <em class="sig-param">x</em>, <em class="sig-param">theta_0=0</em>, <em class="sig-param">B=1000</em>, <em class="sig-param">size=None</em>, <em class="sig-param">return_samples=False</em>, <em class="sig-param">theta_star=None</em>, <em class="sig-param">theta_hat=None</em>, <em class="sig-param">two_sided=False</em>, <em class="sig-param">num_threads=1</em><span class="sig-paren">)</span><a class="headerlink" href="#bootstrap_stat.percentile_asl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Achieved Significance Level, percentile method</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dist</strong> (<a class="reference internal" href="#bootstrap_stat.EmpiricalDistribution" title="bootstrap_stat.EmpiricalDistribution"><em>EmpiricalDistribution</em></a>) – The empirical distribution.</p></li>
+<li><p><strong>stat</strong> (<em>function</em>) – The test statistic.</p></li>
+<li><p><strong>x</strong> (<em>array_like</em><em> or </em><em>pandas DataFrame</em><em> or </em><em>tuple</em>) – The data, used to calculate the observed value of the
+statistic if <cite>theta_hat</cite> is not passed.</p></li>
+<li><p><strong>theta_0</strong> (<em>float</em><em>, </em><em>optional</em>) – The mean of the test statistic under the null
+hypothesis. Defaults to 0.</p></li>
+<li><p><strong>B</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of bootstrap samples.</p></li>
+<li><p><strong>size</strong> (<em>int</em><em> or </em><em>tuple of ints</em><em>, </em><em>optional</em>) – Size to pass for generating samples from the alternative
+distribution. Defaults to None.</p></li>
+<li><p><strong>return_samples</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If True, return the bootstrapped statistic or jackknife
+values. Defaults to False.</p></li>
+<li><p><strong>theta_star</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Bootstrapped statistic values. Can be passed if they have
+already been calculated, which will speed this up
+considerably.</p></li>
+<li><p><strong>theta_hat</strong> (<em>float</em><em>, </em><em>optional</em>) – Observed statistic. Can be passed if it has already been
+calculated, which will speed this up slightly.</p></li>
+<li><p><strong>two_sided</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If True, computes a two-sided significance value. If False
+(default), only a one-sided value is returned. Support for
+two-sided tests is <em>experimental</em>. Use with caution!</p></li>
+<li><p><strong>num_threads</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of threads to use for multicore processing. Defaults to
+1, meaning all calculations will be done in a single
+thread. Set to -1 to use all available cores.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>asl</strong> (<em>float</em>) – Achieved significance level, the probability of an outcome at
+least as extreme as that actually observed under the null
+hypothesis; aka the p-value.</p></li>
+<li><p><strong>theta_star</strong> (<em>ndarray</em>) – Array of bootstrapped statistic values. Only returned if
+<cite>return_samples</cite> is True.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Under the null hypothesis, the value of the statistic is
+theta_0. Suppose theta_hat &gt; theta_0. Let theta_lo, theta_hi be
+the endpoints of a 100(1-alpha)% confidence interval on theta.
+Suppose alpha is such that theta_lo = theta_0. Then alpha is the
+achieved significance level.</p>
+<p>For the percentile interval, this is simply the fraction of
+bootstrap samples that are “on the other side” of theta_0 from
+theta_hat.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="bootstrap_stat.percentile_interval">
+<code class="sig-prename descclassname">bootstrap_stat.</code><code class="sig-name descname">percentile_interval</code><span class="sig-paren">(</span><em class="sig-param">dist</em>, <em class="sig-param">stat</em>, <em class="sig-param">alpha=0.05</em>, <em class="sig-param">B=1000</em>, <em class="sig-param">size=None</em>, <em class="sig-param">return_samples=False</em>, <em class="sig-param">theta_star=None</em>, <em class="sig-param">num_threads=1</em><span class="sig-paren">)</span><a class="headerlink" href="#bootstrap_stat.percentile_interval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Percentile Intervals</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dist</strong> (<a class="reference internal" href="#bootstrap_stat.EmpiricalDistribution" title="bootstrap_stat.EmpiricalDistribution"><em>EmpiricalDistribution</em></a>) – The empirical distribution.</p></li>
+<li><p><strong>stat</strong> (<em>function</em>) – The statistic.</p></li>
+<li><p><strong>alpha</strong> (<em>float</em><em>, </em><em>optional</em>) – Number controlling the size of the interval. That is, this
+function will return a 100(1 - 2 * <cite>alpha</cite>)% confidence
+interval. Defaults to 0.05.</p></li>
+<li><p><strong>B</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of bootstrap samples. Defaults to 1000.</p></li>
+<li><p><strong>size</strong> (<em>int</em><em> or </em><em>tuple of ints</em><em>, </em><em>optional</em>) – Size to pass for generating samples from the distribution.
+Defaults to None, indicating the samples will be the same size
+as the original dataset.</p></li>
+<li><p><strong>return_samples</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If True, return the bootstrapped statistic values. Defaults to False.</p></li>
+<li><p><strong>theta_star</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Bootstrapped statistic values. Can be passed if they have
+already been calculated, which will speed this up
+considerably.</p></li>
+<li><p><strong>num_threads</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of threads to use for multicore processing. Defaults to
+1, meaning all calculations will be done in a single
+thread. Set to -1 to use all available cores.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>ci_low, ci_high</strong> (<em>float</em>) – Lower and upper bounds on a 100(1-2*`alpha`)% confidence
+interval on theta.</p></li>
+<li><p><strong>theta_star</strong> (<em>ndarray</em>) – Array of bootstrapped statistic values. Only returned if
+<cite>return_samples</cite> is True.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="bootstrap_stat.prediction_error_632">
+<code class="sig-prename descclassname">bootstrap_stat.</code><code class="sig-name descname">prediction_error_632</code><span class="sig-paren">(</span><em class="sig-param">dist</em>, <em class="sig-param">data</em>, <em class="sig-param">train</em>, <em class="sig-param">predict</em>, <em class="sig-param">error</em>, <em class="sig-param">B=200</em>, <em class="sig-param">apparent_error=None</em>, <em class="sig-param">use_632_plus=False</em>, <em class="sig-param">gamma=None</em>, <em class="sig-param">no_inf_err_rate=None</em>, <em class="sig-param">num_threads=1</em><span class="sig-paren">)</span><a class="headerlink" href="#bootstrap_stat.prediction_error_632" title="Permalink to this definition">¶</a></dt>
+<dd><p>.632 Bootstrap</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dist</strong> (<a class="reference internal" href="#bootstrap_stat.EmpiricalDistribution" title="bootstrap_stat.EmpiricalDistribution"><em>EmpiricalDistribution</em></a>) – Empirical distribution.</p></li>
+<li><p><strong>data</strong> (<em>array_like</em><em> or </em><em>pandas DataFrame</em>) – The data.</p></li>
+<li><p><strong>train</strong> (<em>function</em>) – Function which takes as input a dataset sampled from the
+empirical distribution and returns a fitted model.</p></li>
+<li><p><strong>predict</strong> (<em>function</em>) – Function which takes as input a fitted model and a dataset, and
+returns the predicted labels for that dataset</p></li>
+<li><p><strong>error</strong> (<em>function</em>) – Function which takes as input a fitted model and a dataset, and
+returns the prediction error <em>for each observation</em> in that
+dataset.</p></li>
+<li><p><strong>B</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of bootstrap samples. Defaults to 200.</p></li>
+<li><p><strong>apparent_error</strong> (<em>float</em><em>, </em><em>optional</em>) – The prediction error of the model on the dataset used to train
+the model, also known as the training error. If omitted, will
+be calculated. Can be passed to this function to save time,
+for example if the model had already been fit elsewhere.</p></li>
+<li><p><strong>use_632_plus</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If True, uses the .632+ bootstrap. See Notes.</p></li>
+<li><p><strong>num_threads</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of threads to use for multicore processing. Defaults to
+1, meaning all calculations will be done in a single
+thread. Set to -1 to use all available cores.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>pe</strong> – Prediction error.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The .632 bootstrap estimate of prediction error is the weighted
+average of the apparent error and another term called eps0. The
+latter term is kind of like cross validation: we generate a
+bootstrap sample, train a model on it, and then make predictions
+using that model on the original dataset. But we only care about
+the predictions on observations that are <em>not</em> part of the
+bootstrap sample. We then average those prediction errors across
+all bootstrap samples. See [ET93, S17.7] for details.</p>
+<p>The method is so-called because the estimated prediction error is
+.368 times the apparent error plus .632 times eps0. [ET93] reports
+that this method performed better than leave-one-out cross
+validation in their simulations, having lower variance, but they
+themselves admit they had not thoroughly evaluated it. [Koh95]
+reported that the .632 bootstrap performed quite poorly when
+overfitting is present. This led Efron and Tibshirani to propose
+the .632+ bootstrap in [ET97]. Finally, [Arl10] surveys various
+approaches to model selection, recommending 10-fold cross
+validation as the preferred method of model selection.</p>
+<p>Because the .632 bootstrap has apparently not withstood the test
+of time, I have made no attempt to implement it efficiently,
+instead preferring the easy-to-follow approach below. This
+function should really only serve pedagogical purposes: it is not
+recommended for serious applications!</p>
+<p>The no information error rate looks at the prediction at point j,
+and computes the error <em>for every label y_i</em>. It averages the
+errors over all i and j. This is because, if we assume the
+features offer no insight into the labels, any observation is as
+good as any other at predicting any particular label.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="bootstrap_stat.prediction_error_optimism">
+<code class="sig-prename descclassname">bootstrap_stat.</code><code class="sig-name descname">prediction_error_optimism</code><span class="sig-paren">(</span><em class="sig-param">dist</em>, <em class="sig-param">data</em>, <em class="sig-param">train</em>, <em class="sig-param">predict</em>, <em class="sig-param">error</em>, <em class="sig-param">B=200</em>, <em class="sig-param">apparent_error=None</em>, <em class="sig-param">num_threads=1</em><span class="sig-paren">)</span><a class="headerlink" href="#bootstrap_stat.prediction_error_optimism" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prediction Error, Optimism Method</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dist</strong> (<a class="reference internal" href="#bootstrap_stat.EmpiricalDistribution" title="bootstrap_stat.EmpiricalDistribution"><em>EmpiricalDistribution</em></a>) – Empirical distribution.</p></li>
+<li><p><strong>data</strong> (<em>array_like</em><em> or </em><em>pandas DataFrame</em>) – The data.</p></li>
+<li><p><strong>train</strong> (<em>function</em>) – Function which takes as input a dataset sampled from the
+empirical distribution and returns a fitted model.</p></li>
+<li><p><strong>predict</strong> (<em>function</em>) – Function which takes as input a fitted model and a dataset, and
+returns the predicted labels for that dataset</p></li>
+<li><p><strong>error</strong> (<em>function</em>) – Function which takes as input a fitted model and a dataset, and
+returns the mean prediction error on that dataset.</p></li>
+<li><p><strong>B</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of bootstrap samples. Defaults to 200.</p></li>
+<li><p><strong>apparent_error</strong> (<em>float</em><em>, </em><em>optional</em>) – The prediction error of the model on the dataset used to train
+the model, also known as the training error. If omitted, will
+be calculated. Can be passed to this function to save time,
+for example if the model had already been fit elsewhere.</p></li>
+<li><p><strong>num_threads</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of threads to use for multicore processing. Defaults to
+1, meaning all calculations will be done in a single
+thread. Set to -1 to use all available cores.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>pe</strong> – Prediction error.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The bootstrap estimate of prediction error can be used for model
+selection. It is similar to cross validation. It adds a bias
+correction term to the apparent error (the accuracy of the
+predictor applied to the same dataset used to train the
+predictor). This bias correction term is called the optimism. See
+[ET93, S17] for details.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="bootstrap_stat.prediction_interval">
+<code class="sig-prename descclassname">bootstrap_stat.</code><code class="sig-name descname">prediction_interval</code><span class="sig-paren">(</span><em class="sig-param">dist</em>, <em class="sig-param">x</em>, <em class="sig-param">mean=None</em>, <em class="sig-param">std=None</em>, <em class="sig-param">B=1000</em>, <em class="sig-param">alpha=0.05</em>, <em class="sig-param">t_star=None</em>, <em class="sig-param">return_t_star=False</em>, <em class="sig-param">num_threads=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#bootstrap_stat.prediction_interval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prediction interval</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dist</strong> (<a class="reference internal" href="#bootstrap_stat.EmpiricalDistribution" title="bootstrap_stat.EmpiricalDistribution"><em>EmpiricalDistribution</em></a>) – The empirical distribution.</p></li>
+<li><p><strong>x</strong> (<em>array_like</em><em> or </em><em>pandas DataFrame</em>) – The data.</p></li>
+<li><p><strong>mean</strong> (<em>function</em><em>, </em><em>optional</em>) – A function returning the mean of a bootstrap sample. Defaults
+to np.mean, but this only works for arrays, not DataFrames. To
+emphasize, this function must return a float!</p></li>
+<li><p><strong>std</strong> (<em>function</em><em>, </em><em>optional</em>) – A function returning the standard deviation of a bootstrap
+sample. Defaults to np.std using ddof=1. As with <cite>mean</cite>,
+specify something different for DataFrames!</p></li>
+<li><p><strong>B</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of bootstrap samples. Defaults to 1000.</p></li>
+<li><p><strong>alpha</strong> (<em>float</em><em>, </em><em>optional</em>) – Number controlling the size of the interval. That is, this
+function will return a 100(1-2 * <cite>alpha</cite>)% prediction
+interval. Defaults to 0.05.</p></li>
+<li><p><strong>t_star</strong> (<em>array_like</em><em> or </em><em>None</em>) – Array of studentized values, used to calculate the interval.
+Can be passed to this function to speed it up, for example
+when calculating multiple intervals.</p></li>
+<li><p><strong>return_t_star</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If True, return the studentized values. (Sometimes it is
+helpful to plot these.)</p></li>
+<li><p><strong>num_threads</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of threads to use for multicore processing. Defaults to
+1, meaning all calculations will be done in a single
+thread. Set to -1 to use all available cores.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>pred_low, pred_high</strong> (<em>float</em>) – A 100(1 - 2 * <cite>alpha</cite>)% prediction interval on a point sampled
+from F.</p></li>
+<li><p><strong>t_star</strong> (<em>array</em>) – Array of studentized values. Returned only if <cite>return_t_star</cite>
+is True.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Suppose we observe <span class="math notranslate nohighlight">\(X_1, X_2, \ldots, X_n\)</span> sampled IID from
+a distribution <span class="math notranslate nohighlight">\(F\)</span>. We wish to calculate a range of
+plausible values for a new point drawn from the same
+distribution. This function returns such a <em>prediction interval</em>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="bootstrap_stat.standard_error">
+<code class="sig-prename descclassname">bootstrap_stat.</code><code class="sig-name descname">standard_error</code><span class="sig-paren">(</span><em class="sig-param">dist</em>, <em class="sig-param">stat</em>, <em class="sig-param">robustness=None</em>, <em class="sig-param">B=200</em>, <em class="sig-param">size=None</em>, <em class="sig-param">jackknife_after_bootstrap=False</em>, <em class="sig-param">return_samples=False</em>, <em class="sig-param">theta_star=None</em>, <em class="sig-param">num_threads=1</em><span class="sig-paren">)</span><a class="headerlink" href="#bootstrap_stat.standard_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Standard error</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dist</strong> (<a class="reference internal" href="#bootstrap_stat.EmpiricalDistribution" title="bootstrap_stat.EmpiricalDistribution"><em>EmpiricalDistribution</em></a>) – The empirical distribution.</p></li>
+<li><p><strong>stat</strong> (<em>function</em>) – The statistic for which we wish to calculate the standard
+error.</p></li>
+<li><p><strong>robustness</strong> (<em>float</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Controls whether to use a robust estimate of standard
+error. If specified, should be a float in (0.5, 1.0), with
+lower values corresponding to greater bias but increased
+robustness. If None (default), uses the non-robust estimate of
+standard error.</p></li>
+<li><p><strong>B</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of bootstrap samples. Defaults to 200.</p></li>
+<li><p><strong>size</strong> (<em>int</em><em> or </em><em>tuple of ints</em><em>, </em><em>optional</em>) – Size to pass for generating samples from the distribution.
+Defaults to None, indicating the samples will be the same size
+as the original dataset.</p></li>
+<li><p><strong>jackknife_after_bootstrap</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If True, will estimate the variability of our estimate of
+standard error. See [ET93, S19.4] for details.</p></li>
+<li><p><strong>return_samples</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If True, return the bootstrapped statistic values. Defaults to False.</p></li>
+<li><p><strong>theta_star</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Bootstrapped statistic values. Can be passed if they have
+already been calculated, which will speed this up
+considerably.</p></li>
+<li><p><strong>num_threads</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of threads to use for multicore processing. Defaults to
+1, meaning all calculations will be done in a single
+thread. Set to -1 to use all available cores.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>se</strong> (<em>float</em>) – The standard error.</p></li>
+<li><p><strong>se_jack</strong> (<em>float</em>) – Jackknife-after-bootstrap estimate of the standard error of se
+(i.e. an estimate of the variability of se itself). Only
+returned if <cite>jackknife_after_bootstrap</cite> is True.</p></li>
+<li><p><strong>theta_star</strong> (<em>ndarray</em>) – Array of bootstrapped statistic values. Only returned if
+<cite>return_samples</cite> is True.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="bootstrap_stat.t_interval">
+<code class="sig-prename descclassname">bootstrap_stat.</code><code class="sig-name descname">t_interval</code><span class="sig-paren">(</span><em class="sig-param">dist</em>, <em class="sig-param">stat</em>, <em class="sig-param">theta_hat</em>, <em class="sig-param">stabilize_variance=False</em>, <em class="sig-param">se_hat=None</em>, <em class="sig-param">fast_std_err=None</em>, <em class="sig-param">alpha=0.05</em>, <em class="sig-param">Binner=25</em>, <em class="sig-param">Bouter=1000</em>, <em class="sig-param">Bvar=100</em>, <em class="sig-param">size=None</em>, <em class="sig-param">empirical_distribution=&lt;class 'bootstrap_stat.EmpiricalDistribution'&gt;</em>, <em class="sig-param">return_samples=False</em>, <em class="sig-param">theta_star=None</em>, <em class="sig-param">se_star=None</em>, <em class="sig-param">z_star=None</em>, <em class="sig-param">num_threads=1</em><span class="sig-paren">)</span><a class="headerlink" href="#bootstrap_stat.t_interval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bootstrap-t Intervals</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dist</strong> (<a class="reference internal" href="#bootstrap_stat.EmpiricalDistribution" title="bootstrap_stat.EmpiricalDistribution"><em>EmpiricalDistribution</em></a>) – The empirical distribution.</p></li>
+<li><p><strong>stat</strong> (<em>function</em>) – The statistic for which we wish to calculate a confidence
+interval.</p></li>
+<li><p><strong>theta_hat</strong> (<em>float</em>) – The observed statistic.</p></li>
+<li><p><strong>stabilize_variance</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If True, use the variance stabilization technique. Defaults to
+False.</p></li>
+<li><p><strong>se_hat</strong> (<em>float</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – The standard error of the observed data. If None (default),
+will be calculated using the nonrobust bootstrap estimate of
+standard error, using the default number of iterations. The
+user may wish to use a nondefault number of bootstrap
+iterations to calculate this, or a robust variant. If so, the
+user should calculate this externally and pass it to this
+function.</p></li>
+<li><p><strong>fast_std_err</strong> (<em>function</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – To speed this up, the user may specify a fast function for
+computing the standard error of a bootstrap sample. If not
+specified, we will use the nonrobust bootstrap estimate of
+standard error, using the default number of iterations. This
+can also be used to specify a nondefault bootstrap
+methodology, such as a robust version. See Examples for some
+examples.</p></li>
+<li><p><strong>alpha</strong> (<em>float</em><em>, </em><em>optional</em>) – Number controlling the size of the interval. That is, this
+function will return a 100(1-2*`alpha`)% confidence
+interval. Defaults to 0.05, corresponding to a 90% confidence
+interval.</p></li>
+<li><p><strong>Binner</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of bootstrap samples for calculating standard
+error. Defaults to 25.</p></li>
+<li><p><strong>Bouter</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of bootstrap samples for calculating
+percentiles. Defaults to 1000.</p></li>
+<li><p><strong>Bvar</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of bootstrap samples used to estimate the relationship
+between the statistic and the standard error for use with
+variance stabilization. Defaults to 100.</p></li>
+<li><p><strong>size</strong> (<em>int</em><em> or </em><em>tuple of ints</em><em>, </em><em>optional</em>) – Size to pass for generating samples from the distribution.
+Defaults to None, indicating the samples will be the same size
+as the original dataset.</p></li>
+<li><p><strong>empirical_distribution</strong> (<em>class</em><em>, </em><em>optional</em>) – Class to be used to generate an empirical distribution.
+Defaults to the regular EmpiricalDistribution, but any class
+that implements a sample method will work. For example, the
+MultiSampleEmpiricalDistribution can be used. This can be used
+to accommodate more exotic applications of the Bootstrap.</p></li>
+<li><p><strong>return_samples</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If True, return the bootstrapped statistic values. Defaults to False.</p></li>
+<li><p><strong>theta_star</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Bootstrapped statistic values. Can be passed if they have
+already been calculated, which will speed this up
+considerably.</p></li>
+<li><p><strong>se_star</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Bootstrapped statistic standard errors. Can be passed if they
+have already been calculated, which will speed this up
+considerably.</p></li>
+<li><p><strong>z_star</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Bootstrapped pivot values. Can be passed if they have already
+been calculated, which will speed this up considerably.</p></li>
+<li><p><strong>num_threads</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of threads to use for multicore processing. Defaults to
+1, meaning all calculations will be done in a single
+thread. Set to -1 to use all available cores.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>ci_low, ci_high</strong> (<em>float</em>) – Lower and upper bounds on a 100(1-2*`alpha`)% confidence
+interval on theta.</p></li>
+<li><p><strong>theta_star</strong> (<em>ndarray</em>) – Array of bootstrapped statistic values. Only returned if
+<cite>return_samples</cite> is True.</p></li>
+<li><p><strong>se_star</strong> (<em>ndarray</em>) – Array of bootstrapped statistic standard errors. Only returned
+if <cite>return_samples</cite> is True.</p></li>
+<li><p><strong>z_star</strong> (<em>ndarray</em>) – Array of bootstrapped pivot values. Only returned if
+<cite>return_samples</cite> is True and <cite>stabilize_variance</cite> is False.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dist</span> <span class="o">=</span> <span class="n">EmpiricalDistribution</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">statistic</span><span class="p">(</span><span class="n">x</span><span class="p">):</span> <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">theta_hat</span> <span class="o">=</span> <span class="n">statistic</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ci_low</span><span class="p">,</span> <span class="n">ci_high</span> <span class="o">=</span> <span class="n">t_interval</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">statistic</span><span class="p">,</span> <span class="n">theta_hat</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">se_hat</span> <span class="o">=</span> <span class="n">standard_error</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">statistic</span><span class="p">,</span> <span class="n">robustness</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span> <span class="n">B</span><span class="o">=</span><span class="mi">2000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ci_low</span><span class="p">,</span> <span class="n">ci_high</span> <span class="o">=</span> <span class="n">t_interval</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">statistic</span><span class="p">,</span> <span class="n">theta_hat</span><span class="p">,</span> <span class="n">se_hat</span><span class="o">=</span><span class="n">se_hat</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">fast_std_err</span><span class="p">(</span><span class="n">x</span><span class="p">):</span> <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ci_low</span><span class="p">,</span> <span class="n">ci_high</span> <span class="o">=</span> <span class="n">t_interval</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">statistic</span><span class="p">,</span> <span class="n">theta_hat</span><span class="p">,</span>
+<span class="gp">... </span>                             <span class="n">fast_std_err</span><span class="o">=</span><span class="n">fast_std_err</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">fast_std_err</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="gp">... </span>   <span class="n">dist</span> <span class="o">=</span> <span class="n">EmpiricalDistribution</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="gp">... </span>   <span class="k">return</span> <span class="n">standard_error</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">statistic</span><span class="p">,</span> <span class="n">robustness</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span> <span class="n">B</span><span class="o">=</span><span class="mi">2000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ci_low</span><span class="p">,</span> <span class="n">ci_high</span> <span class="o">=</span> <span class="n">t_interval</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">statistic</span><span class="p">,</span> <span class="n">theta_hat</span><span class="p">,</span>
+<span class="gp">... </span>                             <span class="n">fast_std_err</span><span class="o">=</span><span class="n">fast_std_err</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">bootstrap-stat</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Documentation for bootstrap-stat</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to bootstrap-stat’s documentation!</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Bob Wilson.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/code.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
