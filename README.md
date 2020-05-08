@@ -1,5 +1,7 @@
 # bootstrap-stat
 
+![](https://github.com/rwilson4/bootstrap-stat/workflows/tests/badge.svg)
+
 Methods relating to the Bootstrap.
 
 Estimates of standard errors, bias, confidence intervals, prediction
