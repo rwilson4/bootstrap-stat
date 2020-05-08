@@ -13,6 +13,7 @@ Welcome to bootstrap-stat's documentation!
 
    code.rst
 
+
 Indices and tables
 ==================
 
