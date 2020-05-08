@@ -21,7 +21,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install poetry
         poetry install
-    # - name: Run linter
-    #   run: black bootstrap_stat/ tests/
-    # - name: Run test cases
-    #   run: python -m pytest
+    - name: Run linter
+      run: poetry run black bootstrap_stat/ tests/
+    - name: Run test cases
+      run: poetry run python -m pytest
