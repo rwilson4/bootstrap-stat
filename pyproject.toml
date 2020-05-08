@@ -8,7 +8,7 @@ readme = "README.md"
 keywords = ["statistics", "nonparametric", "machine learning"]
 
 [tool.poetry.dependencies]
-python = ">=3.7"
+python = ">=3.6"
 numpy = ">=1.17"
 scipy = ">=1.3"
 pandas = ">=0.25.1"
