@@ -215,9 +215,8 @@ $ python -m pytest
 ```
 
 ## Documentation
-Documentation is built using Sphinx. It isn't currently hosted
-anywhere but is included with this repo. After cloning, point your
-browser at `docs/_build/html/index.html`.
+Documentation is built using Sphinx and is hosted at
+[Convex Analytics](https://www.convexanalytics.com/bootstrap-stat/index.html).
 
 To update the docs (e.g. after updating the code), just change
 directory to `docs` and type `make html`. You'll need to be in a
