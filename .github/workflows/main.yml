@@ -28,9 +28,6 @@ jobs:
       with:
         path: /home/runner/.cache/pypoetry/virtualenvs
       key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
-      restore-keys: |
-        ${{ runner.os }}-poetry-
-        ${{ runner.os }}-
     - name: Install dependencies
       run: poetry install
     - name: Run linter
