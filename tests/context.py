@@ -4,7 +4,7 @@ import os
 sys.path.insert(
     0,
     os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "..", "bootstrap-stat")
+        os.path.join(os.path.dirname(__file__), "..", "bootstrap_stat")
     ),
 )
 
