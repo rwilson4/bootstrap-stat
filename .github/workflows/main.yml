@@ -1,0 +1,28 @@
+name: Bootstrap-Stat
+
+# Triggers the workflow on pull request events but only for the master
+# branch
+on:
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.7
+    - name: Install dependencies
+      run: |
+        curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+        source $HOME/.poetry/env
+        poetry shell
+        poetry install
+    - name: Run linter
+      run: black bootstrap_stat/ tests/
+    - name: Run test cases
+      run: python -m pytest
