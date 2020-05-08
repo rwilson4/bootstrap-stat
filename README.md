@@ -1,6 +1,6 @@
 # bootstrap-stat
 
-![](https://github.com/rwilson4/bootstrap-stat/workflows/tests/badge.svg)
+![](https://github.com/rwilson4/bootstrap-stat/workflows/build/badge.svg)
 
 Methods relating to the Bootstrap.
 
