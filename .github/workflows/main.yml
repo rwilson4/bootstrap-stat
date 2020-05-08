@@ -1,4 +1,4 @@
-name: Bootstrap-Stat
+name: build
 
 # Triggers the workflow on pull request events but only for the master
 # branch
