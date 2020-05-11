@@ -8,14 +8,8 @@ Estimates of standard errors, bias, confidence intervals, prediction
 errors, and more!
 
 ## Getting Started
-We're not quite ready to upload this to PyPI yet, so currently the way
-to use this library is to clone the repo, change directory to it, then
-run `poetry build` (assuming you have [poetry](https://python-poetry.org/)
-installed).
-
-That will create a `bootstrap-stat-x.y.z.tar.gz` in the `dist/`
-folder. That file should be copied wherever it is needed and added
-like you would any other library, e.g. `poetry add path_to_tar_gz`.
+Bootstrap-Stat is hosted on PyPI. Install as you would any other
+library, e.g.: `poetry add bootstrap-stat`.
 
 Documentation is available at
 [Convex Analytics](https://www.convexanalytics.com/bootstrap-stat/index.html)
