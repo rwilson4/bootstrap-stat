@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bootstrap-stat"
-version = "0.2.4"
+version = "0.2.4.1"
 description = "Bootstrap method for standard errors, confidence intervals, and more!"
 authors = ["Bob Wilson <bob@convexanalytics.com>"]
 
