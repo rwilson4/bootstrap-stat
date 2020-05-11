@@ -239,9 +239,8 @@ directory to `docs` and type `make html`. You'll need to be in a
 poetry shell.
 
 ## Architecture
-We use Poetry to manage dependencies, instead of pipenv, pytest as our
-test runner, black for code formatting, and sphinx for generating
-documentation.
+We use Poetry to manage dependencies, pytest as our test runner, black
+for code formatting, and sphinx for generating documentation.
 
 Basic multicore functionality is implemented, using the
 [pathos](https://pathos.readthedocs.io/en/latest/) version of
@@ -250,6 +249,10 @@ multiprocessing library since pathos uses `dill` instead of `pickle`
 to manage shared memory, and `pickle` cannot be used with locally
 defined functions. For users of this library, hopefully that
 implementation detail is irrelevant.
+
+## Licensing
+Bootstrap-Stat is licensed under the Apache License, Version 2.0. See
+`LICENSE.txt` for the full license text.
 
 ## References
 
