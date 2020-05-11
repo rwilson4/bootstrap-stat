@@ -8,14 +8,8 @@ Estimates of standard errors, bias, confidence intervals, prediction
 errors, and more!
 
 ## Getting Started
-We're not quite ready to upload this to PyPI yet, so currently the way
-to use this library is to clone the repo, change directory to it, then
-run `poetry build` (assuming you have [poetry](https://python-poetry.org/)
-installed).
-
-That will create a `bootstrap-stat-x.y.z.tar.gz` in the `dist/`
-folder. That file should be copied wherever it is needed and added
-like you would any other library, e.g. `poetry add path_to_tar_gz`.
+Bootstrap-Stat is hosted on PyPI. Install as you would any other
+library, e.g.: `poetry add bootstrap-stat`.
 
 Documentation is available at
 [Convex Analytics](https://www.convexanalytics.com/bootstrap-stat/index.html)
@@ -239,9 +233,8 @@ directory to `docs` and type `make html`. You'll need to be in a
 poetry shell.
 
 ## Architecture
-We use Poetry to manage dependencies, instead of pipenv, pytest as our
-test runner, black for code formatting, and sphinx for generating
-documentation.
+We use Poetry to manage dependencies, pytest as our test runner, black
+for code formatting, and sphinx for generating documentation.
 
 Basic multicore functionality is implemented, using the
 [pathos](https://pathos.readthedocs.io/en/latest/) version of
@@ -250,6 +243,10 @@ multiprocessing library since pathos uses `dill` instead of `pickle`
 to manage shared memory, and `pickle` cannot be used with locally
 defined functions. For users of this library, hopefully that
 implementation detail is irrelevant.
+
+## Licensing
+Bootstrap-Stat is licensed under the Apache License, Version 2.0. See
+`LICENSE.txt` for the full license text.
 
 ## References
 
