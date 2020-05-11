@@ -5,6 +5,9 @@ description = "Bootstrap method for standard errors, confidence intervals, and m
 authors = ["Bob Wilson <bob@convexanalytics.com>"]
 
 readme = "README.md"
+documentation = "https://www.convexanalytics.com/bootstrap-stat/index.html"
+repository = "https://github.com/rwilson4/bootstrap-stat"
+license = "Apache-2.0"
 keywords = ["statistics", "nonparametric", "machine learning"]
 
 [tool.poetry.dependencies]
