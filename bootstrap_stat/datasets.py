@@ -1,9 +1,12 @@
+"""Dataset loading functions for bootstrap examples."""
+
 import os
+from typing import Literal
 
 import pandas as pd
 
 
-def mouse_data(dataset):
+def mouse_data(dataset: Literal["control", "treatment"]) -> list[int]:
     """Mouse data
 
     Data from An Introduction to the Bootstrap by Bradley Efron and
@@ -21,7 +24,7 @@ def mouse_data(dataset):
         raise ValueError("Please specify either 'control' or 'treatment'")
 
 
-def law_data(full=False):
+def law_data(full: bool = False) -> pd.DataFrame:
     """Law School Data
 
     Collection of N = 82 American law schools participating in a large
@@ -61,7 +64,7 @@ def law_data(full=False):
     return df
 
 
-def rainfall_data():
+def rainfall_data() -> pd.DataFrame:
     """Rainfall data.
 
     The yearly rainfall, in inches, in Nevada City, California, 1873
@@ -77,7 +80,9 @@ def rainfall_data():
     return df
 
 
-def spatial_test_data(test="both"):
+def spatial_test_data(
+    test: Literal["A", "B", "both"] = "both",
+) -> pd.DataFrame | pd.Series:
     """Spatial Test Data.
 
     n = 26 children have each taken two tests of spatial ability,
@@ -107,7 +112,7 @@ def spatial_test_data(test="both"):
         raise ValueError("Invalid test")
 
 
-def hormone_data():
+def hormone_data() -> pd.DataFrame:
     """The hormone data.
 
     Taken from Table 9.1 of [ET93].
@@ -125,7 +130,7 @@ def hormone_data():
     return df
 
 
-def patch_data():
+def patch_data() -> pd.DataFrame:
     """The patch data.
 
     Taken from Table 10.1 of [ET93].

@@ -55,9 +55,20 @@ select = [
 ]
 ignore = [
     "E501",   # line too long (handled by black)
+    "SIM108", # ternary operator - prefer explicit if/else per style guide
+    "SIM105", # contextlib.suppress - prefer explicit try/except
+    "SIM101", # multiple isinstance - prefer explicit checks
+    "B007",   # unused loop variable - common pattern in numerical code
+    "B905",   # zip strict - not always needed
+    "B028",   # stacklevel in warnings - not critical
 ]
 
 [tool.mypy]
 python_version = "3.10"
-warn_return_any = true
 warn_unused_ignores = true
+# Gradual typing: ignore missing imports and some error categories
+# as we incrementally add type hints to the codebase
+ignore_missing_imports = true
+check_untyped_defs = false
+disallow_untyped_defs = false
+disallow_incomplete_defs = false

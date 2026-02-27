@@ -1,12 +1,3 @@
-import warnings
-import multiprocessing as mp
-
-import numpy as np
-import scipy.stats as ss
-import scipy.optimize as optimize
-import pandas as pd
-from pathos.multiprocessing import ProcessPool as Pool
-
 """Methods relating to the Bootstrap.
 
 Estimates of standard errors, bias, confidence intervals, prediction
@@ -28,6 +19,25 @@ References
 
 """
 
+import multiprocessing as mp
+import warnings
+from collections.abc import Callable
+from typing import Any, Literal, TypeAlias, overload
+
+import numpy as np
+import numpy.typing as npt
+import pandas as pd
+import scipy.optimize as optimize
+import scipy.stats as ss
+from pathos.multiprocessing import ProcessPool as Pool
+
+# Type aliases for common types
+ArrayLike: TypeAlias = npt.NDArray[np.float64] | list[float] | pd.Series | pd.DataFrame
+Statistic: TypeAlias = Callable[..., float]
+JackknifeValues: TypeAlias = (
+    npt.NDArray[np.float64] | tuple[npt.NDArray[np.float64], ...]
+)
+
 
 class EmpiricalDistribution:
     r"""Empirical Distribution
@@ -43,7 +53,11 @@ class EmpiricalDistribution:
 
     """
 
-    def __init__(self, data):
+    data: ArrayLike
+    n: int
+    is_multi_sample: bool
+
+    def __init__(self, data: ArrayLike) -> None:
         """Empirical Distribution
 
         Parameters
@@ -56,7 +70,32 @@ class EmpiricalDistribution:
         self.n = len(data)
         self.is_multi_sample = False
 
-    def sample(self, size=None, return_indices=False, reset_index=True):
+    @overload
+    def sample(
+        self,
+        size: int | None = None,
+        return_indices: Literal[False] = False,
+        reset_index: bool = True,
+    ) -> npt.NDArray[np.float64] | pd.DataFrame: ...
+
+    @overload
+    def sample(
+        self,
+        size: int | None,
+        return_indices: Literal[True],
+        reset_index: bool = True,
+    ) -> tuple[npt.NDArray[np.float64] | pd.DataFrame, npt.NDArray[np.intp]]: ...
+
+    def sample(
+        self,
+        size: int | None = None,
+        return_indices: bool = False,
+        reset_index: bool = True,
+    ) -> (
+        npt.NDArray[np.float64]
+        | pd.DataFrame
+        | tuple[npt.NDArray[np.float64] | pd.DataFrame, npt.NDArray[np.intp]]
+    ):
         """Sample from the empirical distribution
 
         Parameters
@@ -107,7 +146,7 @@ class EmpiricalDistribution:
                     samples.reset_index(drop=True, inplace=True)
             return samples
 
-    def calculate_parameter(self, t):
+    def calculate_parameter(self, t: Statistic) -> float:
         """Calculate a parameter of the distribution.
 
         Parameters
@@ -183,7 +222,10 @@ class MultiSampleEmpiricalDistribution(EmpiricalDistribution):
 
     """
 
-    def __init__(self, datasets):
+    dists: list[EmpiricalDistribution]
+    n: list[int]  # type: ignore[assignment]
+
+    def __init__(self, datasets: tuple[ArrayLike, ...]) -> None:
         """Constructor.
 
         Parameters
@@ -216,7 +258,9 @@ class MultiSampleEmpiricalDistribution(EmpiricalDistribution):
         self.n = [len(d) for d in datasets]
         self.is_multi_sample = True
 
-    def sample(self, size=None):
+    def sample(  # type: ignore[override]
+        self, size: tuple[int, ...] | list[int] | None = None
+    ) -> tuple[npt.NDArray[np.float64] | pd.DataFrame, ...]:
         """Sample from the empirical distribution
 
         Parameters
@@ -240,7 +284,7 @@ class MultiSampleEmpiricalDistribution(EmpiricalDistribution):
         samples = [d.sample(size=si) for d, si in zip(self.dists, s)]
         return (*samples,)
 
-    def calculate_parameter(self, t):
+    def calculate_parameter(self, t: Statistic) -> float:
         r"""Calculate a parameter of the distribution.
 
         Parameters
@@ -274,7 +318,13 @@ class MultiSampleEmpiricalDistribution(EmpiricalDistribution):
         return t(self.data)
 
 
-def jackknife_standard_error(x, stat, return_samples=False, jv=None, num_threads=1):
+def jackknife_standard_error(
+    x: ArrayLike | tuple[ArrayLike, ...],
+    stat: Statistic,
+    return_samples: bool = False,
+    jv: JackknifeValues | None = None,
+    num_threads: int = 1,
+) -> float | tuple[float, JackknifeValues]:
     r"""Jackknife estimate of standard error.
 
     Parameters
@@ -337,15 +387,20 @@ def jackknife_standard_error(x, stat, return_samples=False, jv=None, num_threads
 
 
 def standard_error(
-    dist,
-    stat,
-    robustness=None,
-    B=200,
-    size=None,
-    jackknife_after_bootstrap=False,
-    return_samples=False,
-    theta_star=None,
-    num_threads=1,
+    dist: EmpiricalDistribution,
+    stat: Statistic,
+    robustness: float | None = None,
+    B: int = 200,
+    size: int | tuple[int, ...] | None = None,
+    jackknife_after_bootstrap: bool = False,
+    return_samples: bool = False,
+    theta_star: npt.NDArray[np.float64] | None = None,
+    num_threads: int = 1,
+) -> (
+    float
+    | tuple[float, float]
+    | tuple[float, npt.NDArray[np.float64]]
+    | tuple[float, float, npt.NDArray[np.float64]]
 ):
     """Standard error
 
@@ -439,13 +494,13 @@ def standard_error(
 
 
 def infinitesimal_jackknife(
-    x,
-    stat,
-    eps=1e-3,
-    influence_components=None,
-    return_influence_components=False,
-    num_threads=1,
-):
+    x: ArrayLike | tuple[ArrayLike, ...],
+    stat: Callable[[Any, npt.NDArray[np.float64]], float],
+    eps: float = 1e-3,
+    influence_components: npt.NDArray[np.float64] | None = None,
+    return_influence_components: bool = False,
+    num_threads: int = 1,
+) -> float | tuple[float, npt.NDArray[np.float64]]:
     """Infinitesimal Jackknife
 
     Parameters
@@ -507,23 +562,33 @@ def infinitesimal_jackknife(
 
 
 def t_interval(
-    dist,
-    stat,
-    theta_hat,
-    stabilize_variance=False,
-    se_hat=None,
-    fast_std_err=None,
-    alpha=0.05,
-    Binner=25,
-    Bouter=1000,
-    Bvar=100,
-    size=None,
-    empirical_distribution=EmpiricalDistribution,
-    return_samples=False,
-    theta_star=None,
-    se_star=None,
-    z_star=None,
-    num_threads=1,
+    dist: EmpiricalDistribution,
+    stat: Statistic,
+    theta_hat: float,
+    stabilize_variance: bool = False,
+    se_hat: float | None = None,
+    fast_std_err: Callable[[ArrayLike], float] | None = None,
+    alpha: float = 0.05,
+    Binner: int = 25,
+    Bouter: int = 1000,
+    Bvar: int = 100,
+    size: int | tuple[int, ...] | None = None,
+    empirical_distribution: type[EmpiricalDistribution] = EmpiricalDistribution,
+    return_samples: bool = False,
+    theta_star: npt.NDArray[np.float64] | None = None,
+    se_star: npt.NDArray[np.float64] | None = None,
+    z_star: npt.NDArray[np.float64] | None = None,
+    num_threads: int = 1,
+) -> (
+    tuple[float, float]
+    | tuple[float, float, npt.NDArray[np.float64], npt.NDArray[np.float64]]
+    | tuple[
+        float,
+        float,
+        npt.NDArray[np.float64],
+        npt.NDArray[np.float64],
+        npt.NDArray[np.float64],
+    ]
 ):
     """Bootstrap-t Intervals
 
@@ -801,15 +866,15 @@ def t_interval(
 
 
 def percentile_interval(
-    dist,
-    stat,
-    alpha=0.05,
-    B=1000,
-    size=None,
-    return_samples=False,
-    theta_star=None,
-    num_threads=1,
-):
+    dist: EmpiricalDistribution,
+    stat: Statistic,
+    alpha: float = 0.05,
+    B: int = 1000,
+    size: int | tuple[int, ...] | None = None,
+    return_samples: bool = False,
+    theta_star: npt.NDArray[np.float64] | None = None,
+    num_threads: int = 1,
+) -> tuple[float, float] | tuple[float, float, npt.NDArray[np.float64]]:
     """Percentile Intervals
 
     Parameters
@@ -862,17 +927,19 @@ def percentile_interval(
 
 
 def bcanon_interval(
-    dist,
-    stat,
-    x,
-    alpha=0.05,
-    B=1000,
-    size=None,
-    return_samples=False,
-    theta_star=None,
-    theta_hat=None,
-    jv=None,
-    num_threads=1,
+    dist: EmpiricalDistribution,
+    stat: Statistic,
+    x: ArrayLike | tuple[ArrayLike, ...],
+    alpha: float = 0.05,
+    B: int = 1000,
+    size: int | tuple[int, ...] | None = None,
+    return_samples: bool = False,
+    theta_star: npt.NDArray[np.float64] | None = None,
+    theta_hat: float | None = None,
+    jv: JackknifeValues | None = None,
+    num_threads: int = 1,
+) -> (
+    tuple[float, float] | tuple[float, float, npt.NDArray[np.float64], JackknifeValues]
 ):
     """BCa Confidence Intervals
 
@@ -957,15 +1024,15 @@ def bcanon_interval(
 
 
 def abcnon_interval(
-    x,
-    stat,
-    alpha=0.05,
-    eps=0.001,
-    influence_components=None,
-    second_derivatives=None,
-    return_influence_components=False,
-    num_threads=1,
-):
+    x: ArrayLike,
+    stat: Callable[[Any, npt.NDArray[np.float64]], float],
+    alpha: float | list[float] = 0.05,
+    eps: float = 0.001,
+    influence_components: npt.NDArray[np.float64] | None = None,
+    second_derivatives: npt.NDArray[np.float64] | None = None,
+    return_influence_components: bool = False,
+    num_threads: int = 1,
+) -> tuple[float, ...]:
     """ABC Confidence Intervals
 
     Parameters
@@ -1075,15 +1142,15 @@ def abcnon_interval(
 
 
 def calibrate_interval(
-    dist,
-    stat,
-    x,
-    theta_hat,
-    alpha=0.05,
-    B=1000,
-    return_confidence_points=False,
-    num_threads=1,
-):
+    dist: EmpiricalDistribution,
+    stat: Callable[[Any, npt.NDArray[np.float64]], float],
+    x: ArrayLike | tuple[ArrayLike, ...],
+    theta_hat: float,
+    alpha: float = 0.05,
+    B: int = 1000,
+    return_confidence_points: bool = False,
+    num_threads: int = 1,
+) -> tuple[float, float] | tuple[float, float, float, float]:
     """Calibrated confidence interval
 
     Parameters
@@ -1223,7 +1290,12 @@ def calibrate_interval(
         return ci_low, ci_high
 
 
-def jackknife_values(x, stat, sample=None, num_threads=1):
+def jackknife_values(
+    x: ArrayLike | tuple[ArrayLike, ...],
+    stat: Statistic,
+    sample: int | None = None,
+    num_threads: int = 1,
+) -> npt.NDArray[np.float64]:
     """Compute jackknife values.
 
     Parameters
@@ -1328,7 +1400,15 @@ def jackknife_values(x, stat, sample=None, num_threads=1):
     return theta_i
 
 
-def bias(dist, stat, t, B=200, return_samples=False, theta_star=None, num_threads=1):
+def bias(
+    dist: EmpiricalDistribution,
+    stat: Statistic,
+    t: Statistic,
+    B: int = 200,
+    return_samples: bool = False,
+    theta_star: npt.NDArray[np.float64] | None = None,
+    num_threads: int = 1,
+) -> float | tuple[float, npt.NDArray[np.float64]]:
     """Estimate of bias
 
     Parameters
@@ -1373,7 +1453,13 @@ def bias(dist, stat, t, B=200, return_samples=False, theta_star=None, num_thread
         return bias
 
 
-def better_bootstrap_bias(x, stat, B=400, return_samples=False, num_threads=1):
+def better_bootstrap_bias(
+    x: ArrayLike,
+    stat: Callable[[Any, npt.NDArray[np.float64]], float],
+    B: int = 400,
+    return_samples: bool = False,
+    num_threads: int = 1,
+) -> float | tuple[float, npt.NDArray[np.float64]]:
     r"""Better bootstrap bias.
 
     Parameters
@@ -1473,7 +1559,13 @@ def better_bootstrap_bias(x, stat, B=400, return_samples=False, num_threads=1):
         return bias
 
 
-def jackknife_bias(x, stat, return_samples=False, jv=None, num_threads=1):
+def jackknife_bias(
+    x: ArrayLike,
+    stat: Statistic,
+    return_samples: bool = False,
+    jv: npt.NDArray[np.float64] | None = None,
+    num_threads: int = 1,
+) -> float | tuple[float, npt.NDArray[np.float64]]:
     r"""Jackknife estimate of bias.
 
     Parameters
@@ -1522,17 +1614,19 @@ def jackknife_bias(x, stat, return_samples=False, jv=None, num_threads=1):
 
 
 def bias_corrected(
-    x,
-    stat,
-    method="better_bootstrap_bias",
-    dist=None,
-    t=None,
-    B=None,
-    return_samples=False,
-    theta_star=None,
-    jv=None,
-    num_threads=1,
-):
+    x: ArrayLike,
+    stat: Statistic | Callable[[Any, npt.NDArray[np.float64]], float],
+    method: Literal[
+        "better_bootstrap_bias", "bias", "jackknife"
+    ] = "better_bootstrap_bias",
+    dist: EmpiricalDistribution | None = None,
+    t: Statistic | None = None,
+    B: int | None = None,
+    return_samples: bool = False,
+    theta_star: npt.NDArray[np.float64] | None = None,
+    jv: npt.NDArray[np.float64] | None = None,
+    num_threads: int = 1,
+) -> float | tuple[float, npt.NDArray[np.float64]]:
     """Bias-corrected estimator.
 
     Parameters
@@ -1637,17 +1731,17 @@ def bias_corrected(
 
 
 def bootstrap_asl(
-    dist,
-    stat,
-    x,
-    B=1000,
-    size=None,
-    return_samples=False,
-    theta_star=None,
-    theta_hat=None,
-    two_sided=False,
-    num_threads=1,
-):
+    dist: EmpiricalDistribution,
+    stat: Statistic,
+    x: ArrayLike | tuple[ArrayLike, ...] | None,
+    B: int = 1000,
+    size: int | tuple[int, ...] | None = None,
+    return_samples: bool = False,
+    theta_star: npt.NDArray[np.float64] | None = None,
+    theta_hat: float | None = None,
+    two_sided: bool = False,
+    num_threads: int = 1,
+) -> float | tuple[float, npt.NDArray[np.float64]]:
     """Achieved Significance Level, general bootstrap method
 
     Parameters
@@ -1718,18 +1812,18 @@ def bootstrap_asl(
 
 
 def percentile_asl(
-    dist,
-    stat,
-    x,
-    theta_0=0,
-    B=1000,
-    size=None,
-    return_samples=False,
-    theta_star=None,
-    theta_hat=None,
-    two_sided=False,
-    num_threads=1,
-):
+    dist: EmpiricalDistribution,
+    stat: Statistic,
+    x: ArrayLike | tuple[ArrayLike, ...],
+    theta_0: float = 0,
+    B: int = 1000,
+    size: int | tuple[int, ...] | None = None,
+    return_samples: bool = False,
+    theta_star: npt.NDArray[np.float64] | None = None,
+    theta_hat: float | None = None,
+    two_sided: bool = False,
+    num_threads: int = 1,
+) -> float | tuple[float, npt.NDArray[np.float64]]:
     """Achieved Significance Level, percentile method
 
     Parameters
@@ -1818,19 +1912,19 @@ def percentile_asl(
 
 
 def bcanon_asl(
-    dist,
-    stat,
-    x,
-    theta_0=0,
-    B=1000,
-    size=None,
-    return_samples=False,
-    theta_star=None,
-    theta_hat=None,
-    jv=None,
-    two_sided=False,
-    num_threads=1,
-):
+    dist: EmpiricalDistribution,
+    stat: Statistic,
+    x: ArrayLike | tuple[ArrayLike, ...],
+    theta_0: float = 0,
+    B: int = 1000,
+    size: int | tuple[int, ...] | None = None,
+    return_samples: bool = False,
+    theta_star: npt.NDArray[np.float64] | None = None,
+    theta_hat: float | None = None,
+    jv: JackknifeValues | None = None,
+    two_sided: bool = False,
+    num_threads: int = 1,
+) -> float | tuple[float, npt.NDArray[np.float64], JackknifeValues | None]:
     """Achieved Significance Level, bcanon method
 
     Parameters
@@ -1956,15 +2050,15 @@ def bcanon_asl(
 
 
 def bootstrap_power(
-    alt_dist,
-    null_dist,
-    stat,
-    asl=bootstrap_asl,
-    alpha=0.05,
-    size=None,
-    P=100,
-    **kwargs,
-):
+    alt_dist: EmpiricalDistribution,
+    null_dist: type[EmpiricalDistribution],
+    stat: Statistic,
+    asl: Callable[..., float] = bootstrap_asl,
+    alpha: float = 0.05,
+    size: int | tuple[int, ...] | None = None,
+    P: int = 100,
+    **kwargs: Any,
+) -> float:
     """Bootstrap Power
 
     Parameters
@@ -2019,15 +2113,15 @@ def bootstrap_power(
 
 
 def prediction_error_optimism(
-    dist,
-    data,
-    train,
-    predict,
-    error,
-    B=200,
-    apparent_error=None,
-    num_threads=1,
-):
+    dist: EmpiricalDistribution,
+    data: ArrayLike,
+    train: Callable[[ArrayLike], Any],
+    predict: Callable[[Any, ArrayLike], Any],
+    error: Callable[[Any, ArrayLike], npt.NDArray[np.float64]],
+    B: int = 200,
+    apparent_error: float | None = None,
+    num_threads: int = 1,
+) -> float:
     """Prediction Error, Optimism Method
 
     Parameters
@@ -2095,18 +2189,18 @@ def prediction_error_optimism(
 
 
 def prediction_error_632(
-    dist,
-    data,
-    train,
-    predict,
-    error,
-    B=200,
-    apparent_error=None,
-    use_632_plus=False,
-    gamma=None,
-    no_inf_err_rate=None,
-    num_threads=1,
-):
+    dist: EmpiricalDistribution,
+    data: ArrayLike,
+    train: Callable[[ArrayLike], Any],
+    predict: Callable[[Any, ArrayLike], Any],
+    error: Callable[[Any, ArrayLike], npt.NDArray[np.float64]],
+    B: int = 200,
+    apparent_error: float | None = None,
+    use_632_plus: bool = False,
+    gamma: float | None = None,
+    no_inf_err_rate: Callable[[Any, ArrayLike], float] | None = None,
+    num_threads: int = 1,
+) -> float:
     """.632 Bootstrap
 
     Parameters
@@ -2287,16 +2381,16 @@ def prediction_error_632(
 
 
 def prediction_interval(
-    dist,
-    x,
-    mean=None,
-    std=None,
-    B=1000,
-    alpha=0.05,
-    t_star=None,
-    return_t_star=False,
-    num_threads=-1,
-):
+    dist: EmpiricalDistribution,
+    x: ArrayLike,
+    mean: Callable[[ArrayLike], float] | None = None,
+    std: Callable[[ArrayLike], float] | None = None,
+    B: int = 1000,
+    alpha: float = 0.05,
+    t_star: npt.NDArray[np.float64] | None = None,
+    return_t_star: bool = False,
+    num_threads: int = -1,
+) -> tuple[float, float] | tuple[float, float, npt.NDArray[np.float64]]:
     r"""Prediction interval
 
     Parameters
@@ -2413,8 +2507,13 @@ def prediction_interval(
 
 
 def multithreaded_bootstrap_samples(
-    dist, stat, B, size=None, jackknife=False, num_threads=-1
-):
+    dist: EmpiricalDistribution,
+    stat: Statistic | dict[str, Statistic],
+    B: int,
+    size: int | tuple[int, ...] | None = None,
+    jackknife: bool = False,
+    num_threads: int = -1,
+) -> npt.NDArray[np.float64] | dict[str, npt.NDArray[np.float64]]:
     """Generate bootstrap samples in parallel.
 
     Parameters
@@ -2502,7 +2601,18 @@ def multithreaded_bootstrap_samples(
     return theta_star
 
 
-def bootstrap_samples(dist, stat, B, size=None, jackknife=False, num_threads=1):
+def bootstrap_samples(
+    dist: EmpiricalDistribution,
+    stat: Statistic | dict[str, Statistic],
+    B: int,
+    size: int | tuple[int, ...] | None = None,
+    jackknife: bool = False,
+    num_threads: int = 1,
+) -> (
+    npt.NDArray[np.float64]
+    | dict[str, npt.NDArray[np.float64]]
+    | tuple[npt.NDArray[np.float64] | dict[str, npt.NDArray[np.float64]], list[Any]]
+):
     """Generate bootstrap samples.
 
     Parameters
@@ -2605,7 +2715,7 @@ def bootstrap_samples(dist, stat, B, size=None, jackknife=False, num_threads=1):
         return theta_star
 
 
-def _bca_acceleration(jv):
+def _bca_acceleration(jv: JackknifeValues) -> float:
     """Compute the BCa acceleration.
 
     Parameters
@@ -2646,7 +2756,9 @@ def _bca_acceleration(jv):
     return a_hat
 
 
-def _adjust_percentiles(alpha, a_hat, z0_hat):
+def _adjust_percentiles(
+    alpha: float, a_hat: float, z0_hat: float
+) -> tuple[float, float]:
     """Adjusted percentiles
 
     Parameters
@@ -2677,7 +2789,9 @@ def _adjust_percentiles(alpha, a_hat, z0_hat):
     return alpha1, alpha2
 
 
-def _percentile(z, p, full_sort=True):
+def _percentile(
+    z: npt.NDArray[np.float64], p: float | list[float], full_sort: bool = True
+) -> npt.NDArray[np.float64]:
     """Percentiles of an array.
 
     Parameters
@@ -2741,7 +2855,13 @@ def _percentile(z, p, full_sort=True):
     return percentiles
 
 
-def loess(z0, z, y, alpha, sided="both"):
+def loess(
+    z0: float,
+    z: npt.NDArray[np.float64],
+    y: npt.NDArray[np.float64],
+    alpha: float,
+    sided: Literal["both", "trailing", "leading"] = "both",
+) -> float:
     """Locally estimated scatterplot smoothing
 
     Parameters
@@ -2807,7 +2927,7 @@ def loess(z0, z, y, alpha, sided="both"):
     return intercept + slope * z0
 
 
-def _resampling_vector(n):
+def _resampling_vector(n: int) -> npt.NDArray[np.float64]:
     """Resampling vector.
 
     Parameters
@@ -2836,7 +2956,13 @@ def _resampling_vector(n):
     return p / n
 
 
-def _influence_components(x, stat, order=1, eps=1e-3, num_threads=1):
+def _influence_components(
+    x: ArrayLike | tuple[ArrayLike, ...],
+    stat: Callable[[Any, npt.NDArray[np.float64]], float],
+    order: Literal[1, 2] = 1,
+    eps: float = 1e-3,
+    num_threads: int = 1,
+) -> npt.NDArray[np.float64] | tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
     """Influence components
 
     Parameters
