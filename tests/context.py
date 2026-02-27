@@ -1,10 +1,14 @@
-import sys
+# pyre-unsafe
+"""Test context for importing bootstrap_stat modules."""
+
 import os
+import sys
 
 sys.path.insert(
     0,
     os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "bootstrap_stat")),
 )
 
-import bootstrap_stat
-import datasets
+import datasets  # noqa: F401, E402
+
+import bootstrap_stat  # noqa: F401, E402

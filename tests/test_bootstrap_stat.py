@@ -1,11 +1,14 @@
+# pyre-unsafe
+"""Tests for bootstrap_stat module."""
+
 import time
 
-import pytest
 import numpy as np
-import scipy.stats as ss
-import scipy.optimize as optimize
-import statsmodels.formula.api as smf
 import pandas as pd
+import pytest
+import scipy.optimize as optimize
+import scipy.stats as ss
+import statsmodels.formula.api as smf
 
 from .context import bootstrap_stat as bp
 from .context import datasets
@@ -92,10 +95,10 @@ class TestMisc:
     def test_loess(self):
         z = np.linspace(0, 1, num=50)
         y = np.sin(12 * (z + 0.2)) / (z + 0.2)
-        np.random.seed(0)
-        ye = y + np.random.normal(0, 1, (50,))
+        rng = np.random.default_rng(0)
+        ye = y + rng.normal(0, 1, (50,))
         alpha = 0.20
-        expected = 0.476
+        expected = 0.561
 
         actual = [bp.loess(z0, z, ye, alpha) for z0 in z]
         actual = np.array(actual)

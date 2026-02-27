@@ -1,3 +1,4 @@
+# pyre-unsafe
 """Methods relating to the Bootstrap.
 
 Estimates of standard errors, bias, confidence intervals, prediction
@@ -362,7 +363,7 @@ def jackknife_standard_error(
     estimators. See [EF93, S10.6]
 
     """
-    if type(x) is tuple:
+    if isinstance(x, tuple):
         # Multisample jackknife
         if jv is None:
             jv = [
@@ -1333,7 +1334,7 @@ def jackknife_values(
     if num_threads == -1:
         num_threads = mp.cpu_count()
 
-    if sample is not None and type(x) is tuple:
+    if sample is not None and isinstance(x, tuple):
         # Multi-sample jackknife. Create a new statistic that is
         # simply a wrapper around the desired `stat`. Only perform the
         # hold-out logic on the specified sample.
@@ -2732,7 +2733,7 @@ def _bca_acceleration(jv: JackknifeValues) -> float:
 
     """
 
-    if type(jv) is tuple:
+    if isinstance(jv, tuple):
         num = 0
         den = 0
         for jv_s in jv:

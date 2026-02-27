@@ -1,3 +1,4 @@
+# pyre-unsafe
 """Dataset loading functions for bootstrap examples."""
 
 import os
