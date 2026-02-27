@@ -274,9 +274,7 @@ class MultiSampleEmpiricalDistribution(EmpiricalDistribution):
         return t(self.data)
 
 
-def jackknife_standard_error(
-    x, stat, return_samples=False, jv=None, num_threads=1
-):
+def jackknife_standard_error(x, stat, return_samples=False, jv=None, num_threads=1):
     r"""Jackknife estimate of standard error.
 
     Parameters
@@ -423,9 +421,7 @@ def standard_error(
             raise ValueError(f"Invalid robustness: {robustness}")
 
         z_alpha = ss.norm.ppf(robustness)
-        p = np.percentile(
-            theta_star, [100 * robustness, 100 * (1 - robustness)]
-        )
+        p = np.percentile(theta_star, [100 * robustness, 100 * (1 - robustness)])
         se = p[0] - p[1]
         se /= 2 * z_alpha
 
@@ -1047,14 +1043,14 @@ def abcnon_interval(
             x, stat, order=2, eps=eps, num_threads=num_threads
         )
 
-    sum_inf_squared = np.sum(influence_components ** 2)
+    sum_inf_squared = np.sum(influence_components**2)
     sigma_hat = np.sqrt(sum_inf_squared) / n
-    a_hat = np.sum(influence_components ** 3) / (6 * sum_inf_squared ** 1.5)
+    a_hat = np.sum(influence_components**3) / (6 * sum_inf_squared**1.5)
 
     delta_hat = influence_components / (n2 * sigma_hat)
-    c_q = (
-        stat(x, p0 + eps * delta_hat) - 2 * t0 + stat(x, p0 - eps * delta_hat)
-    ) / (2 * sigma_hat * eps * eps)
+    c_q = (stat(x, p0 + eps * delta_hat) - 2 * t0 + stat(x, p0 - eps * delta_hat)) / (
+        2 * sigma_hat * eps * eps
+    )
 
     b_hat = np.sum(second_derivatives) / (2 * n * n)
     gamma_hat = b_hat / sigma_hat - c_q
@@ -1185,7 +1181,7 @@ def calibrate_interval(
         for i in range(extra):
             batch_sizes[i] += 1
 
-        seeds = np.random.randint(0, 2 ** 32 - 1, num_threads)
+        seeds = np.random.randint(0, 2**32 - 1, num_threads)
         for i, seed in enumerate(seeds):
             r = pool.apipe(
                 _calc_p_hat,
@@ -1332,9 +1328,7 @@ def jackknife_values(x, stat, sample=None, num_threads=1):
     return theta_i
 
 
-def bias(
-    dist, stat, t, B=200, return_samples=False, theta_star=None, num_threads=1
-):
+def bias(dist, stat, t, B=200, return_samples=False, theta_star=None, num_threads=1):
     """Estimate of bias
 
     Parameters
@@ -1455,7 +1449,7 @@ def better_bootstrap_bias(x, stat, B=400, return_samples=False, num_threads=1):
         for i in range(extra):
             batch_sizes[i] += 1
 
-        seeds = np.random.randint(0, 2 ** 32 - 1, num_threads)
+        seeds = np.random.randint(0, 2**32 - 1, num_threads)
         for i, seed in enumerate(seeds):
             r = pool.apipe(_bootstrap_sim, x, stat, batch_sizes[i], seed)
             results.append(r)
@@ -2089,9 +2083,7 @@ def prediction_error_optimism(
         pred_orig = predict(mdl_boot, data)  # Predictions for original dataset
         pred_boot = predict(mdl_boot, x)  # Predictions for bootstrap dataset
 
-        err_orig = np.mean(
-            error(pred_orig, data)
-        )  # Error for original dataset
+        err_orig = np.mean(error(pred_orig, data))  # Error for original dataset
         err_boot = np.mean(error(pred_boot, x))  # Error for bootstrap dataset
 
         optimism = err_orig - err_boot
@@ -2244,7 +2236,7 @@ def prediction_error_632(
         for i in range(extra):
             batch_sizes[i] += 1
 
-        seeds = np.random.randint(0, 2 ** 32 - 1, num_threads)
+        seeds = np.random.randint(0, 2**32 - 1, num_threads)
         for i, seed in enumerate(seeds):
             r = pool.apipe(
                 _bootstrap_sim,
@@ -2402,11 +2394,9 @@ def prediction_interval(
             for i in range(extra):
                 batch_sizes[i] += 1
 
-            seeds = np.random.randint(0, 2 ** 32 - 1, num_threads)
+            seeds = np.random.randint(0, 2**32 - 1, num_threads)
             for i, seed in enumerate(seeds):
-                r = pool.apipe(
-                    _bootstrap_sim, dist, mean, std, batch_sizes[i], seed
-                )
+                r = pool.apipe(_bootstrap_sim, dist, mean, std, batch_sizes[i], seed)
                 results.append(r)
 
             t_star = np.hstack([res.get() for res in results])
@@ -2492,7 +2482,7 @@ def multithreaded_bootstrap_samples(
     for i in range(extra):
         batch_sizes[i] += 1
 
-    seeds = np.random.randint(0, 2 ** 32 - 1, num_threads)
+    seeds = np.random.randint(0, 2**32 - 1, num_threads)
     for i, seed in enumerate(seeds):
         r = pool.apipe(_bootstrap_sim, dist, stat, size, batch_sizes[i], seed)
         results.append(r)
@@ -2512,9 +2502,7 @@ def multithreaded_bootstrap_samples(
     return theta_star
 
 
-def bootstrap_samples(
-    dist, stat, B, size=None, jackknife=False, num_threads=1
-):
+def bootstrap_samples(dist, stat, B, size=None, jackknife=False, num_threads=1):
     """Generate bootstrap samples.
 
     Parameters
@@ -2646,7 +2634,7 @@ def _bca_acceleration(jv):
             U2 = U * U
             num += np.sum(U2 * U) / (n2 * n)
             den += np.sum(U2) / n2
-        den = 6 * (den ** 1.5)
+        den = 6 * (den**1.5)
     else:
         theta_dot = np.mean(jv)
         U = theta_dot - jv
@@ -2681,12 +2669,9 @@ def _adjust_percentiles(alpha, a_hat, z0_hat):
     """
     z_alpha = ss.norm.ppf(alpha)
     z_one_m_alpha = ss.norm.ppf(1 - alpha)
-    alpha1 = ss.norm.cdf(
-        z0_hat + (z0_hat + z_alpha) / (1 - a_hat * (z0_hat + z_alpha))
-    )
+    alpha1 = ss.norm.cdf(z0_hat + (z0_hat + z_alpha) / (1 - a_hat * (z0_hat + z_alpha)))
     alpha2 = ss.norm.cdf(
-        z0_hat
-        + (z0_hat + z_one_m_alpha) / (1 - a_hat * (z0_hat + z_one_m_alpha))
+        z0_hat + (z0_hat + z_one_m_alpha) / (1 - a_hat * (z0_hat + z_one_m_alpha))
     )
 
     return alpha1, alpha2
@@ -2742,9 +2727,7 @@ def _percentile(z, p, full_sort=True):
                 k = B + 1 - k
 
         if k <= 0 or k >= B:
-            warnings.warn(
-                "Index outside of bounds. Try more bootstrap samples."
-            )
+            warnings.warn("Index outside of bounds. Try more bootstrap samples.")
             if k <= 0:
                 k = 0
             elif k >= B:
