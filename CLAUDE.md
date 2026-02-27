@@ -13,24 +13,29 @@ prediction error estimation, and significance testing.
 ## Development Commands
 
 ```bash
-# Install dependencies and activate environment
-poetry install
-poetry shell
+# Install dependencies
+uv sync --all-extras
 
 # Run all tests with coverage
-python -m pytest
+uv run pytest
 
 # Run a single test file
-python -m pytest tests/test_bootstrap_stat.py
+uv run pytest tests/test_bootstrap_stat.py
 
 # Run tests matching a pattern
-python -m pytest -k "test_standard_error"
+uv run pytest -k "test_standard_error"
 
-# Format code (79-char line width)
-poetry run black bootstrap_stat/ tests/
+# Lint with ruff
+uv run ruff check bootstrap_stat/ tests/
+
+# Format code
+uv run black bootstrap_stat/ tests/
+
+# Type check
+uv run mypy bootstrap_stat/
 
 # Build documentation
-cd docs && make html
+cd docs && uv run make html
 ```
 
 ## Code Architecture
@@ -86,9 +91,9 @@ Example datasets for testing: `law_data()`, `mouse_data()`,
 
 ## CI/CD
 
-- GitHub Actions runs tests on Python 3.6, 3.7, 3.8
-- PRs to master trigger build workflow (format check + tests)
-- Pushes to master trigger PyPI deployment via `poetry publish`
+- GitHub Actions runs tests on Python 3.10, 3.11, 3.12
+- PRs to master trigger build workflow (ruff, black check, tests)
+- Pushes to master trigger PyPI deployment via `uv publish`
 
 ## References
 
