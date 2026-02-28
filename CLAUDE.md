@@ -40,35 +40,67 @@ cd docs && uv run make html
 
 ## Code Architecture
 
-### Core Module: `bootstrap_stat/bootstrap_stat.py`
+The package is organized into submodules by functionality. All public
+API is re-exported from `bootstrap_stat/__init__.py` for convenient
+imports:
 
-**Key Classes:**
+```python
+import bootstrap_stat as bp
+# or
+from bootstrap_stat import EmpiricalDistribution, bcanon_interval
+```
+
+### Module Structure
+
+```
+bootstrap_stat/
+├── __init__.py           # Re-exports all public API
+├── _utils.py             # Private utilities and type aliases
+├── distributions.py      # EmpiricalDistribution classes
+├── sampling.py           # bootstrap_samples, jackknife_values
+├── standard_error.py     # SE estimation methods
+├── confidence.py         # Confidence interval methods
+├── bias.py               # Bias estimation and correction
+├── significance.py       # ASL and power analysis
+├── prediction.py         # Prediction error and intervals
+└── datasets.py           # Example datasets
+```
+
+### Key Classes (`distributions.py`)
+
 - `EmpiricalDistribution` - Represents the empirical distribution of a
   sample; provides `sample()` method for drawing bootstrap samples
 - `MultiSampleEmpiricalDistribution` - Extension for two-sample
   problems (treatment/control comparisons)
 
-**Function Categories:**
+### Function Categories
 
-Standard error and bias:
+**Standard error** (`standard_error.py`):
 - `standard_error()`, `jackknife_standard_error()`, `infinitesimal_jackknife()`
+
+**Bias** (`bias.py`):
 - `bias()`, `jackknife_bias()`, `better_bootstrap_bias()`, `bias_corrected()`
 
-Confidence intervals:
+**Confidence intervals** (`confidence.py`):
 - `percentile_interval()` - Simple percentile method
 - `bcanon_interval()` - BCa (Bias-Corrected and Accelerated), recommended default
 - `abcnon_interval()` - Analytical BCa approximation
 - `t_interval()` - Bootstrap-t method
 - `calibrate_interval()` - Calibrated coverage adjustment
 
-Significance testing:
+**Significance testing** (`significance.py`):
 - `bootstrap_asl()`, `percentile_asl()`, `bcanon_asl()` - Achieved significance levels
+- `bootstrap_power()` - Power analysis
 
-Prediction:
+**Prediction** (`prediction.py`):
 - `prediction_error_optimism()`, `prediction_error_632()`
 - `prediction_interval()`
 
-**Statistic Functions:**
+**Sampling** (`sampling.py`):
+- `bootstrap_samples()`, `multithreaded_bootstrap_samples()`
+- `jackknife_values()`
+
+### Statistic Functions
 
 All bootstrap methods take a `statistic` parameter: a callable that
 accepts a sample (array or DataFrame) and returns a scalar. Example:
@@ -83,7 +115,7 @@ Multicore support via pathos (uses dill instead of pickle, allowing
 locally-defined functions). Specify `num_threads` parameter in
 applicable functions.
 
-### Datasets: `bootstrap_stat/datasets.py`
+### Datasets (`datasets.py`)
 
 Example datasets for testing: `law_data()`, `mouse_data()`,
 `rainfall_data()`, `spatial_test_data()`, `hormone_data()`,

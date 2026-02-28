@@ -9,7 +9,7 @@ errors, and more!
 
 ## Getting Started
 Bootstrap-Stat is hosted on PyPI. Install as you would any other
-library, e.g.: `poetry add bootstrap-stat`.
+library, e.g.: `pip install bootstrap-stat` or `uv add bootstrap-stat`.
 
 Documentation is available at
 [Convex Analytics](https://www.convexanalytics.com/bootstrap-stat/index.html)
@@ -77,7 +77,7 @@ practical examples.
 
 ```
 >>> import numpy as np
->>> from bootstrap_stat import bootstrap_stat as bp
+>>> import bootstrap_stat as bp
 >>> from bootstrap_stat import datasets as d
 >>>
 >>> df = d.law_data()
@@ -220,8 +220,7 @@ details.
 ## Running the test cases
 
 ```
-$ poetry shell
-$ python -m pytest
+$ uv run pytest
 ```
 
 ## Documentation
@@ -229,12 +228,12 @@ Documentation is built using Sphinx and is hosted at
 [Convex Analytics](https://www.convexanalytics.com/bootstrap-stat/index.html).
 
 To update the docs (e.g. after updating the code), just change
-directory to `docs` and type `make html`. You'll need to be in a
-poetry shell.
+directory to `docs` and type `uv run make html`.
 
 ## Architecture
-We use Poetry to manage dependencies, pytest as our test runner, black
-for code formatting, and sphinx for generating documentation.
+We use uv to manage dependencies, pytest as our test runner, black
+for code formatting, ruff for linting, and sphinx for generating
+documentation.
 
 Basic multicore functionality is implemented, using the
 [pathos](https://pathos.readthedocs.io/en/latest/) version of
