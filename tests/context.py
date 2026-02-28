@@ -6,9 +6,8 @@ import sys
 
 sys.path.insert(
     0,
-    os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "bootstrap_stat")),
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "..")),
 )
 
-import datasets  # noqa: F401, E402
-
 import bootstrap_stat  # noqa: F401, E402
+from bootstrap_stat import datasets  # noqa: F401, E402

@@ -10,6 +10,13 @@ import scipy.optimize as optimize
 import scipy.stats as ss
 import statsmodels.formula.api as smf
 
+from bootstrap_stat._utils import (
+    _adjust_percentiles,
+    _bca_acceleration,
+    _percentile,
+    _resampling_vector,
+)
+
 from .context import bootstrap_stat as bp
 from .context import datasets
 
@@ -21,7 +28,7 @@ class TestMisc:
         expected_low = 50
         expected_high = 950
 
-        actual = bp._percentile(z, [alpha, 1 - alpha])
+        actual = _percentile(z, [alpha, 1 - alpha])
         assert actual[0] == expected_low
         assert actual[1] == expected_high
 
@@ -31,7 +38,7 @@ class TestMisc:
         expected_low = 50
         expected_high = 950
 
-        actual = bp._percentile(z, [alpha, 1 - alpha])
+        actual = _percentile(z, [alpha, 1 - alpha])
         assert actual[0] == expected_low
         assert actual[1] == expected_high
 
@@ -41,7 +48,7 @@ class TestMisc:
         expected_low = 50
         expected_high = 950
 
-        actual = bp._percentile(z, [alpha, 1 - alpha], full_sort=False)
+        actual = _percentile(z, [alpha, 1 - alpha], full_sort=False)
         assert actual[0] == expected_low
         assert actual[1] == expected_high
 
@@ -53,7 +60,7 @@ class TestMisc:
         expected_alpha1 = 0.110
         expected_alpha2 = 0.985
 
-        actual_alpha1, actual_alpha2 = bp._adjust_percentiles(alpha, a_hat, z0_hat)
+        actual_alpha1, actual_alpha2 = _adjust_percentiles(alpha, a_hat, z0_hat)
 
         assert actual_alpha1 == pytest.approx(expected_alpha1, abs=1e-3)
         assert actual_alpha2 == pytest.approx(expected_alpha2, abs=1e-3)
@@ -66,7 +73,7 @@ class TestMisc:
             return np.var(x, ddof=0)
 
         jv = bp.jackknife_values(df, statistic)
-        actual = bp._bca_acceleration(jv)
+        actual = _bca_acceleration(jv)
         assert actual == pytest.approx(expected, abs=1e-3)
 
     def test_jackknife_values_array(self):
@@ -78,7 +85,7 @@ class TestMisc:
             return np.var(x, ddof=0)
 
         jv = bp.jackknife_values(x, statistic)
-        actual = bp._bca_acceleration(jv)
+        actual = _bca_acceleration(jv)
         assert actual == pytest.approx(expected, abs=1e-3)
 
     def test_jackknife_values_dataframe(self):
@@ -89,7 +96,7 @@ class TestMisc:
             return np.var(df["A"], ddof=0)
 
         jv = bp.jackknife_values(df, statistic)
-        actual = bp._bca_acceleration(jv)
+        actual = _bca_acceleration(jv)
         assert actual == pytest.approx(expected, abs=1e-3)
 
     def test_loess(self):
@@ -110,7 +117,7 @@ class TestMisc:
         expected = [1 / 8, 0, 0, 3 / 8, 1 / 8, 1 / 8, 0, 2 / 8]
 
         np.random.seed(0)
-        actual = bp._resampling_vector(n)
+        actual = _resampling_vector(n)
         np.testing.assert_array_equal(actual, expected)
 
     def test_parametric_bootstrap(self):
