@@ -106,7 +106,7 @@ measurements were made on the entering classes of each school in 1973:
 LSAT, the average score for the class on a national law test, and GPA,
 the average undergraduate grade-point average for the class. Both the
 full data set, and a sample are available. The above is a sample of 15
-schools. The law data are taken from [EF93].
+schools. The law data are taken from [ET93].
 
 Suppose we are interested in the correlation between LSAT and
 GPA. Numpy can be used to compute the observed correlation for the
@@ -208,7 +208,7 @@ interval by specifying `alpha`:
 
 In general, `bcanon_interval` returns a 100(1-2`alpha`)% confidence
 interval. The `bcanon` terminology is a nod to the S implementation
-discussed in [ETF93]. (BCa is an algorithm for Bias-Corrected and
+discussed in [ET93]. (BCa is an algorithm for Bias-Corrected and
 Accelerated confidence intervals, and the function is NONparametric.)
 
 Basic multicore functionality is implemented, allowing parallel

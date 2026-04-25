@@ -1,21 +1,44 @@
 Documentation for bootstrap-stat
-********************************
+*********************************
 
-Literary References
-===================
-[ET93]:  Bradley Efron and Robert J. Tibshirani, "An Introduction to the
-         Bootstrap". Chapman & Hall, 1993.
-[Koh95]: Ron Kohavi, "A Study of Cross-Validation and Bootstrap for
-         Accuracy Estimation and Model Selection".  International
-         Joint Conference on Artificial Intelligence, 1995.
-[ET97]:  Bradley Efron and Robert Tibshirani. "Improvements on
-         Cross-Validation: The .632+ Bootstrap Method". Journal of the
-         American Statistical Association, Vol. 92, No. 438.  June
-         1997, pp. 548--560.
-[Arl10]: Sylvain Arlot, "A Survey of Cross-Validation Procedures for
-         Model Selection". Statistics Surveys, Vol. 4, 2010.
-
-Module Functions
-================
 .. automodule:: bootstrap_stat
+
+Distributions
+=============
+.. automodule:: bootstrap_stat.distributions
+   :members:
+
+Sampling
+========
+.. automodule:: bootstrap_stat.sampling
+   :members:
+
+Standard Error
+==============
+.. automodule:: bootstrap_stat.standard_error
+   :members:
+
+Bias
+====
+.. automodule:: bootstrap_stat.bias
+   :members:
+
+Confidence Intervals
+====================
+.. automodule:: bootstrap_stat.confidence
+   :members:
+
+Significance Testing
+====================
+.. automodule:: bootstrap_stat.significance
+   :members:
+
+Prediction
+==========
+.. automodule:: bootstrap_stat.prediction
+   :members:
+
+Datasets
+========
+.. automodule:: bootstrap_stat.datasets
    :members:

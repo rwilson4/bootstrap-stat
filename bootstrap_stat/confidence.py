@@ -144,6 +144,12 @@ def t_interval(
         Array of bootstrapped pivot values. Only returned if
         `return_samples` is True and `stabilize_variance` is False.
 
+    See Also
+    --------
+    bcanon_interval : BCa confidence interval (recommended default).
+    percentile_interval : Simple percentile interval.
+    standard_error : Bootstrap standard error, used internally.
+
     Examples
     --------
     >>> x = np.random.randn(100)
@@ -352,7 +358,8 @@ def percentile_interval(
      alpha : float, optional
         Number controlling the size of the interval. That is, this
         function will return a 100(1 - 2 * `alpha`)% confidence
-        interval. Defaults to 0.05.
+        interval. Defaults to 0.05, corresponding to a 90% confidence
+        interval.
      B : int, optional
         Number of bootstrap samples. Defaults to 1000.
      size : int or tuple of ints, optional
@@ -378,6 +385,14 @@ def percentile_interval(
      theta_star : ndarray
         Array of bootstrapped statistic values. Only returned if
         `return_samples` is True.
+
+    See Also
+    --------
+    bcanon_interval : BCa confidence interval (recommended default).
+    t_interval : Bootstrap-t interval.
+    abcnon_interval : Analytical BCa approximation, no bootstrap
+        required.
+    calibrate_interval : Coverage-calibrated interval.
 
     """
     if theta_star is None:
@@ -421,7 +436,8 @@ def bcanon_interval(
      alpha : float, optional
         Number controlling the size of the interval. That is, this
         function will return a 100(1-2*`alpha`)% confidence
-        interval. Defaults to 0.05.
+        interval. Defaults to 0.05, corresponding to a 90% confidence
+        interval.
      B : int, optional
         Number of bootstrap samples. Defaults to 1000.
      size : int or tuple of ints, optional
@@ -455,6 +471,14 @@ def bcanon_interval(
         `return_samples` is True.
      jv : ndarray
         Jackknife values. Only returned if `return_samples` is True.
+
+    See Also
+    --------
+    percentile_interval : Simple percentile interval.
+    abcnon_interval : Analytical BCa approximation, no bootstrap
+        required.
+    t_interval : Bootstrap-t interval.
+    calibrate_interval : Coverage-calibrated interval.
 
     """
     # The observed value of the statistic.
@@ -512,9 +536,10 @@ def abcnon_interval(
      alpha : float or array of floats, optional
         Number controlling the size of the interval. That is, this
         function will return a 100(1 - 2 * `alpha`)% confidence
-        interval. Defaults to 0.05. Alternatively, the user can pass
-        an array of floats in (0, 1). In that case, the return value
-        will be a tuple of confidence points. See Notes.
+        interval. Defaults to 0.05, corresponding to a 90% confidence
+        interval. Alternatively, the user can pass an array of floats
+        in (0, 1). In that case, the return value will be a tuple of
+        confidence points. See Notes.
      influence_components : array_like, optional
         Influence components. See Notes.
      second_derivatives : array_like, optional
@@ -539,6 +564,13 @@ def abcnon_interval(
         Vector of second_derivatives. Only returned if
         `return_influence_components` is True.
 
+    See Also
+    --------
+    bcanon_interval : BCa interval using bootstrap samples.
+    percentile_interval : Simple percentile interval.
+    calibrate_interval : Coverage-calibrated interval using ABC
+        internally.
+
     Notes
     -----
     Approximate Bootstrap Confidence (ABC) intervals require the
@@ -561,8 +593,9 @@ def abcnon_interval(
     calls to this function. (The recurring cost is 1 call to `stat`
     for each additional point specified.) This in turn facilitates
     using these intervals for achieved significance levels,
-    effectively by inverting the interval having endpoint 0. See the
-    ASL functions for how this might be done.
+    effectively by inverting the interval having endpoint 0. See
+    :func:`bootstrap_asl` and :func:`bcanon_asl` for how this might be
+    done.
 
     """
     n = len(x)
@@ -632,7 +665,8 @@ def calibrate_interval(
      alpha : float, optional
         Number controlling the size of the interval. That is, this
         function will return a 100(1-2*`alpha`)% confidence
-        interval. Defaults to 0.05.
+        interval. Defaults to 0.05, corresponding to a 90% confidence
+        interval.
      B : int, optional
         Number of bootstrap samples. Defaults to 1000.
      return_confidence_points : boolean, optional
@@ -654,12 +688,17 @@ def calibrate_interval(
         coverage, then lmbda_low would be `alpha` and lmbda_high would
         be 1 - `alpha`.
 
+    See Also
+    --------
+    abcnon_interval : ABC interval used internally.
+    bcanon_interval : BCa interval, often preferred.
+
     Notes
     -----
     While we can in principle calibrate any type of confidence
     interval, in most instances that results in a "double
-    bootstrap". For this reason, only ABC intervals are currently
-    supported. Moreover, from my limited experience calibration seems
+    bootstrap". For this reason, only :func:`abcnon_interval` intervals
+    are currently supported. Moreover, from my limited experience calibration seems
     pretty finicky. I would consider this function to be illustrative
     but experimental. See [ET93, S18] for details.
 

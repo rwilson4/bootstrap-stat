@@ -8,10 +8,19 @@ import pandas as pd
 
 
 def mouse_data(dataset: Literal["control", "treatment"]) -> list[int]:
-    """Mouse data
+    """Mouse data from [ET93], Table 2.2.
 
-    Data from An Introduction to the Bootstrap by Bradley Efron and
-    Robert J. Tibshirani.
+    Survival times in days of mice in a treatment/control experiment.
+
+    Parameters
+    ----------
+     dataset : ["control", "treatment"]
+        Which group to return.
+
+    Returns
+    -------
+     data : list of int
+        Survival times in days.
 
     """
     treatment = [94, 197, 16, 38, 99, 141, 23]
@@ -66,13 +75,15 @@ def law_data(full: bool = False) -> pd.DataFrame:
 
 
 def rainfall_data() -> pd.DataFrame:
-    """Rainfall data.
+    """Rainfall data from [ET93], Table 4.2.
 
-    The yearly rainfall, in inches, in Nevada City, California, 1873
-    through 1978. An example of time series data.
+    Yearly rainfall in inches in Nevada City, California, 1873 through
+    1978. An example of time series data.
 
-    Table 4.2 in An Introduction to the Bootstrap by Bradley Efron and
-    Robert J. Tibshirani.
+    Returns
+    -------
+     df : pandas DataFrame
+        DataFrame indexed by ``year`` with column ``rainfall``.
 
     """
     fn = os.path.join(os.path.dirname(__file__), "data", "rainfall.csv")
@@ -114,16 +125,19 @@ def spatial_test_data(
 
 
 def hormone_data() -> pd.DataFrame:
-    """The hormone data.
-
-    Taken from Table 9.1 of [ET93].
+    """Hormone data from [ET93], Table 9.1.
 
     Amount in milligrams of anti-inflammatory hormone remaining in 27
-    devices, after a certain number of hours of wear. The devices were
-    sampled from 3 different manufacturing lots, called A, B, and
-    C. Lot C looks like it had greater amounts of remaining hormone,
-    but it also was worn the least number of hours. A regression
-    analysis clarifies the situation.
+    devices after a certain number of hours of wear. Devices were
+    sampled from three manufacturing lots (A, B, C). Lot C appears to
+    have greater remaining hormone but was worn the fewest hours; a
+    regression analysis clarifies the situation.
+
+    Returns
+    -------
+     df : pandas DataFrame
+        Observations with columns for hours worn, manufacturing lot,
+        and remaining hormone level.
 
     """
     fn = os.path.join(os.path.dirname(__file__), "data", "hormone_data.csv")
@@ -132,21 +146,21 @@ def hormone_data() -> pd.DataFrame:
 
 
 def patch_data() -> pd.DataFrame:
-    """The patch data.
+    """Patch data from [ET93], Table 10.1.
 
-    Taken from Table 10.1 of [ET93].
+    Eight subjects wore medical patches designed to increase blood
+    levels of a natural hormone. Each subject wore three patches: a
+    placebo, an "old" patch from an established plant, and a "new"
+    patch from a newly opened plant. Derived columns: ``z`` =
+    oldpatch - placebo, ``y`` = newpatch - oldpatch. The purpose of
+    the experiment was to show equivalence between the two plants.
+    Chapter 25 of [ET93] has an extended analysis.
 
-    Eight subjects wore medical patches designed to increase the blood
-    levels of a certain natural hormone. Each subject had his blood
-    levels of the hormone measured after wearing three different
-    patches: a placebo patch, which had no medicine in it, an "old"
-    patch which was from a lot manufactured at an old plant, and a
-    "new" patch, which was from a lot manufactured at a newly opened
-    plant. For each subject, z = oldpatch - placebo measurement and y
-    = newpatch - oldpatch measurement. The purpose of the experiment
-    was to show that the new plant was producing patches equivalent to
-    those from the old plant. Chapter 25 of [ET93] has an extended
-    analysis of this data set.
+    Returns
+    -------
+     df : pandas DataFrame
+        DataFrame indexed by ``subject`` with columns ``placebo``,
+        ``oldpatch``, ``newpatch``, ``z``, and ``y``.
 
     """
     fn = os.path.join(os.path.dirname(__file__), "data", "patch.csv")

@@ -22,6 +22,20 @@ class EmpiricalDistribution:
      data : array_like or pandas DataFrame
         The data.
 
+    Attributes
+    ----------
+    data : array_like or pandas DataFrame
+        The underlying data.
+    n : int
+        Number of observations.
+    is_multi_sample : bool
+        Always False for this class.
+
+    See Also
+    --------
+    MultiSampleEmpiricalDistribution : Extension for two-sample and
+        multi-sample problems.
+
     """
 
     data: ArrayLike
@@ -29,14 +43,6 @@ class EmpiricalDistribution:
     is_multi_sample: bool
 
     def __init__(self, data: ArrayLike) -> None:
-        """Empirical Distribution
-
-        Parameters
-        ----------
-         data : array_like or pandas DataFrame
-            The data.
-
-        """
         self.data = data
         self.n = len(data)
         self.is_multi_sample = False
@@ -144,6 +150,10 @@ class MultiSampleEmpiricalDistribution(EmpiricalDistribution):
      datasets : tuple of arrays or pandas DataFrames.
         Observed data sets.
 
+    See Also
+    --------
+    EmpiricalDistribution : Single-sample empirical distribution.
+
     Notes
     -----
     Suppose we observe
@@ -169,8 +179,9 @@ class MultiSampleEmpiricalDistribution(EmpiricalDistribution):
     for details and examples.
 
     This is a relatively thin wrapper around the regular
-    EmpiricalDistribution: we just create a distinct
-    EmpiricalDistribution for each dataset, and use that for sampling.
+    :class:`EmpiricalDistribution`: we just create a distinct
+    :class:`EmpiricalDistribution` for each dataset, and use that for
+    sampling.
 
     Examples
     --------
@@ -197,33 +208,6 @@ class MultiSampleEmpiricalDistribution(EmpiricalDistribution):
     n: list[int]  # type: ignore[assignment]
 
     def __init__(self, datasets: tuple[ArrayLike, ...]) -> None:
-        """Constructor.
-
-        Parameters
-        ----------
-         datasets : tuple of arrays or pandas DataFrames.
-            Observed data sets.
-
-        Examples
-        --------
-        >>> data = [1, 2, 3]
-        >>> dist = EmpiricalDistribution(data)
-        >>> dist.sample()
-        [1, 2, 1]
-        >>> data_a = [1, 2, 3]
-        >>> data_b = [4, 5, 6]
-        >>> data = (data_a, data_b)  # Note tuple
-        >>> dist = MultiSampleEmpiricalDistribution(data)
-        >>> a, b = dist.sample()  # Can de-tuple directly
-        >>> a
-        [2, 2, 3]
-        >>> b
-        [4, 6, 4]
-        >>> ab = dist.sample()  # Or indirectly, which is often more useful
-        >>> ab
-        [array([2, 2, 3]), array([4, 6, 4])]
-
-        """
         self.data = datasets
         self.dists = [EmpiricalDistribution(d) for d in datasets]
         self.n = [len(d) for d in datasets]

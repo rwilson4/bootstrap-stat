@@ -75,6 +75,25 @@ def bootstrap_asl(
         Array of bootstrapped statistic values. Only returned if
         `return_samples` is True.
 
+    See Also
+    --------
+    percentile_asl : Percentile method for achieved significance level.
+    bcanon_asl : BCa-corrected achieved significance level.
+    bootstrap_power : Bootstrap estimate of statistical power.
+
+    Notes
+    -----
+    The bootstrap ASL estimates the p-value by sampling from a null
+    distribution---an empirical distribution for which the null
+    hypothesis is true---and counting the fraction of bootstrap
+    statistics at least as extreme as the observed value. The caller
+    is responsible for constructing the null distribution. For
+    example, if the null hypothesis is that a population mean equals
+    zero, ``dist`` should be built from a shifted copy of the data.
+    The argument ``x`` is accepted but not used; it is present for
+    consistency with :func:`percentile_asl` and :func:`bcanon_asl`.
+    See [ET93, S16.3] for details.
+
     """
     asl = 0
 
@@ -159,6 +178,12 @@ def percentile_asl(
         Array of bootstrapped statistic values. Only returned if
         `return_samples` is True.
 
+    See Also
+    --------
+    bootstrap_asl : General bootstrap achieved significance level.
+    bcanon_asl : BCa-corrected achieved significance level.
+    bootstrap_power : Bootstrap estimate of statistical power.
+
     Notes
     -----
     Under the null hypothesis, the value of the statistic is
@@ -212,7 +237,7 @@ def bcanon_asl(
     two_sided: bool = False,
     num_threads: int = 1,
 ) -> float | tuple[float, npt.NDArray[np.float64], JackknifeValues | None]:
-    """Achieved Significance Level, bcanon method
+    r"""Achieved Significance Level, bcanon method
 
     Parameters
     ----------
@@ -264,6 +289,27 @@ def bcanon_asl(
         `return_samples` is True.
      jv : ndarray
         Jackknife values. Only returned if `return_samples` is True.
+
+    See Also
+    --------
+    bootstrap_asl : General bootstrap achieved significance level.
+    percentile_asl : Percentile method for achieved significance level.
+    bcanon_interval : Related BCa confidence interval.
+    bootstrap_power : Bootstrap estimate of statistical power.
+
+    Notes
+    -----
+    The BCa-corrected ASL applies the same bias-correction and
+    acceleration adjustments used in :func:`bcanon_interval` to the
+    percentile-based ASL from :func:`percentile_asl`. Where
+    :func:`percentile_asl` simply counts bootstrap statistics on the
+    far side of ``theta_0``, this function converts that count to a
+    normal-quantile, shifts it by the bias-correction term
+    :math:`\hat{z}_0`, and further adjusts by the acceleration
+    :math:`\hat{a}`, which accounts for skewness in the sampling
+    distribution of the statistic. The result is more accurate than
+    the percentile ASL when the statistic is not symmetrically
+    distributed. See [ET93, S14.3] for details.
 
     """
     if theta_hat is None:
@@ -377,14 +423,20 @@ def bootstrap_power(
         The fraction of Monte Carlo simulations in which the null
         hypothesis was rejected.
 
+    See Also
+    --------
+    bootstrap_asl : General bootstrap achieved significance level.
+    bcanon_asl : BCa-corrected achieved significance level.
+
     Notes
     -----
     Perhaps the most confusing aspect of this function is that there
     are two distribution passed as input, and they are of a different
     form. The `alt_dist` should be passed as an instance of an
-    EmpiricalDistribution or a subclass thereof. We use this parameter
-    to generate samples from that distribution. We then need to
-    generate an EmpiricalDistribution from that sample, for which we
+    :class:`EmpiricalDistribution` or a subclass thereof. We use this
+    parameter to generate samples from that distribution. We then need
+    to generate an :class:`EmpiricalDistribution` from that sample,
+    for which we
     need the *class* corresponding to the null distribution, not an
     instance thereof. I recognize this is confusing!
 

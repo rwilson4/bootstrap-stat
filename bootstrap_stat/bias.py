@@ -54,6 +54,13 @@ def bias(
         Array of bootstrapped statistic values. Only returned if
         `return_samples` is True.
 
+    See Also
+    --------
+    jackknife_bias : Jackknife estimate of bias.
+    better_bootstrap_bias : Bootstrap bias estimate with faster
+        convergence for plug-in statistics.
+    bias_corrected : Bias-corrected estimator.
+
     """
     if theta_star is None:
         theta_star = bootstrap_samples(dist, stat, B, num_threads=num_threads)
@@ -100,6 +107,12 @@ def better_bootstrap_bias(
         Array of bootstrapped statistic values. Only returned if
         `return_samples` is True.
 
+    See Also
+    --------
+    bias : General bootstrap estimate of bias.
+    jackknife_bias : Jackknife estimate of bias.
+    bias_corrected : Bias-corrected estimator.
+
     Notes
     -----
     The "better" bootstrap bias estimate is only applicable when
@@ -108,11 +121,11 @@ def better_bootstrap_bias(
     is the empirical distribution. Notable situations where this
     assumption does not hold include robust statistics like using the
     alpha-trimmed mean, since that is not the plug-in statistic for
-    the mean. In cases like that, just use the "worse" `bias`
+    the mean. In cases like that, just use the "worse" :func:`bias`
     function. The advantage of the "better" bootstrap bias estimate is
     faster convergence.  Whereas using `B` = 400 is typically adequate
     here, it can take thousands of bootstrap samples to give an
-    accurate estimate in the "worse" `bias` function.
+    accurate estimate in the "worse" :func:`bias` function.
 
     """
     if num_threads == -1:
@@ -204,6 +217,13 @@ def jackknife_bias(
      jv : ndarray
         Jackknife values. Only returned if `return_samples` is True.
 
+    See Also
+    --------
+    bias : Bootstrap estimate of bias.
+    better_bootstrap_bias : Bootstrap bias estimate with faster
+        convergence for plug-in statistics.
+    bias_corrected : Bias-corrected estimator.
+
     Notes
     -----
     The jackknife estimate of bias is only applicable when `stat` is a
@@ -211,7 +231,7 @@ def jackknife_bias(
     where :math:`\hat{F}` is the empirical distribution. Moreover, it
     is only applicable when `t` is a smooth function. Notable
     exceptions include the median. The jackknife cannot be used to
-    estimate the bias of non-smooth estimators. See [EF93, S10.5] for
+    estimate the bias of non-smooth estimators. See [ET93, S10.5] for
     details.
 
     """
@@ -292,6 +312,13 @@ def bias_corrected(
      jv : ndarray
         Jackknife values. Only returned if `return_samples` is True
         and method == "jackknife".
+
+    See Also
+    --------
+    bias : Bootstrap estimate of bias.
+    jackknife_bias : Jackknife estimate of bias.
+    better_bootstrap_bias : Bootstrap bias estimate with faster
+        convergence for plug-in statistics.
 
     Notes
     -----

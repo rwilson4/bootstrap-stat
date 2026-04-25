@@ -12,20 +12,21 @@
 #
 import os
 import sys
+from importlib.metadata import version as _get_version
 
 sys.path.insert(
-    0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "bootstrap_stat"))
+    0, os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 )
 
 
 # -- Project information -----------------------------------------------------
 
 project = "bootstrap-stat"
-copyright = "2020, Bob Wilson"
+copyright = "2020-2026, Bob Wilson"
 author = "Bob Wilson"
 
 # The full version, including alpha/beta/rc tags
-release = "v0.2.3"
+release = _get_version("bootstrap-stat")
 
 
 # -- General configuration ---------------------------------------------------
@@ -37,10 +38,16 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx.ext.mathjax",
+    "sphinx.ext.viewcode",
+    "sphinx.ext.intersphinx",
 ]
 
-# Add any paths that contain templates here, relative to this directory.
-templates_path = ["_templates"]
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3", None),
+    "numpy": ("https://numpy.org/doc/stable", None),
+    "pandas": ("https://pandas.pydata.org/docs", None),
+    "scipy": ("https://docs.scipy.org/doc/scipy", None),
+}
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -55,8 +62,3 @@ autodoc_member_order = "bysource"
 # a list of builtin themes.
 #
 html_theme = "alabaster"
-
-# Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
-# so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ["_static"]

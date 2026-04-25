@@ -105,7 +105,7 @@ def _percentile(
      p : float or array of floats
         Number in (0, 0.5), specifing the percentiles.
      full_sort : boolean, optional
-        Whether to fully sort z (see Notes). Defaults to False.
+        Whether to fully sort z (see Notes). Defaults to True.
 
     Returns
     -------

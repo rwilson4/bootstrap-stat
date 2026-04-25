@@ -50,6 +50,12 @@ def jackknife_standard_error(
      jv : ndarray
         Jackknife values. Only returned if `return_samples` is True.
 
+    See Also
+    --------
+    standard_error : Bootstrap estimate of standard error.
+    infinitesimal_jackknife : Infinitesimal jackknife estimate of
+        standard error.
+
     Notes
     -----
     The jackknife estimate of standard error is only applicable when
@@ -58,7 +64,7 @@ def jackknife_standard_error(
     distribution. Moreover, it is only applicable when t is a smooth
     function. Notable exceptions include the median. The jackknife
     cannot be used to estimate the standard error of non-smooth
-    estimators. See [EF93, S10.6]
+    estimators. See [ET93, S10.6]
 
     """
     if isinstance(x, tuple):
@@ -137,7 +143,7 @@ def standard_error(
         thread. Set to -1 to use all available cores.
 
     Returns
-    --------
+    -------
      se : float
         The standard error.
      se_jack : float
@@ -147,6 +153,30 @@ def standard_error(
      theta_star : ndarray
         Array of bootstrapped statistic values. Only returned if
         `return_samples` is True.
+
+    See Also
+    --------
+    jackknife_standard_error : Jackknife estimate of standard error.
+    infinitesimal_jackknife : Infinitesimal jackknife estimate of
+        standard error.
+
+    Notes
+    -----
+    The bootstrap estimate of standard error draws B bootstrap samples
+    from the empirical distribution, evaluates the statistic on each,
+    and returns the standard deviation of those B values. See [ET93,
+    S6.1] for details.
+
+    By default the non-robust estimate is used. When `robustness` is
+    specified, a percentile-based estimate is returned instead: the
+    spread between the `robustness` and 1 - `robustness` quantiles of
+    the bootstrap distribution, divided by the corresponding spread of
+    a standard normal. See [ET93, S10.3] for details.
+
+    When `jackknife_after_bootstrap` is True, the function also
+    returns `se_jack`, an estimate of the variability of `se` itself,
+    which can be used to assess how stable the standard error estimate
+    is. See [ET93, S19.4] for details.
 
     """
     import scipy.stats as ss
@@ -231,6 +261,11 @@ def infinitesimal_jackknife(
      influence_components : array_like
         The influence components. Only returned if
         `return_influence_components` is True.
+
+    See Also
+    --------
+    standard_error : Bootstrap estimate of standard error.
+    jackknife_standard_error : Jackknife estimate of standard error.
 
     Notes
     -----

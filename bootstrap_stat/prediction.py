@@ -58,6 +58,12 @@ def prediction_error_optimism(
      pe : float
         Prediction error.
 
+    See Also
+    --------
+    prediction_error_632 : .632 bootstrap estimate of prediction error.
+    prediction_interval : Bootstrap prediction interval for a new
+        observation.
+
     Notes
     -----
     The bootstrap estimate of prediction error can be used for model
@@ -130,6 +136,14 @@ def prediction_error_632(
         for example if the model had already been fit elsewhere.
      use_632_plus : boolean, optional
         If True, uses the .632+ bootstrap. See Notes.
+     gamma : float, optional
+        The no-information error rate. Required when `use_632_plus` is
+        True and `no_inf_err_rate` is not provided.
+     no_inf_err_rate : function, optional
+        A function that computes the no-information error rate from
+        predictions and data. Required when `use_632_plus` is True and
+        `gamma` is not provided. Takes as input the predictions and the
+        dataset, and returns a float.
      num_threads : int, optional
         Number of threads to use for multicore processing. Defaults to
         1, meaning all calculations will be done in a single
@@ -139,6 +153,13 @@ def prediction_error_632(
     -------
      pe : float
         Prediction error.
+
+    See Also
+    --------
+    prediction_error_optimism : Optimism-based bootstrap prediction
+        error.
+    prediction_interval : Bootstrap prediction interval for a new
+        observation.
 
     Notes
     -----
@@ -324,8 +345,8 @@ def prediction_interval(
         helpful to plot these.)
      num_threads : int, optional
         Number of threads to use for multicore processing. Defaults to
-        1, meaning all calculations will be done in a single
-        thread. Set to -1 to use all available cores.
+        -1, meaning all available cores will be used. Set to 1 to
+        disable multicore processing.
 
     Returns
     -------
@@ -335,6 +356,12 @@ def prediction_interval(
      t_star : array
         Array of studentized values. Returned only if `return_t_star`
         is True.
+
+    See Also
+    --------
+    prediction_error_optimism : Bootstrap estimate of prediction error,
+        optimism method.
+    prediction_error_632 : .632 bootstrap estimate of prediction error.
 
     Notes
     -----

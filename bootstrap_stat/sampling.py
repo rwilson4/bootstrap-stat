@@ -44,6 +44,11 @@ def jackknife_values(
      jv : ndarray
         The jackknife values.
 
+    See Also
+    --------
+    bootstrap_samples : Generate bootstrap samples from an empirical
+        distribution.
+
     Notes
     -----
     The jackknife values consist of the statistic applied to a
@@ -157,6 +162,11 @@ def multithreaded_bootstrap_samples(
         statistics are being calculated on the same bootstrap samples,
         the return value will be a dictionary having keys the same as
         `stat` and values an ndarray for each statistic.
+
+    See Also
+    --------
+    bootstrap_samples : Single-threaded bootstrap sampling with
+        optional jackknife support.
 
     Notes
     -----
@@ -272,6 +282,11 @@ def bootstrap_samples(
         the ith datapoint can be used for inferences involving the ith
         point.) See [ET93, S19.4] for details. Only returned if
         `jackknife` is True.
+
+    See Also
+    --------
+    jackknife_values : Compute jackknife values directly.
+    multithreaded_bootstrap_samples : Parallel-only bootstrap sampling.
 
     """
     if num_threads == -1:
