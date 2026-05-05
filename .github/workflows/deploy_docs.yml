@@ -1,0 +1,21 @@
+name: deploy-docs
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'docs/**'   # only fire when docs change
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Pull docs on droplet
+      uses: appleboy/ssh-action@v1.2.5
+      with:
+        host: ${{ secrets.PROD_HOST }}
+        username: ${{ secrets.PROD_USERNAME }}
+        key: ${{ secrets.PROD_SSHKEY }}
+        script: |
+          set -e
+          cd nginx-proxy/convexanalytics/bootstrap-stat
+          git pull --ff-only
