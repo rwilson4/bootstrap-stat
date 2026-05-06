@@ -1,7 +1,14 @@
-Documentation for bootstrap-stat
-*********************************
+API Reference
+*************
 
 .. automodule:: bootstrap_stat
+
+.. note::
+
+   The ``alpha`` parameter in all interval functions controls the
+   per-tail probability, so ``alpha=0.05`` produces a **90%** interval
+   (5% excluded from each tail). This follows the convention in
+   [ET93]_.
 
 Distributions
 =============

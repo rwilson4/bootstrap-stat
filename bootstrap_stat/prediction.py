@@ -71,7 +71,7 @@ def prediction_error_optimism(
     correction term to the apparent error (the accuracy of the
     predictor applied to the same dataset used to train the
     predictor). This bias correction term is called the optimism. See
-    [ET93, S17] for details.
+    [ET93]_ (S17) for details.
 
     """
     if apparent_error is None:
@@ -170,16 +170,16 @@ def prediction_error_632(
     using that model on the original dataset. But we only care about
     the predictions on observations that are *not* part of the
     bootstrap sample. We then average those prediction errors across
-    all bootstrap samples. See [ET93, S17.7] for details.
+    all bootstrap samples. See [ET93]_ (S17.7) for details.
 
     The method is so-called because the estimated prediction error is
-    .368 times the apparent error plus .632 times eps0. [ET93] reports
+    .368 times the apparent error plus .632 times eps0. [ET93]_ reports
     that this method performed better than leave-one-out cross
     validation in their simulations, having lower variance, but they
-    themselves admit they had not thoroughly evaluated it. [Koh95]
+    themselves admit they had not thoroughly evaluated it. [Koh95]_
     reported that the .632 bootstrap performed quite poorly when
     overfitting is present. This led Efron and Tibshirani to propose
-    the .632+ bootstrap in [ET97]. Finally, [Arl10] surveys various
+    the .632+ bootstrap in [ET97]_. Finally, [Arl10]_ surveys various
     approaches to model selection, recommending 10-fold cross
     validation as the preferred method of model selection.
 
@@ -334,7 +334,7 @@ def prediction_interval(
         Number of bootstrap samples. Defaults to 1000.
      alpha : float, optional
         Number controlling the size of the interval. That is, this
-        function will return a 100(1-2 * `alpha`)% prediction
+        function will return a :math:`100(1 - 2\alpha)\%` prediction
         interval. Defaults to 0.05.
      t_star : array_like or None
         Array of studentized values, used to calculate the interval.
@@ -351,7 +351,7 @@ def prediction_interval(
     Returns
     -------
      pred_low, pred_high : float
-        A 100(1 - 2 * `alpha`)% prediction interval on a point sampled
+        A :math:`100(1 - 2\alpha)\%` prediction interval on a point sampled
         from F.
      t_star : array
         Array of studentized values. Returned only if `return_t_star`

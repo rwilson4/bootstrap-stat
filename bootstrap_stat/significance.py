@@ -92,7 +92,7 @@ def bootstrap_asl(
     zero, ``dist`` should be built from a shifted copy of the data.
     The argument ``x`` is accepted but not used; it is present for
     consistency with :func:`percentile_asl` and :func:`bcanon_asl`.
-    See [ET93, S16.3] for details.
+    See [ET93]_ (S16.3) for details.
 
     """
     asl = 0
@@ -130,7 +130,7 @@ def percentile_asl(
     two_sided: bool = False,
     num_threads: int = 1,
 ) -> float | tuple[float, npt.NDArray[np.float64]]:
-    """Achieved Significance Level, percentile method
+    r"""Achieved Significance Level, percentile method
 
     Parameters
     ----------
@@ -187,14 +187,16 @@ def percentile_asl(
     Notes
     -----
     Under the null hypothesis, the value of the statistic is
-    theta_0. Suppose theta_hat > theta_0. Let theta_lo, theta_hi be
-    the endpoints of a 100(1-alpha)% confidence interval on theta.
-    Suppose alpha is such that theta_lo = theta_0. Then alpha is the
-    achieved significance level.
+    :math:`\theta_0`. Suppose :math:`\hat{\theta} > \theta_0`. Let
+    :math:`\theta_{\mathrm{lo}}`, :math:`\theta_{\mathrm{hi}}` be the
+    endpoints of a :math:`100(1 - \alpha)\%` confidence interval on
+    :math:`\theta`. Suppose :math:`\alpha` is such that
+    :math:`\theta_{\mathrm{lo}} = \theta_0`. Then :math:`\alpha` is
+    the achieved significance level.
 
     For the percentile interval, this is simply the fraction of
-    bootstrap samples that are "on the other side" of theta_0 from
-    theta_hat.
+    bootstrap samples that are "on the other side" of :math:`\theta_0`
+    from :math:`\hat{\theta}`.
 
     """
     if theta_hat is None:
@@ -309,7 +311,7 @@ def bcanon_asl(
     :math:`\hat{a}`, which accounts for skewness in the sampling
     distribution of the statistic. The result is more accurate than
     the percentile ASL when the statistic is not symmetrically
-    distributed. See [ET93, S14.3] for details.
+    distributed. See [ET93]_ (S14.3) for details.
 
     """
     if theta_hat is None:
