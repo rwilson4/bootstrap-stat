@@ -127,6 +127,33 @@ Example datasets for testing: `law_data()`, `mouse_data()`,
 - PRs to master trigger build workflow (ruff, black check, tests)
 - Pushes to master trigger PyPI deployment via `uv publish`
 
+## Documentation deployment
+
+Docs are served from a DigitalOcean droplet via nginx. The deploy
+workflow (`.github/workflows/deploy_docs.yml`) fires on pushes to
+master that touch `docs/**`. It SSHes to the droplet and runs
+`git pull --ff-only` — it does **not** run `make html`.
+
+**`docs/_build/html/` must therefore be committed to git.** The
+`.gitignore` does not exclude it. When editing docs:
+
+```bash
+# 1. Edit RST sources under docs/
+# 2. Rebuild
+cd docs && uv run make html
+
+# 3. Stage sources and build artifacts together
+git add docs/<changed-source-files>
+git add -f docs/_build/html/   # -f needed for any new files
+
+# 4. Commit and push to master
+```
+
+`bootstrap-stat` is a submodule of the nginx-proxy repo on the
+droplet. Each pull updates the working tree, but the parent repo's
+submodule pointer goes stale — cosmetic only; nginx serves from the
+working tree directly.
+
 ## References
 
 [ET93] Bradley Efron and Robert J. Tibshirani, "An Introduction to the
