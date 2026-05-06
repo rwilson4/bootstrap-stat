@@ -72,3 +72,8 @@ ignore_missing_imports = true
 check_untyped_defs = false
 disallow_untyped_defs = false
 disallow_incomplete_defs = false
+
+[dependency-groups]
+dev = [
+    "pydata-sphinx-theme>=0.17.1",
+]

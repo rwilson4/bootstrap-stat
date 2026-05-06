@@ -23,7 +23,7 @@ def bias(
     theta_star: npt.NDArray[np.float64] | None = None,
     num_threads: int = 1,
 ) -> float | tuple[float, npt.NDArray[np.float64]]:
-    """Estimate of bias
+    r"""Estimate of bias
 
     Parameters
     ----------
@@ -60,6 +60,25 @@ def bias(
     better_bootstrap_bias : Bootstrap bias estimate with faster
         convergence for plug-in statistics.
     bias_corrected : Bias-corrected estimator.
+
+    Notes
+    -----
+    The bootstrap bias estimate is
+
+    .. math::
+
+        \widehat{\mathrm{bias}} = \bar{\theta}^* - t(\hat{F}),
+
+    where :math:`\bar{\theta}^* = B^{-1}\sum_{b=1}^{B}\mathrm{stat}(x^*_b)`
+    is the mean over bootstrap samples and :math:`t(\hat{F})` is the
+    plug-in value of the parameter under the empirical distribution.
+    For a smooth plug-in statistic :math:`t(\hat{F}) = \mathrm{stat}(x)`,
+    but the two arguments allow the caller to supply a different plug-in
+    value when needed. See [ET93]_ (S10.2) for details.
+
+    For plug-in statistics, :func:`better_bootstrap_bias` converges
+    faster using the same number of bootstrap samples. For non-smooth
+    statistics, :func:`jackknife_bias` is an alternative.
 
     """
     if theta_star is None:

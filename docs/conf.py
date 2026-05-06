@@ -61,4 +61,8 @@ autodoc_member_order = "bysource"
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "alabaster"
+html_theme = "pydata_sphinx_theme"
+html_theme_options = {
+    "github_url": "https://github.com/rwilson4/bootstrap-stat",
+    "show_prev_next": False,
+}
