@@ -15,6 +15,7 @@ from bootstrap_stat._utils import (
     _bca_acceleration,
     _percentile,
     _resampling_vector,
+    loess,
 )
 
 from .context import bootstrap_stat as bp
@@ -107,7 +108,7 @@ class TestMisc:
         alpha = 0.20
         expected = 0.561
 
-        actual = [bp.loess(z0, z, ye, alpha) for z0 in z]
+        actual = [loess(z0, z, ye, alpha) for z0 in z]
         actual = np.array(actual)
         actual = np.sqrt(np.mean((actual - y) ** 2))
         assert actual == pytest.approx(expected, abs=1e-3)

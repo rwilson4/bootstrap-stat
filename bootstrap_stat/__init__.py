@@ -24,7 +24,7 @@ References
 
 # Type aliases (public)
 # Public utility function
-from bootstrap_stat._utils import ArrayLike, JackknifeValues, Statistic, loess
+from bootstrap_stat._utils import ArrayLike, JackknifeValues, Statistic
 
 # Bias estimation and correction
 from bootstrap_stat.bias import (
@@ -83,8 +83,6 @@ __all__ = [
     "ArrayLike",
     "JackknifeValues",
     "Statistic",
-    # Utility
-    "loess",
     # Distributions
     "EmpiricalDistribution",
     "MultiSampleEmpiricalDistribution",
