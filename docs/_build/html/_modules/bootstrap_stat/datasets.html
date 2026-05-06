@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>bootstrap_stat.datasets &#8212; bootstrap-stat 0.2.4.3 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../_static/documentation_options.js?v=30b058cc"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for bootstrap_stat.datasets</h1><div class="highlight"><pre>
+<span></span><span class="c1"># pyre-unsafe</span>
+<span class="sd">&quot;&quot;&quot;Dataset loading functions for bootstrap examples.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Literal</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+
+<div class="viewcode-block" id="mouse_data">
+<a class="viewcode-back" href="../../api.html#bootstrap_stat.datasets.mouse_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">mouse_data</span><span class="p">(</span><span class="n">dataset</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;control&quot;</span><span class="p">,</span> <span class="s2">&quot;treatment&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Mouse data from [ET93]_, Table 2.2.</span>
+
+<span class="sd">    Survival times in days of mice in a treatment/control experiment.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">     dataset : [&quot;control&quot;, &quot;treatment&quot;]</span>
+<span class="sd">        Which group to return.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">     data : list of int</span>
+<span class="sd">        Survival times in days.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">treatment</span> <span class="o">=</span> <span class="p">[</span><span class="mi">94</span><span class="p">,</span> <span class="mi">197</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">38</span><span class="p">,</span> <span class="mi">99</span><span class="p">,</span> <span class="mi">141</span><span class="p">,</span> <span class="mi">23</span><span class="p">]</span>
+    <span class="n">control</span> <span class="o">=</span> <span class="p">[</span><span class="mi">52</span><span class="p">,</span> <span class="mi">104</span><span class="p">,</span> <span class="mi">146</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">51</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">27</span><span class="p">,</span> <span class="mi">46</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">dataset</span> <span class="o">==</span> <span class="s2">&quot;control&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">control</span>
+    <span class="k">elif</span> <span class="n">dataset</span> <span class="o">==</span> <span class="s2">&quot;treatment&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">treatment</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Please specify either &#39;control&#39; or &#39;treatment&#39;&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="law_data">
+<a class="viewcode-back" href="../../api.html#bootstrap_stat.datasets.law_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">law_data</span><span class="p">(</span><span class="n">full</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Law School Data</span>
+
+<span class="sd">    Collection of N = 82 American law schools participating in a large</span>
+<span class="sd">    study of admissions practices. Two measurements were made on the</span>
+<span class="sd">    entering classes of each school in 1973: LSAT, the average score</span>
+<span class="sd">    for the class on a national law test, and GPA, the average</span>
+<span class="sd">    undergraduate grade-point average for the class.</span>
+
+<span class="sd">    Additionally, a sample of n = 15 schools were taken.</span>
+
+<span class="sd">    Data from Table 3.2 in An Introduction to the Bootstrap by Bradley</span>
+<span class="sd">    Efron and Robert J. Tibshirani.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">     full : boolean, optional</span>
+<span class="sd">        If True, return the full (N = 82) dataset. If False (default),</span>
+<span class="sd">        return the sampled (n = 15) dataset.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">     df : pandas DataFrame</span>
+<span class="sd">        The dataset.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;law_school.csv&quot;</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;school&quot;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">sample</span> <span class="o">=</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">79</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">70</span><span class="p">,</span> <span class="mi">52</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">47</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">82</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">36</span><span class="p">,</span> <span class="mi">53</span><span class="p">]</span>
+    <span class="n">sample</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sample</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">full</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">sample</span><span class="p">]</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+
+<div class="viewcode-block" id="rainfall_data">
+<a class="viewcode-back" href="../../api.html#bootstrap_stat.datasets.rainfall_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">rainfall_data</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Rainfall data from [ET93]_, Table 4.2.</span>
+
+<span class="sd">    Yearly rainfall in inches in Nevada City, California, 1873 through</span>
+<span class="sd">    1978. An example of time series data.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">     df : pandas DataFrame</span>
+<span class="sd">        DataFrame indexed by ``year`` with column ``rainfall``.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;rainfall.csv&quot;</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+
+<div class="viewcode-block" id="spatial_test_data">
+<a class="viewcode-back" href="../../api.html#bootstrap_stat.datasets.spatial_test_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">spatial_test_data</span><span class="p">(</span>
+    <span class="n">test</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;both&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;both&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Spatial Test Data.</span>
+
+<span class="sd">    n = 26 children have each taken two tests of spatial ability,</span>
+<span class="sd">    called A and B. Table 14.1 in An Introduction to the Bootstrap by</span>
+<span class="sd">    Bradley Efron and Robert J. Tibshirani.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">     test : [&quot;A&quot;, &quot;B&quot;, &quot;both&quot;], optional</span>
+<span class="sd">        Which test results to return. Defaults to &quot;both&quot;.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">     df : pandas DataFrame or Series</span>
+<span class="sd">        The data.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;spatial_test.csv&quot;</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;Child&quot;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">test</span> <span class="o">==</span> <span class="s2">&quot;both&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">df</span>
+    <span class="k">elif</span> <span class="n">test</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="n">test</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid test&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="hormone_data">
+<a class="viewcode-back" href="../../api.html#bootstrap_stat.datasets.hormone_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">hormone_data</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Hormone data from [ET93]_, Table 9.1.</span>
+
+<span class="sd">    Amount in milligrams of anti-inflammatory hormone remaining in 27</span>
+<span class="sd">    devices after a certain number of hours of wear. Devices were</span>
+<span class="sd">    sampled from three manufacturing lots (A, B, C). Lot C appears to</span>
+<span class="sd">    have greater remaining hormone but was worn the fewest hours; a</span>
+<span class="sd">    regression analysis clarifies the situation.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">     df : pandas DataFrame</span>
+<span class="sd">        Observations with columns for hours worn, manufacturing lot,</span>
+<span class="sd">        and remaining hormone level.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;hormone_data.csv&quot;</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+
+<div class="viewcode-block" id="patch_data">
+<a class="viewcode-back" href="../../api.html#bootstrap_stat.datasets.patch_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">patch_data</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Patch data from [ET93]_, Table 10.1.</span>
+
+<span class="sd">    Eight subjects wore medical patches designed to increase blood</span>
+<span class="sd">    levels of a natural hormone. Each subject wore three patches: a</span>
+<span class="sd">    placebo, an &quot;old&quot; patch from an established plant, and a &quot;new&quot;</span>
+<span class="sd">    patch from a newly opened plant. Derived columns: ``z`` =</span>
+<span class="sd">    oldpatch - placebo, ``y`` = newpatch - oldpatch. The purpose of</span>
+<span class="sd">    the experiment was to show equivalence between the two plants.</span>
+<span class="sd">    Chapter 25 of [ET93]_ has an extended analysis.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">     df : pandas DataFrame</span>
+<span class="sd">        DataFrame indexed by ``subject`` with columns ``placebo``,</span>
+<span class="sd">        ``oldpatch``, ``newpatch``, ``z``, and ``y``.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;patch.csv&quot;</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;subject&quot;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="s2">&quot;z&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;oldpatch&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;placebo&quot;</span><span class="p">]</span>
+    <span class="n">df</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;newpatch&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;oldpatch&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">df</span></div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">bootstrap-stat</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">References</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2020-2026, Bob Wilson.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

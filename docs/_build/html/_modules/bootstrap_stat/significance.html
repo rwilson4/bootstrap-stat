@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>bootstrap_stat.significance &#8212; bootstrap-stat 0.2.4.3 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../_static/documentation_options.js?v=30b058cc"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for bootstrap_stat.significance</h1><div class="highlight"><pre>
+<span></span><span class="c1"># pyre-unsafe</span>
+<span class="sd">&quot;&quot;&quot;Achieved significance level and power analysis methods.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ss</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">bootstrap_stat._utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">JackknifeValues</span><span class="p">,</span>
+    <span class="n">Statistic</span><span class="p">,</span>
+    <span class="n">_bca_acceleration</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bootstrap_stat.distributions</span><span class="w"> </span><span class="kn">import</span> <span class="n">EmpiricalDistribution</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bootstrap_stat.sampling</span><span class="w"> </span><span class="kn">import</span> <span class="n">bootstrap_samples</span><span class="p">,</span> <span class="n">jackknife_values</span>
+
+
+<div class="viewcode-block" id="bootstrap_asl">
+<a class="viewcode-back" href="../../api.html#bootstrap_stat.significance.bootstrap_asl">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">bootstrap_asl</span><span class="p">(</span>
+    <span class="n">dist</span><span class="p">:</span> <span class="n">EmpiricalDistribution</span><span class="p">,</span>
+    <span class="n">stat</span><span class="p">:</span> <span class="n">Statistic</span><span class="p">,</span>
+    <span class="n">x</span><span class="p">:</span> <span class="n">ArrayLike</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">B</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+    <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">return_samples</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">theta_star</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">theta_hat</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">two_sided</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">num_threads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Achieved Significance Level, general bootstrap method</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">     dist : EmpiricalDistribution</span>
+<span class="sd">        The empirical distribution.</span>
+<span class="sd">     stat : function</span>
+<span class="sd">        The test statistic.</span>
+<span class="sd">     x : array_like or pandas DataFrame or tuple</span>
+<span class="sd">        The data. It isn&#39;t used for anything, so the caller can pass</span>
+<span class="sd">        None if the data are not available, but it is here for</span>
+<span class="sd">        consistency across asl routines.</span>
+<span class="sd">     B : int, optional</span>
+<span class="sd">        Number of bootstrap samples. Defaults to 1000.</span>
+<span class="sd">     size : int or tuple of ints, optional</span>
+<span class="sd">        Size to pass for generating samples from the alternative</span>
+<span class="sd">        distribution. Defaults to None.</span>
+<span class="sd">     return_samples : boolean, optional</span>
+<span class="sd">        If True, return the bootstrapped statistic or jackknife</span>
+<span class="sd">        values. Defaults to False.</span>
+<span class="sd">     theta_star : array_like, optional</span>
+<span class="sd">        Bootstrapped statistic values. Can be passed if they have</span>
+<span class="sd">        already been calculated, which will speed this up</span>
+<span class="sd">        considerably.</span>
+<span class="sd">     theta_hat : float, optional</span>
+<span class="sd">        Observed statistic. Can be passed if it has already been</span>
+<span class="sd">        calculated, which will speed this up slightly.</span>
+<span class="sd">     two_sided : boolean, optional</span>
+<span class="sd">        If True, computes a two-sided significance value. If False</span>
+<span class="sd">        (default), only a one-sided value is returned. Support for</span>
+<span class="sd">        two-sided tests is *experimental*. Use with caution!</span>
+<span class="sd">     num_threads : int, optional</span>
+<span class="sd">        Number of threads to use for multicore processing. Defaults to</span>
+<span class="sd">        1, meaning all calculations will be done in a single</span>
+<span class="sd">        thread. Set to -1 to use all available cores.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">     asl : float</span>
+<span class="sd">       Achieved significance level, the probability of an outcome at</span>
+<span class="sd">       least as extreme as that actually observed under the null</span>
+<span class="sd">       hypothesis; aka the p-value.</span>
+<span class="sd">     theta_star : ndarray</span>
+<span class="sd">        Array of bootstrapped statistic values. Only returned if</span>
+<span class="sd">        `return_samples` is True.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    percentile_asl : Percentile method for achieved significance level.</span>
+<span class="sd">    bcanon_asl : BCa-corrected achieved significance level.</span>
+<span class="sd">    bootstrap_power : Bootstrap estimate of statistical power.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The bootstrap ASL estimates the p-value by sampling from a null</span>
+<span class="sd">    distribution---an empirical distribution for which the null</span>
+<span class="sd">    hypothesis is true---and counting the fraction of bootstrap</span>
+<span class="sd">    statistics at least as extreme as the observed value. The caller</span>
+<span class="sd">    is responsible for constructing the null distribution. For</span>
+<span class="sd">    example, if the null hypothesis is that a population mean equals</span>
+<span class="sd">    zero, ``dist`` should be built from a shifted copy of the data.</span>
+<span class="sd">    The argument ``x`` is accepted but not used; it is present for</span>
+<span class="sd">    consistency with :func:`percentile_asl` and :func:`bcanon_asl`.</span>
+<span class="sd">    See [ET93]_ (S16.3) for details.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">asl</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">if</span> <span class="n">theta_hat</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">theta_hat</span> <span class="o">=</span> <span class="n">stat</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">theta_star</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">theta_star</span> <span class="o">=</span> <span class="n">bootstrap_samples</span><span class="p">(</span>
+            <span class="n">dist</span><span class="p">,</span> <span class="n">stat</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">num_threads</span><span class="o">=</span><span class="n">num_threads</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">two_sided</span><span class="p">:</span>
+        <span class="n">asl</span> <span class="o">=</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">theta_star</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">theta_hat</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">asl</span> <span class="o">=</span> <span class="p">(</span><span class="n">theta_star</span> <span class="o">&gt;=</span> <span class="n">theta_hat</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+    <span class="n">asl</span> <span class="o">/=</span> <span class="nb">len</span><span class="p">(</span><span class="n">theta_star</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">return_samples</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">asl</span><span class="p">,</span> <span class="n">theta_star</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">asl</span></div>
+
+
+
+<div class="viewcode-block" id="percentile_asl">
+<a class="viewcode-back" href="../../api.html#bootstrap_stat.significance.percentile_asl">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">percentile_asl</span><span class="p">(</span>
+    <span class="n">dist</span><span class="p">:</span> <span class="n">EmpiricalDistribution</span><span class="p">,</span>
+    <span class="n">stat</span><span class="p">:</span> <span class="n">Statistic</span><span class="p">,</span>
+    <span class="n">x</span><span class="p">:</span> <span class="n">ArrayLike</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+    <span class="n">theta_0</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">B</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+    <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">return_samples</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">theta_star</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">theta_hat</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">two_sided</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">num_threads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Achieved Significance Level, percentile method</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">     dist : EmpiricalDistribution</span>
+<span class="sd">        The empirical distribution.</span>
+<span class="sd">     stat : function</span>
+<span class="sd">        The test statistic.</span>
+<span class="sd">     x : array_like or pandas DataFrame or tuple</span>
+<span class="sd">        The data, used to calculate the observed value of the</span>
+<span class="sd">        statistic if `theta_hat` is not passed.</span>
+<span class="sd">     theta_0 : float, optional</span>
+<span class="sd">        The mean of the test statistic under the null</span>
+<span class="sd">        hypothesis. Defaults to 0.</span>
+<span class="sd">     B : int, optional</span>
+<span class="sd">        Number of bootstrap samples.</span>
+<span class="sd">     size : int or tuple of ints, optional</span>
+<span class="sd">        Size to pass for generating samples from the alternative</span>
+<span class="sd">        distribution. Defaults to None.</span>
+<span class="sd">     return_samples : boolean, optional</span>
+<span class="sd">        If True, return the bootstrapped statistic or jackknife</span>
+<span class="sd">        values. Defaults to False.</span>
+<span class="sd">     theta_star : array_like, optional</span>
+<span class="sd">        Bootstrapped statistic values. Can be passed if they have</span>
+<span class="sd">        already been calculated, which will speed this up</span>
+<span class="sd">        considerably.</span>
+<span class="sd">     theta_hat : float, optional</span>
+<span class="sd">        Observed statistic. Can be passed if it has already been</span>
+<span class="sd">        calculated, which will speed this up slightly.</span>
+<span class="sd">     two_sided : boolean, optional</span>
+<span class="sd">        If True, computes a two-sided significance value. If False</span>
+<span class="sd">        (default), only a one-sided value is returned. Support for</span>
+<span class="sd">        two-sided tests is *experimental*. Use with caution!</span>
+<span class="sd">     num_threads : int, optional</span>
+<span class="sd">        Number of threads to use for multicore processing. Defaults to</span>
+<span class="sd">        1, meaning all calculations will be done in a single</span>
+<span class="sd">        thread. Set to -1 to use all available cores.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">     asl : float</span>
+<span class="sd">       Achieved significance level, the probability of an outcome at</span>
+<span class="sd">       least as extreme as that actually observed under the null</span>
+<span class="sd">       hypothesis; aka the p-value.</span>
+<span class="sd">     theta_star : ndarray</span>
+<span class="sd">        Array of bootstrapped statistic values. Only returned if</span>
+<span class="sd">        `return_samples` is True.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    bootstrap_asl : General bootstrap achieved significance level.</span>
+<span class="sd">    bcanon_asl : BCa-corrected achieved significance level.</span>
+<span class="sd">    bootstrap_power : Bootstrap estimate of statistical power.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Under the null hypothesis, the value of the statistic is</span>
+<span class="sd">    :math:`\theta_0`. Suppose :math:`\hat{\theta} &gt; \theta_0`. Let</span>
+<span class="sd">    :math:`\theta_{\mathrm{lo}}`, :math:`\theta_{\mathrm{hi}}` be the</span>
+<span class="sd">    endpoints of a :math:`100(1 - \alpha)\%` confidence interval on</span>
+<span class="sd">    :math:`\theta`. Suppose :math:`\alpha` is such that</span>
+<span class="sd">    :math:`\theta_{\mathrm{lo}} = \theta_0`. Then :math:`\alpha` is</span>
+<span class="sd">    the achieved significance level.</span>
+
+<span class="sd">    For the percentile interval, this is simply the fraction of</span>
+<span class="sd">    bootstrap samples that are &quot;on the other side&quot; of :math:`\theta_0`</span>
+<span class="sd">    from :math:`\hat{\theta}`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">theta_hat</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">theta_hat</span> <span class="o">=</span> <span class="n">stat</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">theta_hat</span> <span class="o">==</span> <span class="n">theta_0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mf">1.0</span>
+
+    <span class="k">if</span> <span class="n">theta_star</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">theta_star</span> <span class="o">=</span> <span class="n">bootstrap_samples</span><span class="p">(</span>
+            <span class="n">dist</span><span class="p">,</span> <span class="n">stat</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">num_threads</span><span class="o">=</span><span class="n">num_threads</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">theta_hat</span> <span class="o">&gt;</span> <span class="n">theta_0</span><span class="p">:</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="p">(</span><span class="n">theta_star</span> <span class="o">&lt;</span> <span class="n">theta_0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="p">(</span><span class="n">theta_star</span> <span class="o">&gt;</span> <span class="n">theta_0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+    <span class="n">asl</span> <span class="o">=</span> <span class="n">b</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">theta_star</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">two_sided</span><span class="p">:</span>
+        <span class="n">asl</span> <span class="o">*=</span> <span class="mi">2</span>
+
+    <span class="k">if</span> <span class="n">return_samples</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">asl</span><span class="p">,</span> <span class="n">theta_star</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">asl</span></div>
+
+
+
+<div class="viewcode-block" id="bcanon_asl">
+<a class="viewcode-back" href="../../api.html#bootstrap_stat.significance.bcanon_asl">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">bcanon_asl</span><span class="p">(</span>
+    <span class="n">dist</span><span class="p">:</span> <span class="n">EmpiricalDistribution</span><span class="p">,</span>
+    <span class="n">stat</span><span class="p">:</span> <span class="n">Statistic</span><span class="p">,</span>
+    <span class="n">x</span><span class="p">:</span> <span class="n">ArrayLike</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+    <span class="n">theta_0</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">B</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+    <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">return_samples</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">theta_star</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">theta_hat</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">jv</span><span class="p">:</span> <span class="n">JackknifeValues</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">two_sided</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">num_threads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">JackknifeValues</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Achieved Significance Level, bcanon method</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">     dist : EmpiricalDistribution</span>
+<span class="sd">        The empirical distribution.</span>
+<span class="sd">     stat : function</span>
+<span class="sd">        The test statistic.</span>
+<span class="sd">     x : array_like or pandas DataFrame or tuple</span>
+<span class="sd">        The data, used to evaluate the observed statistic and compute</span>
+<span class="sd">        jackknife values.</span>
+<span class="sd">     theta_0 : float, optional</span>
+<span class="sd">        The mean of the test statistic under the null</span>
+<span class="sd">        hypothesis. Defaults to 0.</span>
+<span class="sd">     B : int, optional</span>
+<span class="sd">        Number of bootstrap samples.</span>
+<span class="sd">     size : int or tuple of ints, optional</span>
+<span class="sd">        Size to pass for generating samples from the alternative</span>
+<span class="sd">        distribution. Defaults to None.</span>
+<span class="sd">     return_samples : boolean, optional</span>
+<span class="sd">        If True, return the bootstrapped statistic or jackknife</span>
+<span class="sd">        values. Defaults to False.</span>
+<span class="sd">     theta_star : array_like, optional</span>
+<span class="sd">        Bootstrapped statistic values. Can be passed if they have</span>
+<span class="sd">        already been calculated, which will speed this up</span>
+<span class="sd">        considerably.</span>
+<span class="sd">     theta_hat : float, optional</span>
+<span class="sd">        Observed statistic. Can be passed if it has already been</span>
+<span class="sd">        calculated, which will speed this up slightly.</span>
+<span class="sd">     jv : array_like, optional</span>
+<span class="sd">        Jackknife values. Can be passed if they have already been</span>
+<span class="sd">        calculated, which will speed this up considerably.</span>
+<span class="sd">     two_sided : boolean, optional</span>
+<span class="sd">        If True, computes a two-sided significance value. If False</span>
+<span class="sd">        (default), only a one-sided value is returned. Support for</span>
+<span class="sd">        two-sided tests is *experimental*. Use with caution!</span>
+<span class="sd">     num_threads : int, optional</span>
+<span class="sd">        Number of threads to use for multicore processing. Defaults to</span>
+<span class="sd">        1, meaning all calculations will be done in a single</span>
+<span class="sd">        thread. Set to -1 to use all available cores.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">     asl : float</span>
+<span class="sd">       Achieved significance level, the probability of an outcome at</span>
+<span class="sd">       least as extreme as that actually observed under the null</span>
+<span class="sd">       hypothesis; aka the p-value.</span>
+<span class="sd">     theta_star : ndarray</span>
+<span class="sd">        Array of bootstrapped statistic values. Only returned if</span>
+<span class="sd">        `return_samples` is True.</span>
+<span class="sd">     jv : ndarray</span>
+<span class="sd">        Jackknife values. Only returned if `return_samples` is True.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    bootstrap_asl : General bootstrap achieved significance level.</span>
+<span class="sd">    percentile_asl : Percentile method for achieved significance level.</span>
+<span class="sd">    bcanon_interval : Related BCa confidence interval.</span>
+<span class="sd">    bootstrap_power : Bootstrap estimate of statistical power.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The BCa-corrected ASL applies the same bias-correction and</span>
+<span class="sd">    acceleration adjustments used in :func:`bcanon_interval` to the</span>
+<span class="sd">    percentile-based ASL from :func:`percentile_asl`. Where</span>
+<span class="sd">    :func:`percentile_asl` simply counts bootstrap statistics on the</span>
+<span class="sd">    far side of ``theta_0``, this function converts that count to a</span>
+<span class="sd">    normal-quantile, shifts it by the bias-correction term</span>
+<span class="sd">    :math:`\hat{z}_0`, and further adjusts by the acceleration</span>
+<span class="sd">    :math:`\hat{a}`, which accounts for skewness in the sampling</span>
+<span class="sd">    distribution of the statistic. The result is more accurate than</span>
+<span class="sd">    the percentile ASL when the statistic is not symmetrically</span>
+<span class="sd">    distributed. See [ET93]_ (S14.3) for details.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">theta_hat</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">theta_hat</span> <span class="o">=</span> <span class="n">stat</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="n">a0</span><span class="p">,</span> <span class="n">theta_star</span> <span class="o">=</span> <span class="n">percentile_asl</span><span class="p">(</span>
+        <span class="n">dist</span><span class="p">,</span>
+        <span class="n">stat</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">theta_0</span><span class="o">=</span><span class="n">theta_0</span><span class="p">,</span>
+        <span class="n">B</span><span class="o">=</span><span class="n">B</span><span class="p">,</span>
+        <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
+        <span class="n">return_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">theta_star</span><span class="o">=</span><span class="n">theta_star</span><span class="p">,</span>
+        <span class="n">theta_hat</span><span class="o">=</span><span class="n">theta_hat</span><span class="p">,</span>
+        <span class="n">two_sided</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">num_threads</span><span class="o">=</span><span class="n">num_threads</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">a0</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">a0</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">return_samples</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">a0</span><span class="p">,</span> <span class="n">theta_star</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">a0</span>
+
+    <span class="k">if</span> <span class="n">theta_hat</span> <span class="o">&gt;</span> <span class="n">theta_0</span><span class="p">:</span>
+        <span class="n">zb</span> <span class="o">=</span> <span class="p">(</span><span class="n">theta_star</span> <span class="o">&lt;</span> <span class="n">theta_hat</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">zb</span> <span class="o">=</span> <span class="p">(</span><span class="n">theta_star</span> <span class="o">&gt;</span> <span class="n">theta_hat</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+    <span class="n">z0_hat</span> <span class="o">=</span> <span class="n">ss</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="n">zb</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">theta_star</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">jv</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">dist</span><span class="o">.</span><span class="n">is_multi_sample</span><span class="p">:</span>
+            <span class="n">jv</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">jackknife_values</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">stat</span><span class="p">,</span> <span class="n">num_threads</span><span class="o">=</span><span class="n">num_threads</span><span class="p">,</span> <span class="n">sample</span><span class="o">=</span><span class="n">i</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+            <span class="p">]</span>
+            <span class="n">jv</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">jv</span><span class="p">,)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">jv</span> <span class="o">=</span> <span class="n">jackknife_values</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">stat</span><span class="p">,</span> <span class="n">num_threads</span><span class="o">=</span><span class="n">num_threads</span><span class="p">)</span>
+
+    <span class="n">a_hat</span> <span class="o">=</span> <span class="n">_bca_acceleration</span><span class="p">(</span><span class="n">jv</span><span class="p">)</span>
+    <span class="n">w0</span> <span class="o">=</span> <span class="n">ss</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="n">a0</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="p">(</span><span class="n">w0</span> <span class="o">-</span> <span class="n">z0_hat</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">a_hat</span> <span class="o">*</span> <span class="p">(</span><span class="n">w0</span> <span class="o">-</span> <span class="n">z0_hat</span><span class="p">))</span> <span class="o">-</span> <span class="n">z0_hat</span>
+    <span class="n">asl</span> <span class="o">=</span> <span class="n">ss</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">two_sided</span><span class="p">:</span>
+        <span class="c1"># To-do: generalize as follows.</span>
+        <span class="c1"># What we really want is stat with the samples</span>
+        <span class="c1"># interchanged. In many cases of practically interest, that is</span>
+        <span class="c1"># simply -stat, as shown below. But that&#39;s not always the case</span>
+        <span class="c1"># and we can be more general by allowing the user to pass a</span>
+        <span class="c1"># transform mapping stat to interchange stat. Need to think</span>
+        <span class="c1"># this through more.</span>
+        <span class="n">other_asl</span> <span class="o">=</span> <span class="n">bcanon_asl</span><span class="p">(</span>
+            <span class="n">dist</span><span class="p">,</span>
+            <span class="k">lambda</span> <span class="n">z</span><span class="p">:</span> <span class="o">-</span><span class="n">stat</span><span class="p">(</span><span class="n">z</span><span class="p">),</span>
+            <span class="n">x</span><span class="p">,</span>
+            <span class="n">theta_hat</span><span class="o">=-</span><span class="n">theta_hat</span><span class="p">,</span>
+            <span class="n">theta_0</span><span class="o">=-</span><span class="n">theta_0</span><span class="p">,</span>
+            <span class="n">theta_star</span><span class="o">=-</span><span class="n">theta_star</span><span class="p">,</span>
+            <span class="n">two_sided</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">num_threads</span><span class="o">=</span><span class="n">num_threads</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">asl</span> <span class="o">+=</span> <span class="n">other_asl</span>
+
+    <span class="k">if</span> <span class="n">return_samples</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">asl</span><span class="p">,</span> <span class="n">theta_star</span><span class="p">,</span> <span class="n">jv</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">asl</span></div>
+
+
+
+<div class="viewcode-block" id="bootstrap_power">
+<a class="viewcode-back" href="../../api.html#bootstrap_stat.significance.bootstrap_power">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">bootstrap_power</span><span class="p">(</span>
+    <span class="n">alt_dist</span><span class="p">:</span> <span class="n">EmpiricalDistribution</span><span class="p">,</span>
+    <span class="n">null_dist</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">EmpiricalDistribution</span><span class="p">],</span>
+    <span class="n">stat</span><span class="p">:</span> <span class="n">Statistic</span><span class="p">,</span>
+    <span class="n">asl</span><span class="p">:</span> <span class="n">Statistic</span> <span class="o">=</span> <span class="n">bootstrap_asl</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
+    <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">P</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Bootstrap Power</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">     alt_dist : EmpiricalDistribution</span>
+<span class="sd">        Distribution under the alternative hypothesis.</span>
+<span class="sd">     null_dist : class</span>
+<span class="sd">        Class corresponding to the null distribution. See Notes.</span>
+<span class="sd">     stat : function</span>
+<span class="sd">        Function that computes the test statistic.</span>
+<span class="sd">     asl : function, optional</span>
+<span class="sd">        Function that computes an achieved significance</span>
+<span class="sd">        level. Defaults to bootstrap_asl.</span>
+<span class="sd">     alpha : float, optional</span>
+<span class="sd">        Desired Type-I error rate. Defaults to 0.05.</span>
+<span class="sd">     size : int or tuple of ints, optional</span>
+<span class="sd">        Size to pass for generating samples from the alternative</span>
+<span class="sd">        distribution. Defaults to None.</span>
+<span class="sd">     P : int, optional</span>
+<span class="sd">        Number of Monte Carlo simulations to run for the purposes of</span>
+<span class="sd">        calculating power. Defaults to 100.</span>
+<span class="sd">     kwargs : optional</span>
+<span class="sd">        Other keyword arguments to pass to `asl`, such as the number</span>
+<span class="sd">        of bootstrap samples to use.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">     pwr : float</span>
+<span class="sd">        The fraction of Monte Carlo simulations in which the null</span>
+<span class="sd">        hypothesis was rejected.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    bootstrap_asl : General bootstrap achieved significance level.</span>
+<span class="sd">    bcanon_asl : BCa-corrected achieved significance level.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Perhaps the most confusing aspect of this function is that there</span>
+<span class="sd">    are two distribution passed as input, and they are of a different</span>
+<span class="sd">    form. The `alt_dist` should be passed as an instance of an</span>
+<span class="sd">    :class:`EmpiricalDistribution` or a subclass thereof. We use this</span>
+<span class="sd">    parameter to generate samples from that distribution. We then need</span>
+<span class="sd">    to generate an :class:`EmpiricalDistribution` from that sample,</span>
+<span class="sd">    for which we</span>
+<span class="sd">    need the *class* corresponding to the null distribution, not an</span>
+<span class="sd">    instance thereof. I recognize this is confusing!</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rejections</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">P</span><span class="p">):</span>
+        <span class="n">sample</span> <span class="o">=</span> <span class="n">alt_dist</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
+        <span class="n">sim_dist</span> <span class="o">=</span> <span class="n">null_dist</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">asl</span><span class="p">(</span><span class="n">sim_dist</span><span class="p">,</span> <span class="n">stat</span><span class="p">,</span> <span class="n">sample</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">a</span> <span class="o">&lt;=</span> <span class="n">alpha</span><span class="p">:</span>
+            <span class="n">rejections</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">rejections</span> <span class="o">/</span> <span class="n">P</span></div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">bootstrap-stat</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">References</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2020-2026, Bob Wilson.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

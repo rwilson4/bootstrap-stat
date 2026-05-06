@@ -45,7 +45,7 @@
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="API Reference" href="api.html" />
+    <link rel="next" title="Confidence Intervals" href="guide.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -130,6 +130,13 @@
 <nav>
   <ul class="bd-navbar-elements navbar-nav">
     
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="guide.html">
+    Confidence Intervals
+  </a>
+</li>
+
+
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="api.html">
     API Reference
@@ -235,6 +242,13 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="guide.html">
+    Confidence Intervals
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="api.html">
     API Reference
   </a>
@@ -333,9 +347,9 @@ analysis</p></li>
 <section id="quickstart">
 <h2>Quickstart<a class="headerlink" href="#quickstart" title="Link to this heading">#</a></h2>
 <p>The core workflow: wrap observed data in an
-<code class="xref py py-class docutils literal notranslate"><span class="pre">EmpiricalDistribution</span></code>, define a statistic
+<a class="reference internal" href="api.html#bootstrap_stat.distributions.EmpiricalDistribution" title="bootstrap_stat.distributions.EmpiricalDistribution"><code class="xref py py-class docutils literal notranslate"><span class="pre">EmpiricalDistribution</span></code></a>, define a statistic
 function, then call whichever inference function you need.
-<code class="xref py py-func docutils literal notranslate"><span class="pre">bcanon_interval()</span></code> is the recommended default for
+<a class="reference internal" href="api.html#bootstrap_stat.confidence.bcanon_interval" title="bootstrap_stat.confidence.bcanon_interval"><code class="xref py py-func docutils literal notranslate"><span class="pre">bcanon_interval()</span></code></a> is the recommended default for
 confidence intervals.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">bootstrap_stat</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">bp</span>
@@ -359,6 +373,17 @@ limitations relative to cross-validation. Full citations are on the
 <div class="toctree-wrapper compound">
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="guide.html">Confidence Intervals</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.html#setting-up">Setting up</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.html#classical-interval-fisher-s-z">Classical interval (Fisher’s z)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.html#percentile-interval">Percentile interval</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.html#bca-interval">BCa interval</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.html#abc-interval">ABC interval</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.html#calibrated-interval">Calibrated interval</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.html#bootstrap-t-interval">Bootstrap-t interval</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.html#comparison">Comparison</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="api.html#module-bootstrap_stat.distributions">Distributions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api.html#module-bootstrap_stat.sampling">Sampling</a></li>

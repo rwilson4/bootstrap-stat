@@ -201,20 +201,19 @@ class MultiSampleEmpiricalDistribution(EmpiricalDistribution):
     --------
     >>> data = [1, 2, 3]
     >>> dist = EmpiricalDistribution(data)
-    >>> dist.sample()
-    [1, 2, 1]
+    >>> sample = dist.sample()
+    >>> len(sample)
+    3
     >>> data_a = [1, 2, 3]
     >>> data_b = [4, 5, 6]
     >>> data = (data_a, data_b)  # Note tuple
     >>> dist = MultiSampleEmpiricalDistribution(data)
     >>> a, b = dist.sample()  # Can de-tuple directly
-    >>> a
-    [2, 2, 3]
-    >>> b
-    [4, 6, 4]
+    >>> len(a), len(b)
+    (3, 3)
     >>> ab = dist.sample()  # Or indirectly, which is often more useful
-    >>> ab
-    [array([2, 2, 3]), array([4, 6, 4])]
+    >>> len(ab)
+    2
 
     """
 
@@ -281,7 +280,7 @@ class MultiSampleEmpiricalDistribution(EmpiricalDistribution):
         >>> def parameter(ab):
         ...     a, b = ab  # Note de-tupling
         ...     return np.mean(b) - np.mean(a)
-        >>> dist.calculate_parameter(parameter)
+        >>> float(dist.calculate_parameter(parameter))
         3.0
         """
         return t(self.data)

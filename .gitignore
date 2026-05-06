@@ -69,7 +69,8 @@ instance/
 .scrapy
 
 # Sphinx documentation
-docs/_build/
+# Note: docs/_build/html/ IS tracked and must be committed — the
+# DigitalOcean deploy workflow does git pull only, no make html.
 
 # PyBuilder
 target/
@@ -127,3 +128,4 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+docs/_build/html/.buildinfo.bak

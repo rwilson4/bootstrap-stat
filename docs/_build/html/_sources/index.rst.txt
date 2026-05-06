@@ -21,9 +21,9 @@ Quickstart
 ----------
 
 The core workflow: wrap observed data in an
-:class:`~bootstrap_stat.EmpiricalDistribution`, define a statistic
+:class:`~bootstrap_stat.distributions.EmpiricalDistribution`, define a statistic
 function, then call whichever inference function you need.
-:func:`~bootstrap_stat.bcanon_interval` is the recommended default for
+:func:`~bootstrap_stat.confidence.bcanon_interval` is the recommended default for
 confidence intervals.
 
 .. code-block:: python
@@ -51,6 +51,7 @@ limitations relative to cross-validation. Full citations are on the
    :maxdepth: 2
    :caption: Contents:
 
+   guide.rst
    api.rst
    references.rst
 
