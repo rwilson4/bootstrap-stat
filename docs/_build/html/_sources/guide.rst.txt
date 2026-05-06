@@ -150,6 +150,42 @@ statistics computed by external libraries or that involve sorting (the
 median, for instance). When it applies, ABC is the most efficient route
 to a second-order accurate interval.
 
+Calibrated interval
+-------------------
+
+A bootstrap confidence interval stated as 90% may cover the true
+parameter only 86% of the time in finite samples. The calibrated
+interval corrects for this by using bootstrap resampling to estimate
+the actual coverage of an interval at any nominal level, and then
+solving for the level that delivers the target. In general this
+requires a *double bootstrap* --- an inner loop of bootstrap samples
+for each outer replicate --- at 100× or more the cost of a single
+bootstrap.
+
+:func:`~bootstrap_stat.confidence.calibrate_interval` avoids the full
+double bootstrap by using the ABC approximation for the inner step.
+Rather than drawing inner replicates, it evaluates
+:func:`~bootstrap_stat.confidence.abcnon_interval` across a grid of
+candidate :math:`\lambda` values, fits a smoother to the
+coverage-versus-:math:`\lambda` curve, and inverts it to find the
+:math:`\lambda` that achieves the desired coverage. This inherits
+ABC's resampling-form requirement: the statistic must accept a weight
+vector ``p``, exactly as for ``abcnon_interval``.
+
+.. code-block:: python
+
+    lo, hi = bp.calibrate_interval(dist, correlation_p, data, theta_hat)
+    # (0.129, 0.920)   ~3.4 s   [representative; see note below]
+
+In theory, calibration achieves :math:`O(n^{-3/2})` coverage error
+--- a full order of magnitude better than BCa. In practice, the
+smoothing step introduces its own variability, and the method is
+sensitive to extreme :math:`\lambda` values that push the ABC
+interval to the boundary of its domain. On the law school data, the
+lower bound ranges from roughly 0.05 to 0.13 across random seeds, and
+the upper bound occasionally exceeds 1 --- an impossible value for a
+correlation. The implementation is best treated as illustrative.
+
 Bootstrap-t interval
 --------------------
 
@@ -269,6 +305,10 @@ school data (:math:`n = 15`):
      - 0.409
      - 0.917
      - 4.4 s
+   * - Calibrated (experimental)
+     - 0.05–0.13
+     - 0.91–1.06
+     - 3.4 s
 
 For most applications, :func:`~bootstrap_stat.confidence.bcanon_interval`
 is the right default: it matches the percentile interval on speed,
@@ -277,5 +317,7 @@ statistic. When the statistic can be written in resampling form,
 :func:`~bootstrap_stat.confidence.abcnon_interval` delivers
 second-order accuracy at negligible cost. The bootstrap-t with
 ``stabilize_variance=True`` is worth considering when a pivotal
-interval is specifically required. See [ET93]_ (S14) for a thorough
-comparison of interval methods.
+interval is specifically required.
+:func:`~bootstrap_stat.confidence.calibrate_interval` is theoretically
+attractive but currently experimental; prefer BCa for applied work.
+See [ET93]_ (S14) for a thorough comparison of interval methods.

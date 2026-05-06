@@ -500,6 +500,38 @@ statistics computed by external libraries or that involve sorting (the
 median, for instance). When it applies, ABC is the most efficient route
 to a second-order accurate interval.</p>
 </section>
+<section id="calibrated-interval">
+<h2>Calibrated interval<a class="headerlink" href="#calibrated-interval" title="Link to this heading">#</a></h2>
+<p>A bootstrap confidence interval stated as 90% may cover the true
+parameter only 86% of the time in finite samples. The calibrated
+interval corrects for this by using bootstrap resampling to estimate
+the actual coverage of an interval at any nominal level, and then
+solving for the level that delivers the target. In general this
+requires a <em>double bootstrap</em> — an inner loop of bootstrap samples
+for each outer replicate — at 100× or more the cost of a single
+bootstrap.</p>
+<p><a class="reference internal" href="api.html#bootstrap_stat.confidence.calibrate_interval" title="bootstrap_stat.confidence.calibrate_interval"><code class="xref py py-func docutils literal notranslate"><span class="pre">calibrate_interval()</span></code></a> avoids the full
+double bootstrap by using the ABC approximation for the inner step.
+Rather than drawing inner replicates, it evaluates
+<a class="reference internal" href="api.html#bootstrap_stat.confidence.abcnon_interval" title="bootstrap_stat.confidence.abcnon_interval"><code class="xref py py-func docutils literal notranslate"><span class="pre">abcnon_interval()</span></code></a> across a grid of
+candidate <span class="math notranslate nohighlight">\(\lambda\)</span> values, fits a smoother to the
+coverage-versus-<span class="math notranslate nohighlight">\(\lambda\)</span> curve, and inverts it to find the
+<span class="math notranslate nohighlight">\(\lambda\)</span> that achieves the desired coverage. This inherits
+ABC’s resampling-form requirement: the statistic must accept a weight
+vector <code class="docutils literal notranslate"><span class="pre">p</span></code>, exactly as for <code class="docutils literal notranslate"><span class="pre">abcnon_interval</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">calibrate_interval</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">correlation_p</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">theta_hat</span><span class="p">)</span>
+<span class="c1"># (0.129, 0.920)   ~3.4 s   [representative; see note below]</span>
+</pre></div>
+</div>
+<p>In theory, calibration achieves <span class="math notranslate nohighlight">\(O(n^{-3/2})\)</span> coverage error
+— a full order of magnitude better than BCa. In practice, the
+smoothing step introduces its own variability, and the method is
+sensitive to extreme <span class="math notranslate nohighlight">\(\lambda\)</span> values that push the ABC
+interval to the boundary of its domain. On the law school data, the
+lower bound ranges from roughly 0.05 to 0.13 across random seeds, and
+the upper bound occasionally exceeds 1 — an impossible value for a
+correlation. The implementation is best treated as illustrative.</p>
+</section>
 <section id="bootstrap-t-interval">
 <h2>Bootstrap-t interval<a class="headerlink" href="#bootstrap-t-interval" title="Link to this heading">#</a></h2>
 <p><a class="reference internal" href="api.html#bootstrap_stat.confidence.t_interval" title="bootstrap_stat.confidence.t_interval"><code class="xref py py-func docutils literal notranslate"><span class="pre">t_interval()</span></code></a> also achieves <span class="math notranslate nohighlight">\(O(n^{-1})\)</span>
@@ -617,6 +649,11 @@ school data (<span class="math notranslate nohighlight">\(n = 15\)</span>):</p>
 <td><p>0.917</p></td>
 <td><p>4.4 s</p></td>
 </tr>
+<tr class="row-even"><td><p>Calibrated (experimental)</p></td>
+<td><p>0.05–0.13</p></td>
+<td><p>0.91–1.06</p></td>
+<td><p>3.4 s</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -627,8 +664,10 @@ statistic. When the statistic can be written in resampling form,
 <a class="reference internal" href="api.html#bootstrap_stat.confidence.abcnon_interval" title="bootstrap_stat.confidence.abcnon_interval"><code class="xref py py-func docutils literal notranslate"><span class="pre">abcnon_interval()</span></code></a> delivers
 second-order accuracy at negligible cost. The bootstrap-t with
 <code class="docutils literal notranslate"><span class="pre">stabilize_variance=True</span></code> is worth considering when a pivotal
-interval is specifically required. See <a class="reference internal" href="references.html#et93" id="id2"><span>[ET93]</span></a> (S14) for a thorough
-comparison of interval methods.</p>
+interval is specifically required.
+<a class="reference internal" href="api.html#bootstrap_stat.confidence.calibrate_interval" title="bootstrap_stat.confidence.calibrate_interval"><code class="xref py py-func docutils literal notranslate"><span class="pre">calibrate_interval()</span></code></a> is theoretically
+attractive but currently experimental; prefer BCa for applied work.
+See <a class="reference internal" href="references.html#et93" id="id2"><span>[ET93]</span></a> (S14) for a thorough comparison of interval methods.</p>
 </section>
 </section>
 
@@ -659,6 +698,7 @@ comparison of interval methods.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#percentile-interval">Percentile interval</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bca-interval">BCa interval</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#abc-interval">ABC interval</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#calibrated-interval">Calibrated interval</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bootstrap-t-interval">Bootstrap-t interval</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#comparison">Comparison</a></li>
 </ul>
