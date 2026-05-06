@@ -54,6 +54,35 @@ the same ``dist`` and ``correlation`` objects.
    --- :math:`100(1 - 2 \times 0.05)\% = 90\%` --- not 95%. Pass
    ``alpha=0.025`` for a 95% interval.
 
+Classical interval (Fisher's z)
+-------------------------------
+
+As a baseline, consider the classical interval derived from Fisher's
+:math:`z`-transform. Under the assumption of bivariate normality,
+:math:`z = \mathrm{arctanh}(r)` has variance approximately
+:math:`1/(n - 3)` regardless of :math:`\rho`, so a symmetric normal
+interval in :math:`z`-space transforms back to a valid interval for
+:math:`\rho`:
+
+.. code-block:: python
+
+    from scipy import stats
+
+    z = np.arctanh(theta_hat)
+    se_z = 1 / np.sqrt(len(data) - 3)
+    z_crit = stats.norm.ppf(1 - 0.05)   # per-tail alpha = 0.05
+
+    lo, hi = np.tanh(z - z_crit * se_z), np.tanh(z + z_crit * se_z)
+    # (0.509, 0.907)   < 0.001 s
+
+This requires no computation beyond the formula itself. Its limitation
+is the bivariate normality assumption and the :math:`n - 3`
+approximation, both of which are strained at :math:`n = 15`. When
+the true correlation is near 1, the sampling distribution of :math:`r`
+is left-skewed --- a feature the symmetric Fisher interval cannot
+capture. The bootstrap methods below make no distributional
+assumptions and handle that skewness directly.
+
 Percentile interval
 -------------------
 
@@ -281,6 +310,10 @@ school data (:math:`n = 15`):
      - Lower
      - Upper
      - Wall time
+   * - Classical (Fisher's z)
+     - 0.509
+     - 0.907
+     - < 0.001 s
    * - Percentile
      - 0.521
      - 0.949

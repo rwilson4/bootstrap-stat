@@ -417,6 +417,32 @@ convention. The default <code class="docutils literal notranslate"><span class="
 <code class="docutils literal notranslate"><span class="pre">alpha=0.025</span></code> for a 95% interval.</p>
 </div>
 </section>
+<section id="classical-interval-fisher-s-z">
+<h2>Classical interval (Fisher’s z)<a class="headerlink" href="#classical-interval-fisher-s-z" title="Link to this heading">#</a></h2>
+<p>As a baseline, consider the classical interval derived from Fisher’s
+<span class="math notranslate nohighlight">\(z\)</span>-transform. Under the assumption of bivariate normality,
+<span class="math notranslate nohighlight">\(z = \mathrm{arctanh}(r)\)</span> has variance approximately
+<span class="math notranslate nohighlight">\(1/(n - 3)\)</span> regardless of <span class="math notranslate nohighlight">\(\rho\)</span>, so a symmetric normal
+interval in <span class="math notranslate nohighlight">\(z\)</span>-space transforms back to a valid interval for
+<span class="math notranslate nohighlight">\(\rho\)</span>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">stats</span>
+
+<span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctanh</span><span class="p">(</span><span class="n">theta_hat</span><span class="p">)</span>
+<span class="n">se_z</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">-</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">z_crit</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="mf">0.05</span><span class="p">)</span>   <span class="c1"># per-tail alpha = 0.05</span>
+
+<span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">z</span> <span class="o">-</span> <span class="n">z_crit</span> <span class="o">*</span> <span class="n">se_z</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">z</span> <span class="o">+</span> <span class="n">z_crit</span> <span class="o">*</span> <span class="n">se_z</span><span class="p">)</span>
+<span class="c1"># (0.509, 0.907)   &lt; 0.001 s</span>
+</pre></div>
+</div>
+<p>This requires no computation beyond the formula itself. Its limitation
+is the bivariate normality assumption and the <span class="math notranslate nohighlight">\(n - 3\)</span>
+approximation, both of which are strained at <span class="math notranslate nohighlight">\(n = 15\)</span>. When
+the true correlation is near 1, the sampling distribution of <span class="math notranslate nohighlight">\(r\)</span>
+is left-skewed — a feature the symmetric Fisher interval cannot
+capture. The bootstrap methods below make no distributional
+assumptions and handle that skewness directly.</p>
+</section>
 <section id="percentile-interval">
 <h2>Percentile interval<a class="headerlink" href="#percentile-interval" title="Link to this heading">#</a></h2>
 <p><a class="reference internal" href="api.html#bootstrap_stat.confidence.percentile_interval" title="bootstrap_stat.confidence.percentile_interval"><code class="xref py py-func docutils literal notranslate"><span class="pre">percentile_interval()</span></code></a> reads the <span class="math notranslate nohighlight">\(\alpha\)</span>
@@ -619,37 +645,42 @@ school data (<span class="math notranslate nohighlight">\(n = 15\)</span>):</p>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>Percentile</p></td>
+<tr class="row-even"><td><p>Classical (Fisher’s z)</p></td>
+<td><p>0.509</p></td>
+<td><p>0.907</p></td>
+<td><p>&lt; 0.001 s</p></td>
+</tr>
+<tr class="row-odd"><td><p>Percentile</p></td>
 <td><p>0.521</p></td>
 <td><p>0.949</p></td>
 <td><p>0.23 s</p></td>
 </tr>
-<tr class="row-odd"><td><p>BCa</p></td>
+<tr class="row-even"><td><p>BCa</p></td>
 <td><p>0.438</p></td>
 <td><p>0.927</p></td>
 <td><p>0.23 s</p></td>
 </tr>
-<tr class="row-even"><td><p>ABC</p></td>
+<tr class="row-odd"><td><p>ABC</p></td>
 <td><p>0.443</p></td>
 <td><p>0.921</p></td>
 <td><p>0.001 s</p></td>
 </tr>
-<tr class="row-odd"><td><p>Bootstrap-t (baseline)</p></td>
+<tr class="row-even"><td><p>Bootstrap-t (baseline)</p></td>
 <td><p>0.012</p></td>
 <td><p>0.960</p></td>
 <td><p>6.1 s</p></td>
 </tr>
-<tr class="row-even"><td><p>Bootstrap-t (Fisher’s z)</p></td>
+<tr class="row-odd"><td><p>Bootstrap-t (Fisher’s z)</p></td>
 <td><p>0.153</p></td>
 <td><p>0.925</p></td>
 <td><p>6.1 s</p></td>
 </tr>
-<tr class="row-odd"><td><p>Bootstrap-t (stabilize_variance)</p></td>
+<tr class="row-even"><td><p>Bootstrap-t (stabilize_variance)</p></td>
 <td><p>0.409</p></td>
 <td><p>0.917</p></td>
 <td><p>4.4 s</p></td>
 </tr>
-<tr class="row-even"><td><p>Calibrated (experimental)</p></td>
+<tr class="row-odd"><td><p>Calibrated (experimental)</p></td>
 <td><p>0.05–0.13</p></td>
 <td><p>0.91–1.06</p></td>
 <td><p>3.4 s</p></td>
@@ -695,6 +726,7 @@ See <a class="reference internal" href="references.html#et93" id="id2"><span>[ET
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up">Setting up</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#classical-interval-fisher-s-z">Classical interval (Fisher’s z)</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#percentile-interval">Percentile interval</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bca-interval">BCa interval</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#abc-interval">ABC interval</a></li>
