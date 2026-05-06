@@ -806,7 +806,7 @@ can also be used to specify a nondefault bootstrap
 methodology, such as a robust version. See Examples for some
 examples.</p></li>
 <li><p><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Number controlling the size of the interval. That is, this
-function will return a 100(1-2*`alpha`)% confidence
+function will return a <span class="math notranslate nohighlight">\(100(1 - 2\alpha)\%\)</span> confidence
 interval. Defaults to 0.05, corresponding to a 90% confidence
 interval.</p></li>
 <li><p><strong>Binner</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Number of bootstrap samples for calculating standard
@@ -840,7 +840,7 @@ thread. Set to -1 to use all available cores.</p></li>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
-<li><p><strong>ci_low, ci_high</strong> (<em>float</em>) – Lower and upper bounds on a 100(1-2*`alpha`)% confidence
+<li><p><strong>ci_low, ci_high</strong> (<em>float</em>) – Lower and upper bounds on a <span class="math notranslate nohighlight">\(100(1 - 2\alpha)\%\)</span> confidence
 interval on theta.</p></li>
 <li><p><strong>theta_star</strong> (<em>ndarray</em>) – Array of bootstrapped statistic values. Only returned if
 <cite>return_samples</cite> is True.</p></li>
@@ -899,7 +899,7 @@ if <cite>return_samples</cite> is True.</p></li>
 <li><p><strong>dist</strong> (<a class="reference internal" href="#bootstrap_stat.distributions.EmpiricalDistribution" title="bootstrap_stat.distributions.EmpiricalDistribution"><em>EmpiricalDistribution</em></a>) – The empirical distribution.</p></li>
 <li><p><strong>stat</strong> (<em>function</em>) – The statistic.</p></li>
 <li><p><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Number controlling the size of the interval. That is, this
-function will return a 100(1 - 2 * <cite>alpha</cite>)% confidence
+function will return a <span class="math notranslate nohighlight">\(100(1 - 2\alpha)\%\)</span> confidence
 interval. Defaults to 0.05, corresponding to a 90% confidence
 interval.</p></li>
 <li><p><strong>B</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Number of bootstrap samples. Defaults to 1000.</p></li>
@@ -917,7 +917,7 @@ thread. Set to -1 to use all available cores.</p></li>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
-<li><p><strong>ci_low, ci_high</strong> (<em>float</em>) – Lower and upper bounds on a 100(1-2*`alpha`)% confidence
+<li><p><strong>ci_low, ci_high</strong> (<em>float</em>) – Lower and upper bounds on a <span class="math notranslate nohighlight">\(100(1 - 2\alpha)\%\)</span> confidence
 interval on theta.</p></li>
 <li><p><strong>theta_star</strong> (<em>ndarray</em>) – Array of bootstrapped statistic values. Only returned if
 <cite>return_samples</cite> is True.</p></li>
@@ -952,7 +952,7 @@ interval on theta.</p></li>
 <li><p><strong>x</strong> (<em>array_like</em><em> or </em><em>pandas DataFrame</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a>) – The data, used to evaluate the observed statistic and compute
 jackknife values.</p></li>
 <li><p><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Number controlling the size of the interval. That is, this
-function will return a 100(1-2*`alpha`)% confidence
+function will return a <span class="math notranslate nohighlight">\(100(1 - 2\alpha)\%\)</span> confidence
 interval. Defaults to 0.05, corresponding to a 90% confidence
 interval.</p></li>
 <li><p><strong>B</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Number of bootstrap samples. Defaults to 1000.</p></li>
@@ -974,7 +974,7 @@ thread. Set to -1 to use all available cores.</p></li>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
-<li><p><strong>ci_low, ci_high</strong> (<em>float</em>) – Lower and upper bounds on a 100(1-2*`alpha`)% confidence
+<li><p><strong>ci_low, ci_high</strong> (<em>float</em>) – Lower and upper bounds on a <span class="math notranslate nohighlight">\(100(1 - 2\alpha)\%\)</span> confidence
 interval on theta.</p></li>
 <li><p><strong>theta_star</strong> (<em>ndarray</em>) – Array of bootstrapped statistic values. Only returned if
 <cite>return_samples</cite> is True.</p></li>
@@ -1010,7 +1010,7 @@ influence components.</p></li>
 <li><p><strong>stat</strong> (<em>function</em>) – The statistic. Should take <cite>x</cite> and a resampling vector as
 input. See Notes.</p></li>
 <li><p><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em> or </em><em>array</em><em> of </em><em>floats</em><em>, </em><em>optional</em>) – Number controlling the size of the interval. That is, this
-function will return a 100(1 - 2 * <cite>alpha</cite>)% confidence
+function will return a <span class="math notranslate nohighlight">\(100(1 - 2\alpha)\%\)</span> confidence
 interval. Defaults to 0.05, corresponding to a 90% confidence
 interval. Alternatively, the user can pass an array of floats
 in (0, 1). In that case, the return value will be a tuple of
@@ -1026,7 +1026,7 @@ thread. Set to -1 to use all available cores.</p></li>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
-<li><p><strong>ci_low, ci_high</strong> (<em>float</em>) – Lower and upper bounds on a 100(1 - 2 * <cite>alpha</cite>)% confidence
+<li><p><strong>ci_low, ci_high</strong> (<em>float</em>) – Lower and upper bounds on a <span class="math notranslate nohighlight">\(100(1 - 2\alpha)\%\)</span> confidence
 interval on theta.</p></li>
 <li><p><strong>influence_components</strong> (<em>array_like</em>) – Vector of influence components. Only returned if
 <cite>return_influence_components</cite> is True.</p></li>
@@ -1083,7 +1083,7 @@ done.</p>
 <li><p><strong>x</strong> (<em>array_like</em><em> or </em><em>pandas DataFrame</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a>) – The data.</p></li>
 <li><p><strong>theta_hat</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Observed statistic.</p></li>
 <li><p><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Number controlling the size of the interval. That is, this
-function will return a 100(1-2*`alpha`)% confidence
+function will return a <span class="math notranslate nohighlight">\(100(1 - 2\alpha)\%\)</span> confidence
 interval. Defaults to 0.05, corresponding to a 90% confidence
 interval.</p></li>
 <li><p><strong>B</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Number of bootstrap samples. Defaults to 1000.</p></li>
@@ -1096,7 +1096,7 @@ thread. Set to -1 to use all available cores.</p></li>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
-<li><p><strong>ci_low, ci_high</strong> (<em>float</em>) – Lower and upper bounds on a 100(1-2*`alpha`)% confidence
+<li><p><strong>ci_low, ci_high</strong> (<em>float</em>) – Lower and upper bounds on a <span class="math notranslate nohighlight">\(100(1 - 2\alpha)\%\)</span> confidence
 interval on theta.</p></li>
 <li><p><strong>lmbda_low, lmbda_high</strong> (<em>float</em>) – The estimated confidence points having the desired
 coverage. For example, if the interval has the nominal
@@ -1252,13 +1252,15 @@ hypothesis; aka the p-value.</p></li>
 </div>
 <p class="rubric">Notes</p>
 <p>Under the null hypothesis, the value of the statistic is
-theta_0. Suppose theta_hat &gt; theta_0. Let theta_lo, theta_hi be
-the endpoints of a 100(1-alpha)% confidence interval on theta.
-Suppose alpha is such that theta_lo = theta_0. Then alpha is the
-achieved significance level.</p>
+<span class="math notranslate nohighlight">\(\theta_0\)</span>. Suppose <span class="math notranslate nohighlight">\(\hat{\theta} &gt; \theta_0\)</span>. Let
+<span class="math notranslate nohighlight">\(\theta_{\mathrm{lo}}\)</span>, <span class="math notranslate nohighlight">\(\theta_{\mathrm{hi}}\)</span> be the
+endpoints of a <span class="math notranslate nohighlight">\(100(1 - \alpha)\%\)</span> confidence interval on
+<span class="math notranslate nohighlight">\(\theta\)</span>. Suppose <span class="math notranslate nohighlight">\(\alpha\)</span> is such that
+<span class="math notranslate nohighlight">\(\theta_{\mathrm{lo}} = \theta_0\)</span>. Then <span class="math notranslate nohighlight">\(\alpha\)</span> is
+the achieved significance level.</p>
 <p>For the percentile interval, this is simply the fraction of
-bootstrap samples that are “on the other side” of theta_0 from
-theta_hat.</p>
+bootstrap samples that are “on the other side” of <span class="math notranslate nohighlight">\(\theta_0\)</span>
+from <span class="math notranslate nohighlight">\(\hat{\theta}\)</span>.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1534,7 +1536,7 @@ sample. Defaults to np.std using ddof=1. As with <cite>mean</cite>,
 specify something different for DataFrames!</p></li>
 <li><p><strong>B</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Number of bootstrap samples. Defaults to 1000.</p></li>
 <li><p><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Number controlling the size of the interval. That is, this
-function will return a 100(1-2 * <cite>alpha</cite>)% prediction
+function will return a <span class="math notranslate nohighlight">\(100(1 - 2\alpha)\%\)</span> prediction
 interval. Defaults to 0.05.</p></li>
 <li><p><strong>t_star</strong> (<em>array_like</em><em> or </em><em>None</em>) – Array of studentized values, used to calculate the interval.
 Can be passed to this function to speed it up, for example
@@ -1548,7 +1550,7 @@ disable multicore processing.</p></li>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
-<li><p><strong>pred_low, pred_high</strong> (<em>float</em>) – A 100(1 - 2 * <cite>alpha</cite>)% prediction interval on a point sampled
+<li><p><strong>pred_low, pred_high</strong> (<em>float</em>) – A <span class="math notranslate nohighlight">\(100(1 - 2\alpha)\%\)</span> prediction interval on a point sampled
 from F.</p></li>
 <li><p><strong>t_star</strong> (<em>array</em>) – Array of studentized values. Returned only if <cite>return_t_star</cite>
 is True.</p></li>

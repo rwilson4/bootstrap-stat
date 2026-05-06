@@ -88,7 +88,7 @@ def t_interval(
         examples.
      alpha : float, optional
         Number controlling the size of the interval. That is, this
-        function will return a 100(1-2*`alpha`)% confidence
+        function will return a :math:`100(1 - 2\\alpha)\\%` confidence
         interval. Defaults to 0.05, corresponding to a 90% confidence
         interval.
      Binner : int, optional
@@ -132,7 +132,7 @@ def t_interval(
     Returns
     -------
      ci_low, ci_high : float
-        Lower and upper bounds on a 100(1-2*`alpha`)% confidence
+        Lower and upper bounds on a :math:`100(1 - 2\\alpha)\\%` confidence
         interval on theta.
      theta_star : ndarray
         Array of bootstrapped statistic values. Only returned if
@@ -357,7 +357,7 @@ def percentile_interval(
         The statistic.
      alpha : float, optional
         Number controlling the size of the interval. That is, this
-        function will return a 100(1 - 2 * `alpha`)% confidence
+        function will return a :math:`100(1 - 2\\alpha)\\%` confidence
         interval. Defaults to 0.05, corresponding to a 90% confidence
         interval.
      B : int, optional
@@ -380,7 +380,7 @@ def percentile_interval(
     Returns
     -------
      ci_low, ci_high : float
-        Lower and upper bounds on a 100(1-2*`alpha`)% confidence
+        Lower and upper bounds on a :math:`100(1 - 2\\alpha)\\%` confidence
         interval on theta.
      theta_star : ndarray
         Array of bootstrapped statistic values. Only returned if
@@ -435,7 +435,7 @@ def bcanon_interval(
         jackknife values.
      alpha : float, optional
         Number controlling the size of the interval. That is, this
-        function will return a 100(1-2*`alpha`)% confidence
+        function will return a :math:`100(1 - 2\\alpha)\\%` confidence
         interval. Defaults to 0.05, corresponding to a 90% confidence
         interval.
      B : int, optional
@@ -464,7 +464,7 @@ def bcanon_interval(
     Returns
     -------
      ci_low, ci_high : float
-        Lower and upper bounds on a 100(1-2*`alpha`)% confidence
+        Lower and upper bounds on a :math:`100(1 - 2\\alpha)\\%` confidence
         interval on theta.
      theta_star : ndarray
         Array of bootstrapped statistic values. Only returned if
@@ -535,7 +535,7 @@ def abcnon_interval(
         input. See Notes.
      alpha : float or array of floats, optional
         Number controlling the size of the interval. That is, this
-        function will return a 100(1 - 2 * `alpha`)% confidence
+        function will return a :math:`100(1 - 2\\alpha)\\%` confidence
         interval. Defaults to 0.05, corresponding to a 90% confidence
         interval. Alternatively, the user can pass an array of floats
         in (0, 1). In that case, the return value will be a tuple of
@@ -555,7 +555,7 @@ def abcnon_interval(
     Returns
     -------
      ci_low, ci_high : float
-        Lower and upper bounds on a 100(1 - 2 * `alpha`)% confidence
+        Lower and upper bounds on a :math:`100(1 - 2\\alpha)\\%` confidence
         interval on theta.
      influence_components : array_like
         Vector of influence components. Only returned if
@@ -664,7 +664,7 @@ def calibrate_interval(
         Observed statistic.
      alpha : float, optional
         Number controlling the size of the interval. That is, this
-        function will return a 100(1-2*`alpha`)% confidence
+        function will return a :math:`100(1 - 2\\alpha)\\%` confidence
         interval. Defaults to 0.05, corresponding to a 90% confidence
         interval.
      B : int, optional
@@ -680,7 +680,7 @@ def calibrate_interval(
     Returns
     -------
      ci_low, ci_high : float
-        Lower and upper bounds on a 100(1-2*`alpha`)% confidence
+        Lower and upper bounds on a :math:`100(1 - 2\\alpha)\\%` confidence
         interval on theta.
      lmbda_low, lmbda_high : float
         The estimated confidence points having the desired

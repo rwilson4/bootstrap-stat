@@ -130,7 +130,7 @@ def percentile_asl(
     two_sided: bool = False,
     num_threads: int = 1,
 ) -> float | tuple[float, npt.NDArray[np.float64]]:
-    """Achieved Significance Level, percentile method
+    r"""Achieved Significance Level, percentile method
 
     Parameters
     ----------
@@ -187,14 +187,16 @@ def percentile_asl(
     Notes
     -----
     Under the null hypothesis, the value of the statistic is
-    theta_0. Suppose theta_hat > theta_0. Let theta_lo, theta_hi be
-    the endpoints of a 100(1-alpha)% confidence interval on theta.
-    Suppose alpha is such that theta_lo = theta_0. Then alpha is the
-    achieved significance level.
+    :math:`\theta_0`. Suppose :math:`\hat{\theta} > \theta_0`. Let
+    :math:`\theta_{\mathrm{lo}}`, :math:`\theta_{\mathrm{hi}}` be the
+    endpoints of a :math:`100(1 - \alpha)\%` confidence interval on
+    :math:`\theta`. Suppose :math:`\alpha` is such that
+    :math:`\theta_{\mathrm{lo}} = \theta_0`. Then :math:`\alpha` is
+    the achieved significance level.
 
     For the percentile interval, this is simply the fraction of
-    bootstrap samples that are "on the other side" of theta_0 from
-    theta_hat.
+    bootstrap samples that are "on the other side" of :math:`\theta_0`
+    from :math:`\hat{\theta}`.
 
     """
     if theta_hat is None:
