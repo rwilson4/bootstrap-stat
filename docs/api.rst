@@ -1,5 +1,5 @@
-Documentation for bootstrap-stat
-*********************************
+API Reference
+*************
 
 .. automodule:: bootstrap_stat
 

@@ -51,7 +51,7 @@ limitations relative to cross-validation. Full citations are on the
    :maxdepth: 2
    :caption: Contents:
 
-   code.rst
+   api.rst
    references.rst
 
 Indices and tables
