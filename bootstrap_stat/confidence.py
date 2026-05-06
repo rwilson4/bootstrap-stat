@@ -174,19 +174,19 @@ def t_interval(
     >>> dist = EmpiricalDistribution(x)
     >>> def statistic(x): return np.mean(x)
     >>> theta_hat = statistic(x)
-    >>> ci_low, ci_high = t_interval(dist, statistic, theta_hat)
+    >>> ci_low, ci_high = t_interval(dist, statistic, theta_hat)  # doctest: +SKIP
 
     >>> se_hat = standard_error(dist, statistic, robustness=0.95, B=2000)
-    >>> ci_low, ci_high = t_interval(dist, statistic, theta_hat, se_hat=se_hat)
+    >>> ci_low, ci_high = t_interval(dist, statistic, theta_hat, se_hat=se_hat)  # doctest: +SKIP
 
     >>> def fast_std_err(x): return np.sqrt(np.var(x, ddof=1) / len(x))
-    >>> ci_low, ci_high = t_interval(dist, statistic, theta_hat,
+    >>> ci_low, ci_high = t_interval(dist, statistic, theta_hat,  # doctest: +SKIP
     ...                              fast_std_err=fast_std_err)
 
     >>> def fast_std_err(x):
     ...    dist = EmpiricalDistribution(x)
     ...    return standard_error(dist, statistic, robustness=0.95, B=2000)
-    >>> ci_low, ci_high = t_interval(dist, statistic, theta_hat,
+    >>> ci_low, ci_high = t_interval(dist, statistic, theta_hat,  # doctest: +SKIP
     ...                              fast_std_err=fast_std_err)
 
     """

@@ -63,6 +63,11 @@ ignore = [
     "B028",   # stacklevel in warnings - not critical
 ]
 
+[tool.pytest.ini_options]
+addopts = "-p no:warnings --cov=bootstrap_stat --cov-report=html --cov-report=term --doctest-modules"
+testpaths = ["bootstrap_stat", "tests"]
+doctest_optionflags = ["NORMALIZE_WHITESPACE", "ELLIPSIS"]
+
 [tool.mypy]
 python_version = "3.10"
 warn_unused_ignores = true
