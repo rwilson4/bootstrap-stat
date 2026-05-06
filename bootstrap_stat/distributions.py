@@ -36,6 +36,20 @@ class EmpiricalDistribution:
     MultiSampleEmpiricalDistribution : Extension for two-sample and
         multi-sample problems.
 
+    Notes
+    -----
+    The bootstrap replaces the unknown distribution :math:`F` with its
+    plug-in estimate :math:`\hat{F}`, the empirical distribution, which
+    places probability :math:`1/n` on each of the :math:`n`
+    observations. Drawing a sample of size :math:`n` from
+    :math:`\hat{F}` with replacement is equivalent to drawing a
+    bootstrap sample.
+
+    All bootstrap methods in this library begin by constructing an
+    :class:`EmpiricalDistribution` and passing it to an inference
+    function such as :func:`~bootstrap_stat.bcanon_interval` or
+    :func:`~bootstrap_stat.standard_error`.
+
     """
 
     data: ArrayLike

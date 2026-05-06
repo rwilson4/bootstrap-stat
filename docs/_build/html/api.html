@@ -421,6 +421,17 @@ observations.</p>
 </dd>
 </dl>
 </div>
+<p class="rubric">Notes</p>
+<p>The bootstrap replaces the unknown distribution <span class="math notranslate nohighlight">\(F\)</span> with its
+plug-in estimate <span class="math notranslate nohighlight">\(\hat{F}\)</span>, the empirical distribution, which
+places probability <span class="math notranslate nohighlight">\(1/n\)</span> on each of the <span class="math notranslate nohighlight">\(n\)</span>
+observations. Drawing a sample of size <span class="math notranslate nohighlight">\(n\)</span> from
+<span class="math notranslate nohighlight">\(\hat{F}\)</span> with replacement is equivalent to drawing a
+bootstrap sample.</p>
+<p>All bootstrap methods in this library begin by constructing an
+<a class="reference internal" href="#bootstrap_stat.distributions.EmpiricalDistribution" title="bootstrap_stat.distributions.EmpiricalDistribution"><code class="xref py py-class docutils literal notranslate"><span class="pre">EmpiricalDistribution</span></code></a> and passing it to an inference
+function such as <code class="xref py py-func docutils literal notranslate"><span class="pre">bcanon_interval()</span></code> or
+<a class="reference internal" href="#module-bootstrap_stat.standard_error" title="bootstrap_stat.standard_error"><code class="xref py py-func docutils literal notranslate"><span class="pre">standard_error()</span></code></a>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="bootstrap_stat.distributions.EmpiricalDistribution.sample">
 <span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_indices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="k"><span class="pre">False</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reset_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.4)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v3.0.2)"><span class="pre">DataFrame</span></a></span></span><a class="reference internal" href="_modules/bootstrap_stat/distributions.html#EmpiricalDistribution.sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bootstrap_stat.distributions.EmpiricalDistribution.sample" title="Link to this definition">#</a></dt>
@@ -716,6 +727,18 @@ point.) See <a class="reference internal" href="references.html#et93" id="id3"><
 </dd>
 </dl>
 </div>
+<p class="rubric">Notes</p>
+<p>For each of the <span class="math notranslate nohighlight">\(B\)</span> bootstrap replicates, a sample of size
+<span class="math notranslate nohighlight">\(n\)</span> is drawn with replacement from the empirical distribution
+<span class="math notranslate nohighlight">\(\hat{F}\)</span>, and <code class="docutils literal notranslate"><span class="pre">stat</span></code> is applied to produce
+<span class="math notranslate nohighlight">\(\hat{\theta}^*_b\)</span>. This collection forms the bootstrap
+distribution, from which standard errors, confidence intervals, and
+significance levels can be estimated.</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">jackknife=True</span></code>, the function tracks which original
+observations appear in each bootstrap sample. The
+jackknife-after-bootstrap approach in <a class="reference internal" href="references.html#et93" id="id4"><span>[ET93]</span></a> (S19.4) uses this
+structure to estimate the influence of each observation on the
+bootstrap distribution without additional simulation.</p>
 </dd></dl>
 
 </section>
@@ -764,7 +787,7 @@ thread. Set to -1 to use all available cores.</p></li>
 distribution. Moreover, it is only applicable when t is a smooth
 function. Notable exceptions include the median. The jackknife
 cannot be used to estimate the standard error of non-smooth
-estimators. See <a class="reference internal" href="references.html#et93" id="id4"><span>[ET93]</span></a> (S10.6)</p>
+estimators. See <a class="reference internal" href="references.html#et93" id="id5"><span>[ET93]</span></a> (S10.6)</p>
 </dd></dl>
 
 <dl class="py function">
@@ -787,7 +810,7 @@ standard error.</p></li>
 Defaults to None, indicating the samples will be the same size
 as the original dataset.</p></li>
 <li><p><strong>jackknife_after_bootstrap</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If True, will estimate the variability of our estimate of
-standard error. See <a class="reference internal" href="references.html#et93" id="id5"><span>[ET93]</span></a> (S19.4) for details.</p></li>
+standard error. See <a class="reference internal" href="references.html#et93" id="id6"><span>[ET93]</span></a> (S19.4) for details.</p></li>
 <li><p><strong>return_samples</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If True, return the bootstrapped statistic values. Defaults to False.</p></li>
 <li><p><strong>theta_star</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Bootstrapped statistic values. Can be passed if they have
 already been calculated, which will speed this up
@@ -821,17 +844,17 @@ returned if <cite>jackknife_after_bootstrap</cite> is True.</p></li>
 <p class="rubric">Notes</p>
 <p>The bootstrap estimate of standard error draws B bootstrap samples
 from the empirical distribution, evaluates the statistic on each,
-and returns the standard deviation of those B values. See <a class="reference internal" href="references.html#et93" id="id6"><span>[ET93]</span></a>
+and returns the standard deviation of those B values. See <a class="reference internal" href="references.html#et93" id="id7"><span>[ET93]</span></a>
 (S6.1) for details.</p>
 <p>By default the non-robust estimate is used. When <cite>robustness</cite> is
 specified, a percentile-based estimate is returned instead: the
 spread between the <cite>robustness</cite> and 1 - <cite>robustness</cite> quantiles of
 the bootstrap distribution, divided by the corresponding spread of
-a standard normal. See <a class="reference internal" href="references.html#et93" id="id7"><span>[ET93]</span></a> (S10.3) for details.</p>
+a standard normal. See <a class="reference internal" href="references.html#et93" id="id8"><span>[ET93]</span></a> (S10.3) for details.</p>
 <p>When <cite>jackknife_after_bootstrap</cite> is True, the function also
 returns <cite>se_jack</cite>, an estimate of the variability of <cite>se</cite> itself,
 which can be used to assess how stable the standard error estimate
-is. See <a class="reference internal" href="references.html#et93" id="id8"><span>[ET93]</span></a> (S19.4) for details.</p>
+is. See <a class="reference internal" href="references.html#et93" id="id9"><span>[ET93]</span></a> (S19.4) for details.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -874,7 +897,7 @@ thread. Set to -1 to use all available cores.</p></li>
 </div>
 <p class="rubric">Notes</p>
 <p>The infinitesimal jackknife requires the statistic to be expressed
-in “resampling form”. See <a class="reference internal" href="references.html#et93" id="id9"><span>[ET93]</span></a> (S21) for details. The ith
+in “resampling form”. See <a class="reference internal" href="references.html#et93" id="id10"><span>[ET93]</span></a> (S21) for details. The ith
 influence component is a type of derivative of the statistic with
 respect to the ith observation. This is computed by a finite
 difference method: we simply evaluate the statistic putting a
@@ -930,6 +953,19 @@ thread. Set to -1 to use all available cores.</p></li>
 </dd>
 </dl>
 </div>
+<p class="rubric">Notes</p>
+<p>The bootstrap bias estimate is</p>
+<div class="math notranslate nohighlight">
+\[\widehat{\mathrm{bias}} = \bar{\theta}^* - t(\hat{F}),\]</div>
+<p>where <span class="math notranslate nohighlight">\(\bar{\theta}^* = B^{-1}\sum_{b=1}^{B}\mathrm{stat}(x^*_b)\)</span>
+is the mean over bootstrap samples and <span class="math notranslate nohighlight">\(t(\hat{F})\)</span> is the
+plug-in value of the parameter under the empirical distribution.
+For a smooth plug-in statistic <span class="math notranslate nohighlight">\(t(\hat{F}) = \mathrm{stat}(x)\)</span>,
+but the two arguments allow the caller to supply a different plug-in
+value when needed. See <a class="reference internal" href="references.html#et93" id="id11"><span>[ET93]</span></a> (S10.2) for details.</p>
+<p>For plug-in statistics, <a class="reference internal" href="#bootstrap_stat.bias.better_bootstrap_bias" title="bootstrap_stat.bias.better_bootstrap_bias"><code class="xref py py-func docutils literal notranslate"><span class="pre">better_bootstrap_bias()</span></code></a> converges
+faster using the same number of bootstrap samples. For non-smooth
+statistics, <a class="reference internal" href="#bootstrap_stat.bias.jackknife_bias" title="bootstrap_stat.bias.jackknife_bias"><code class="xref py py-func docutils literal notranslate"><span class="pre">jackknife_bias()</span></code></a> is an alternative.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1025,7 +1061,7 @@ plug-in statistic, that is, having the form <span class="math notranslate nohigh
 where <span class="math notranslate nohighlight">\(\hat{F}\)</span> is the empirical distribution. Moreover, it
 is only applicable when <cite>t</cite> is a smooth function. Notable
 exceptions include the median. The jackknife cannot be used to
-estimate the bias of non-smooth estimators. See <a class="reference internal" href="references.html#et93" id="id10"><span>[ET93]</span></a> (S10.5) for
+estimate the bias of non-smooth estimators. See <a class="reference internal" href="references.html#et93" id="id12"><span>[ET93]</span></a> (S10.5) for
 details.</p>
 </dd></dl>
 
@@ -1087,7 +1123,7 @@ and method == “jackknife”.</p></li>
 </dl>
 </div>
 <p class="rubric">Notes</p>
-<p>Per <a class="reference internal" href="references.html#et93" id="id11"><span>[ET93]</span></a> (S10.6), bias-corrected estimators tend to have much
+<p>Per <a class="reference internal" href="references.html#et93" id="id13"><span>[ET93]</span></a> (S10.6), bias-corrected estimators tend to have much
 higher variance than the non-corrected version. This should be
 assessed, for example, using the bootstrap to directly estimate
 the standard error of the corrected and uncorrected estimators.</p>
@@ -1182,6 +1218,21 @@ if <cite>return_samples</cite> is True.</p></li>
 </dd>
 </dl>
 </div>
+<p class="rubric">Notes</p>
+<p>The bootstrap-t interval forms a pivotal quantity
+<span class="math notranslate nohighlight">\(z^* = (\hat{\theta}^* - \hat{\theta}) / \widehat{\mathrm{se}}^*\)</span>
+for each bootstrap sample, where <span class="math notranslate nohighlight">\(\widehat{\mathrm{se}}^*\)</span> is
+an estimate of the standard error computed from the bootstrap sample
+itself (the inner bootstrap). The <span class="math notranslate nohighlight">\(\alpha\)</span> and
+<span class="math notranslate nohighlight">\(1 - \alpha\)</span> quantiles of <span class="math notranslate nohighlight">\(z^*\)</span> are then inverted to
+produce the interval. See <a class="reference internal" href="references.html#et93" id="id14"><span>[ET93]</span></a> (S12.5) for details.</p>
+<p>This interval achieves second-order coverage accuracy,
+<span class="math notranslate nohighlight">\(O(n^{-1})\)</span>, matching BCa. Its main drawback is computational
+cost: each outer bootstrap sample requires an inner bootstrap to
+estimate the standard error. The variance-stabilization option
+(<code class="docutils literal notranslate"><span class="pre">stabilize_variance=True</span></code>) reparameterizes to a scale where the
+standard error is approximately constant, which can improve
+stability when the statistic has strongly varying variance.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dist</span> <span class="o">=</span> <span class="n">EmpiricalDistribution</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -1257,6 +1308,18 @@ interval on theta.</p></li>
 </dd>
 </dl>
 </div>
+<p class="rubric">Notes</p>
+<p>The percentile interval reads off the <span class="math notranslate nohighlight">\(\alpha\)</span> and
+<span class="math notranslate nohighlight">\(1 - \alpha\)</span> quantiles of the bootstrap distribution of
+<span class="math notranslate nohighlight">\(\hat{\theta}^*\)</span> directly. It is transformation-respecting:
+if <span class="math notranslate nohighlight">\(\phi = g(\theta)\)</span> for a monotone increasing <span class="math notranslate nohighlight">\(g\)</span>,
+the interval on <span class="math notranslate nohighlight">\(\phi\)</span> is exactly
+<span class="math notranslate nohighlight">\([g(\theta_\mathrm{lo}), g(\theta_\mathrm{hi})]\)</span>. See
+<a class="reference internal" href="references.html#et93" id="id15"><span>[ET93]</span></a> (S13) for details.</p>
+<p>The coverage error is <span class="math notranslate nohighlight">\(O(n^{-1/2})\)</span>. When bias or skewness
+in the bootstrap distribution is substantial,
+<a class="reference internal" href="#bootstrap_stat.confidence.bcanon_interval" title="bootstrap_stat.confidence.bcanon_interval"><code class="xref py py-func docutils literal notranslate"><span class="pre">bcanon_interval()</span></code></a> corrects for both and achieves
+<span class="math notranslate nohighlight">\(O(n^{-1})\)</span> coverage error; it should generally be preferred.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1315,6 +1378,21 @@ interval on theta.</p></li>
 </dd>
 </dl>
 </div>
+<p class="rubric">Notes</p>
+<p>The BCa (bias-corrected and accelerated) interval adjusts the
+percentile endpoints using two quantities estimated from the data.
+The bias-correction <span class="math notranslate nohighlight">\(\hat{z}_0\)</span> accounts for median bias in
+the bootstrap distribution: it is the normal quantile of the
+fraction of bootstrap replicates below <span class="math notranslate nohighlight">\(\hat{\theta}\)</span>. The
+acceleration <span class="math notranslate nohighlight">\(\hat{a}\)</span> accounts for the rate at which the
+standard error of the statistic changes with <span class="math notranslate nohighlight">\(\theta\)</span>, and is
+estimated from the jackknife values. See <a class="reference internal" href="references.html#et93" id="id16"><span>[ET93]</span></a> (S14.3) for
+details.</p>
+<p>When <span class="math notranslate nohighlight">\(\hat{z}_0 = 0\)</span> and <span class="math notranslate nohighlight">\(\hat{a} = 0\)</span>, BCa reduces to
+the percentile interval. In general BCa achieves second-order
+accurate coverage (<span class="math notranslate nohighlight">\(O(n^{-1})\)</span> error) versus first-order
+(<span class="math notranslate nohighlight">\(O(n^{-1/2})\)</span>) for the percentile interval, and is the
+recommended default for most applications.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1368,7 +1446,7 @@ interval on theta.</p></li>
 </div>
 <p class="rubric">Notes</p>
 <p>Approximate Bootstrap Confidence (ABC) intervals require the
-statistic to be expressed in resampling form. See <a class="reference internal" href="references.html#et93" id="id12"><span>[ET93]</span></a> (S14.4)
+statistic to be expressed in resampling form. See <a class="reference internal" href="references.html#et93" id="id17"><span>[ET93]</span></a> (S14.4)
 for details. It only applies to statistics which are smooth
 functions of the data. A notable example where ABC does not apply
 is the sample median.</p>
@@ -1440,7 +1518,7 @@ interval, in most instances that results in a “double
 bootstrap”. For this reason, only <a class="reference internal" href="#bootstrap_stat.confidence.abcnon_interval" title="bootstrap_stat.confidence.abcnon_interval"><code class="xref py py-func docutils literal notranslate"><span class="pre">abcnon_interval()</span></code></a> intervals
 are currently supported. Moreover, from my limited experience calibration seems
 pretty finicky. I would consider this function to be illustrative
-but experimental. See <a class="reference internal" href="references.html#et93" id="id13"><span>[ET93]</span></a> (S18) for details.</p>
+but experimental. See <a class="reference internal" href="references.html#et93" id="id18"><span>[ET93]</span></a> (S18) for details.</p>
 <p>We compute the observed coverage for a range of points around the
 nominal <cite>alpha</cite> and 1-<cite>alpha</cite>. Then we fit a smoother (loess) to
 these data and invert to find the confidence point, lmbda, having
@@ -1513,7 +1591,7 @@ example, if the null hypothesis is that a population mean equals
 zero, <code class="docutils literal notranslate"><span class="pre">dist</span></code> should be built from a shifted copy of the data.
 The argument <code class="docutils literal notranslate"><span class="pre">x</span></code> is accepted but not used; it is present for
 consistency with <a class="reference internal" href="#bootstrap_stat.significance.percentile_asl" title="bootstrap_stat.significance.percentile_asl"><code class="xref py py-func docutils literal notranslate"><span class="pre">percentile_asl()</span></code></a> and <a class="reference internal" href="#bootstrap_stat.significance.bcanon_asl" title="bootstrap_stat.significance.bcanon_asl"><code class="xref py py-func docutils literal notranslate"><span class="pre">bcanon_asl()</span></code></a>.
-See <a class="reference internal" href="references.html#et93" id="id14"><span>[ET93]</span></a> (S16.3) for details.</p>
+See <a class="reference internal" href="references.html#et93" id="id19"><span>[ET93]</span></a> (S16.3) for details.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1651,7 +1729,7 @@ normal-quantile, shifts it by the bias-correction term
 <span class="math notranslate nohighlight">\(\hat{a}\)</span>, which accounts for skewness in the sampling
 distribution of the statistic. The result is more accurate than
 the percentile ASL when the statistic is not symmetrically
-distributed. See <a class="reference internal" href="references.html#et93" id="id15"><span>[ET93]</span></a> (S14.3) for details.</p>
+distributed. See <a class="reference internal" href="references.html#et93" id="id20"><span>[ET93]</span></a> (S14.3) for details.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1755,7 +1833,7 @@ selection. It is similar to cross validation. It adds a bias
 correction term to the apparent error (the accuracy of the
 predictor applied to the same dataset used to train the
 predictor). This bias correction term is called the optimism. See
-<a class="reference internal" href="references.html#et93" id="id16"><span>[ET93]</span></a> (S17) for details.</p>
+<a class="reference internal" href="references.html#et93" id="id21"><span>[ET93]</span></a> (S17) for details.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1815,15 +1893,15 @@ bootstrap sample, train a model on it, and then make predictions
 using that model on the original dataset. But we only care about
 the predictions on observations that are <em>not</em> part of the
 bootstrap sample. We then average those prediction errors across
-all bootstrap samples. See <a class="reference internal" href="references.html#et93" id="id17"><span>[ET93]</span></a> (S17.7) for details.</p>
+all bootstrap samples. See <a class="reference internal" href="references.html#et93" id="id22"><span>[ET93]</span></a> (S17.7) for details.</p>
 <p>The method is so-called because the estimated prediction error is
-.368 times the apparent error plus .632 times eps0. <a class="reference internal" href="references.html#et93" id="id18"><span>[ET93]</span></a> reports
+.368 times the apparent error plus .632 times eps0. <a class="reference internal" href="references.html#et93" id="id23"><span>[ET93]</span></a> reports
 that this method performed better than leave-one-out cross
 validation in their simulations, having lower variance, but they
-themselves admit they had not thoroughly evaluated it. <a class="reference internal" href="references.html#koh95" id="id19"><span>[Koh95]</span></a>
+themselves admit they had not thoroughly evaluated it. <a class="reference internal" href="references.html#koh95" id="id24"><span>[Koh95]</span></a>
 reported that the .632 bootstrap performed quite poorly when
 overfitting is present. This led Efron and Tibshirani to propose
-the .632+ bootstrap in <a class="reference internal" href="references.html#et97" id="id20"><span>[ET97]</span></a>. Finally, <a class="reference internal" href="references.html#arl10" id="id21"><span>[Arl10]</span></a> surveys various
+the .632+ bootstrap in <a class="reference internal" href="references.html#et97" id="id25"><span>[ET97]</span></a>. Finally, <a class="reference internal" href="references.html#arl10" id="id26"><span>[Arl10]</span></a> surveys various
 approaches to model selection, recommending 10-fold cross
 validation as the preferred method of model selection.</p>
 <p>Because the .632 bootstrap has apparently not withstood the test
@@ -1900,7 +1978,7 @@ distribution. This function returns such a <em>prediction interval</em>.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="bootstrap_stat.datasets.mouse_data">
 <span class="sig-prename descclassname"><span class="pre">bootstrap_stat.datasets.</span></span><span class="sig-name descname"><span class="pre">mouse_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'control'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'treatment'</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/bootstrap_stat/datasets.html#mouse_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bootstrap_stat.datasets.mouse_data" title="Link to this definition">#</a></dt>
-<dd><p>Mouse data from <a class="reference internal" href="references.html#et93" id="id22"><span>[ET93]</span></a>, Table 2.2.</p>
+<dd><p>Mouse data from <a class="reference internal" href="references.html#et93" id="id27"><span>[ET93]</span></a>, Table 2.2.</p>
 <p>Survival times in days of mice in a treatment/control experiment.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1944,7 +2022,7 @@ return the sampled (n = 15) dataset.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="bootstrap_stat.datasets.rainfall_data">
 <span class="sig-prename descclassname"><span class="pre">bootstrap_stat.datasets.</span></span><span class="sig-name descname"><span class="pre">rainfall_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v3.0.2)"><span class="pre">DataFrame</span></a></span></span><a class="reference internal" href="_modules/bootstrap_stat/datasets.html#rainfall_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bootstrap_stat.datasets.rainfall_data" title="Link to this definition">#</a></dt>
-<dd><p>Rainfall data from <a class="reference internal" href="references.html#et93" id="id23"><span>[ET93]</span></a>, Table 4.2.</p>
+<dd><p>Rainfall data from <a class="reference internal" href="references.html#et93" id="id28"><span>[ET93]</span></a>, Table 4.2.</p>
 <p>Yearly rainfall in inches in Nevada City, California, 1873 through
 1978. An example of time series data.</p>
 <dl class="field-list simple">
@@ -1980,7 +2058,7 @@ Bradley Efron and Robert J. Tibshirani.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="bootstrap_stat.datasets.hormone_data">
 <span class="sig-prename descclassname"><span class="pre">bootstrap_stat.datasets.</span></span><span class="sig-name descname"><span class="pre">hormone_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v3.0.2)"><span class="pre">DataFrame</span></a></span></span><a class="reference internal" href="_modules/bootstrap_stat/datasets.html#hormone_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bootstrap_stat.datasets.hormone_data" title="Link to this definition">#</a></dt>
-<dd><p>Hormone data from <a class="reference internal" href="references.html#et93" id="id24"><span>[ET93]</span></a>, Table 9.1.</p>
+<dd><p>Hormone data from <a class="reference internal" href="references.html#et93" id="id29"><span>[ET93]</span></a>, Table 9.1.</p>
 <p>Amount in milligrams of anti-inflammatory hormone remaining in 27
 devices after a certain number of hours of wear. Devices were
 sampled from three manufacturing lots (A, B, C). Lot C appears to
@@ -2000,14 +2078,14 @@ and remaining hormone level.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="bootstrap_stat.datasets.patch_data">
 <span class="sig-prename descclassname"><span class="pre">bootstrap_stat.datasets.</span></span><span class="sig-name descname"><span class="pre">patch_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v3.0.2)"><span class="pre">DataFrame</span></a></span></span><a class="reference internal" href="_modules/bootstrap_stat/datasets.html#patch_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bootstrap_stat.datasets.patch_data" title="Link to this definition">#</a></dt>
-<dd><p>Patch data from <a class="reference internal" href="references.html#et93" id="id25"><span>[ET93]</span></a>, Table 10.1.</p>
+<dd><p>Patch data from <a class="reference internal" href="references.html#et93" id="id30"><span>[ET93]</span></a>, Table 10.1.</p>
 <p>Eight subjects wore medical patches designed to increase blood
 levels of a natural hormone. Each subject wore three patches: a
 placebo, an “old” patch from an established plant, and a “new”
 patch from a newly opened plant. Derived columns: <code class="docutils literal notranslate"><span class="pre">z</span></code> =
 oldpatch - placebo, <code class="docutils literal notranslate"><span class="pre">y</span></code> = newpatch - oldpatch. The purpose of
 the experiment was to show equivalence between the two plants.
-Chapter 25 of <a class="reference internal" href="references.html#et93" id="id26"><span>[ET93]</span></a> has an extended analysis.</p>
+Chapter 25 of <a class="reference internal" href="references.html#et93" id="id31"><span>[ET93]</span></a> has an extended analysis.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>df</strong> – DataFrame indexed by <code class="docutils literal notranslate"><span class="pre">subject</span></code> with columns <code class="docutils literal notranslate"><span class="pre">placebo</span></code>,

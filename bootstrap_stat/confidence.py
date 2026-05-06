@@ -56,7 +56,7 @@ def t_interval(
         npt.NDArray[np.float64],
     ]
 ):
-    """Bootstrap-t Intervals
+    r"""Bootstrap-t Intervals
 
     Parameters
     ----------
@@ -88,7 +88,7 @@ def t_interval(
         examples.
      alpha : float, optional
         Number controlling the size of the interval. That is, this
-        function will return a :math:`100(1 - 2\\alpha)\\%` confidence
+        function will return a :math:`100(1 - 2\alpha)\%` confidence
         interval. Defaults to 0.05, corresponding to a 90% confidence
         interval.
      Binner : int, optional
@@ -132,7 +132,7 @@ def t_interval(
     Returns
     -------
      ci_low, ci_high : float
-        Lower and upper bounds on a :math:`100(1 - 2\\alpha)\\%` confidence
+        Lower and upper bounds on a :math:`100(1 - 2\alpha)\%` confidence
         interval on theta.
      theta_star : ndarray
         Array of bootstrapped statistic values. Only returned if
@@ -149,6 +149,24 @@ def t_interval(
     bcanon_interval : BCa confidence interval (recommended default).
     percentile_interval : Simple percentile interval.
     standard_error : Bootstrap standard error, used internally.
+
+    Notes
+    -----
+    The bootstrap-t interval forms a pivotal quantity
+    :math:`z^* = (\hat{\theta}^* - \hat{\theta}) / \widehat{\mathrm{se}}^*`
+    for each bootstrap sample, where :math:`\widehat{\mathrm{se}}^*` is
+    an estimate of the standard error computed from the bootstrap sample
+    itself (the inner bootstrap). The :math:`\alpha` and
+    :math:`1 - \alpha` quantiles of :math:`z^*` are then inverted to
+    produce the interval. See [ET93]_ (S12.5) for details.
+
+    This interval achieves second-order coverage accuracy,
+    :math:`O(n^{-1})`, matching BCa. Its main drawback is computational
+    cost: each outer bootstrap sample requires an inner bootstrap to
+    estimate the standard error. The variance-stabilization option
+    (``stabilize_variance=True``) reparameterizes to a scale where the
+    standard error is approximately constant, which can improve
+    stability when the statistic has strongly varying variance.
 
     Examples
     --------
@@ -347,7 +365,7 @@ def percentile_interval(
     theta_star: npt.NDArray[np.float64] | None = None,
     num_threads: int = 1,
 ) -> tuple[float, float] | tuple[float, float, npt.NDArray[np.float64]]:
-    """Percentile Intervals
+    r"""Percentile Intervals
 
     Parameters
     ----------
@@ -357,7 +375,7 @@ def percentile_interval(
         The statistic.
      alpha : float, optional
         Number controlling the size of the interval. That is, this
-        function will return a :math:`100(1 - 2\\alpha)\\%` confidence
+        function will return a :math:`100(1 - 2\alpha)\%` confidence
         interval. Defaults to 0.05, corresponding to a 90% confidence
         interval.
      B : int, optional
@@ -380,7 +398,7 @@ def percentile_interval(
     Returns
     -------
      ci_low, ci_high : float
-        Lower and upper bounds on a :math:`100(1 - 2\\alpha)\\%` confidence
+        Lower and upper bounds on a :math:`100(1 - 2\alpha)\%` confidence
         interval on theta.
      theta_star : ndarray
         Array of bootstrapped statistic values. Only returned if
@@ -393,6 +411,21 @@ def percentile_interval(
     abcnon_interval : Analytical BCa approximation, no bootstrap
         required.
     calibrate_interval : Coverage-calibrated interval.
+
+    Notes
+    -----
+    The percentile interval reads off the :math:`\alpha` and
+    :math:`1 - \alpha` quantiles of the bootstrap distribution of
+    :math:`\hat{\theta}^*` directly. It is transformation-respecting:
+    if :math:`\phi = g(\theta)` for a monotone increasing :math:`g`,
+    the interval on :math:`\phi` is exactly
+    :math:`[g(\theta_\mathrm{lo}), g(\theta_\mathrm{hi})]`. See
+    [ET93]_ (S13) for details.
+
+    The coverage error is :math:`O(n^{-1/2})`. When bias or skewness
+    in the bootstrap distribution is substantial,
+    :func:`bcanon_interval` corrects for both and achieves
+    :math:`O(n^{-1})` coverage error; it should generally be preferred.
 
     """
     if theta_star is None:
@@ -422,7 +455,7 @@ def bcanon_interval(
 ) -> (
     tuple[float, float] | tuple[float, float, npt.NDArray[np.float64], JackknifeValues]
 ):
-    """BCa Confidence Intervals
+    r"""BCa Confidence Intervals
 
     Parameters
     ----------
@@ -435,7 +468,7 @@ def bcanon_interval(
         jackknife values.
      alpha : float, optional
         Number controlling the size of the interval. That is, this
-        function will return a :math:`100(1 - 2\\alpha)\\%` confidence
+        function will return a :math:`100(1 - 2\alpha)\%` confidence
         interval. Defaults to 0.05, corresponding to a 90% confidence
         interval.
      B : int, optional
@@ -464,7 +497,7 @@ def bcanon_interval(
     Returns
     -------
      ci_low, ci_high : float
-        Lower and upper bounds on a :math:`100(1 - 2\\alpha)\\%` confidence
+        Lower and upper bounds on a :math:`100(1 - 2\alpha)\%` confidence
         interval on theta.
      theta_star : ndarray
         Array of bootstrapped statistic values. Only returned if
@@ -479,6 +512,24 @@ def bcanon_interval(
         required.
     t_interval : Bootstrap-t interval.
     calibrate_interval : Coverage-calibrated interval.
+
+    Notes
+    -----
+    The BCa (bias-corrected and accelerated) interval adjusts the
+    percentile endpoints using two quantities estimated from the data.
+    The bias-correction :math:`\hat{z}_0` accounts for median bias in
+    the bootstrap distribution: it is the normal quantile of the
+    fraction of bootstrap replicates below :math:`\hat{\theta}`. The
+    acceleration :math:`\hat{a}` accounts for the rate at which the
+    standard error of the statistic changes with :math:`\theta`, and is
+    estimated from the jackknife values. See [ET93]_ (S14.3) for
+    details.
+
+    When :math:`\hat{z}_0 = 0` and :math:`\hat{a} = 0`, BCa reduces to
+    the percentile interval. In general BCa achieves second-order
+    accurate coverage (:math:`O(n^{-1})` error) versus first-order
+    (:math:`O(n^{-1/2})`) for the percentile interval, and is the
+    recommended default for most applications.
 
     """
     # The observed value of the statistic.

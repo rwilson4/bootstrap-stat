@@ -240,7 +240,7 @@ def bootstrap_samples(
     | dict[str, npt.NDArray[np.float64]]
     | tuple[npt.NDArray[np.float64] | dict[str, npt.NDArray[np.float64]], list[Any]]
 ):
-    """Generate bootstrap samples.
+    r"""Generate bootstrap samples.
 
     Parameters
     ----------
@@ -287,6 +287,21 @@ def bootstrap_samples(
     --------
     jackknife_values : Compute jackknife values directly.
     multithreaded_bootstrap_samples : Parallel-only bootstrap sampling.
+
+    Notes
+    -----
+    For each of the :math:`B` bootstrap replicates, a sample of size
+    :math:`n` is drawn with replacement from the empirical distribution
+    :math:`\hat{F}`, and ``stat`` is applied to produce
+    :math:`\hat{\theta}^*_b`. This collection forms the bootstrap
+    distribution, from which standard errors, confidence intervals, and
+    significance levels can be estimated.
+
+    When ``jackknife=True``, the function tracks which original
+    observations appear in each bootstrap sample. The
+    jackknife-after-bootstrap approach in [ET93]_ (S19.4) uses this
+    structure to estimate the influence of each observation on the
+    bootstrap distribution without additional simulation.
 
     """
     if num_threads == -1:
