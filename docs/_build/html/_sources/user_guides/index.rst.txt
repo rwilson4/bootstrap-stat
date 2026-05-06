@@ -11,3 +11,4 @@ self-contained and may be read in any order.
    standard_errors
    confidence_intervals
    bias
+   significance
