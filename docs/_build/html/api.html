@@ -1967,8 +1967,18 @@ is True.</p></li>
 <p class="rubric">Notes</p>
 <p>Suppose we observe <span class="math notranslate nohighlight">\(X_1, X_2, \ldots, X_n\)</span> sampled IID from
 a distribution <span class="math notranslate nohighlight">\(F\)</span>. We wish to calculate a range of
-plausible values for a new point drawn from the same
-distribution. This function returns such a <em>prediction interval</em>.</p>
+plausible values for a new point <span class="math notranslate nohighlight">\(X_{n+1}\)</span> drawn from the
+same distribution. This function returns such a <em>prediction
+interval</em>.</p>
+<p>For each bootstrap replicate, the method draws a sample of size
+<span class="math notranslate nohighlight">\(n\)</span> from <span class="math notranslate nohighlight">\(\hat{F}\)</span> and a single additional point
+<span class="math notranslate nohighlight">\(z^*\)</span>, then forms the studentized quantity
+<span class="math notranslate nohighlight">\(t^* = (\bar{X}^* - z^*) / s^*\)</span>. The
+<span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(1 - \alpha\)</span> quantiles of <span class="math notranslate nohighlight">\(t^*\)</span>
+are inverted to produce the interval. The construction mirrors the
+classical t-distribution prediction interval, but makes no
+parametric assumption on <span class="math notranslate nohighlight">\(F\)</span>. See <a class="reference internal" href="references.html#et93" id="id27"><span>[ET93]</span></a> (S6.5) for
+details.</p>
 </dd></dl>
 
 </section>
@@ -1978,7 +1988,7 @@ distribution. This function returns such a <em>prediction interval</em>.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="bootstrap_stat.datasets.mouse_data">
 <span class="sig-prename descclassname"><span class="pre">bootstrap_stat.datasets.</span></span><span class="sig-name descname"><span class="pre">mouse_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'control'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'treatment'</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/bootstrap_stat/datasets.html#mouse_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bootstrap_stat.datasets.mouse_data" title="Link to this definition">#</a></dt>
-<dd><p>Mouse data from <a class="reference internal" href="references.html#et93" id="id27"><span>[ET93]</span></a>, Table 2.2.</p>
+<dd><p>Mouse data from <a class="reference internal" href="references.html#et93" id="id28"><span>[ET93]</span></a>, Table 2.2.</p>
 <p>Survival times in days of mice in a treatment/control experiment.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2022,7 +2032,7 @@ return the sampled (n = 15) dataset.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="bootstrap_stat.datasets.rainfall_data">
 <span class="sig-prename descclassname"><span class="pre">bootstrap_stat.datasets.</span></span><span class="sig-name descname"><span class="pre">rainfall_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v3.0.2)"><span class="pre">DataFrame</span></a></span></span><a class="reference internal" href="_modules/bootstrap_stat/datasets.html#rainfall_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bootstrap_stat.datasets.rainfall_data" title="Link to this definition">#</a></dt>
-<dd><p>Rainfall data from <a class="reference internal" href="references.html#et93" id="id28"><span>[ET93]</span></a>, Table 4.2.</p>
+<dd><p>Rainfall data from <a class="reference internal" href="references.html#et93" id="id29"><span>[ET93]</span></a>, Table 4.2.</p>
 <p>Yearly rainfall in inches in Nevada City, California, 1873 through
 1978. An example of time series data.</p>
 <dl class="field-list simple">
@@ -2058,7 +2068,7 @@ Bradley Efron and Robert J. Tibshirani.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="bootstrap_stat.datasets.hormone_data">
 <span class="sig-prename descclassname"><span class="pre">bootstrap_stat.datasets.</span></span><span class="sig-name descname"><span class="pre">hormone_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v3.0.2)"><span class="pre">DataFrame</span></a></span></span><a class="reference internal" href="_modules/bootstrap_stat/datasets.html#hormone_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bootstrap_stat.datasets.hormone_data" title="Link to this definition">#</a></dt>
-<dd><p>Hormone data from <a class="reference internal" href="references.html#et93" id="id29"><span>[ET93]</span></a>, Table 9.1.</p>
+<dd><p>Hormone data from <a class="reference internal" href="references.html#et93" id="id30"><span>[ET93]</span></a>, Table 9.1.</p>
 <p>Amount in milligrams of anti-inflammatory hormone remaining in 27
 devices after a certain number of hours of wear. Devices were
 sampled from three manufacturing lots (A, B, C). Lot C appears to
@@ -2078,14 +2088,14 @@ and remaining hormone level.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="bootstrap_stat.datasets.patch_data">
 <span class="sig-prename descclassname"><span class="pre">bootstrap_stat.datasets.</span></span><span class="sig-name descname"><span class="pre">patch_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v3.0.2)"><span class="pre">DataFrame</span></a></span></span><a class="reference internal" href="_modules/bootstrap_stat/datasets.html#patch_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bootstrap_stat.datasets.patch_data" title="Link to this definition">#</a></dt>
-<dd><p>Patch data from <a class="reference internal" href="references.html#et93" id="id30"><span>[ET93]</span></a>, Table 10.1.</p>
+<dd><p>Patch data from <a class="reference internal" href="references.html#et93" id="id31"><span>[ET93]</span></a>, Table 10.1.</p>
 <p>Eight subjects wore medical patches designed to increase blood
 levels of a natural hormone. Each subject wore three patches: a
 placebo, an “old” patch from an established plant, and a “new”
 patch from a newly opened plant. Derived columns: <code class="docutils literal notranslate"><span class="pre">z</span></code> =
 oldpatch - placebo, <code class="docutils literal notranslate"><span class="pre">y</span></code> = newpatch - oldpatch. The purpose of
 the experiment was to show equivalence between the two plants.
-Chapter 25 of <a class="reference internal" href="references.html#et93" id="id31"><span>[ET93]</span></a> has an extended analysis.</p>
+Chapter 25 of <a class="reference internal" href="references.html#et93" id="id32"><span>[ET93]</span></a> has an extended analysis.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>df</strong> – DataFrame indexed by <code class="docutils literal notranslate"><span class="pre">subject</span></code> with columns <code class="docutils literal notranslate"><span class="pre">placebo</span></code>,

@@ -367,8 +367,19 @@ def prediction_interval(
     -----
     Suppose we observe :math:`X_1, X_2, \ldots, X_n` sampled IID from
     a distribution :math:`F`. We wish to calculate a range of
-    plausible values for a new point drawn from the same
-    distribution. This function returns such a *prediction interval*.
+    plausible values for a new point :math:`X_{n+1}` drawn from the
+    same distribution. This function returns such a *prediction
+    interval*.
+
+    For each bootstrap replicate, the method draws a sample of size
+    :math:`n` from :math:`\hat{F}` and a single additional point
+    :math:`z^*`, then forms the studentized quantity
+    :math:`t^* = (\bar{X}^* - z^*) / s^*`. The
+    :math:`\alpha` and :math:`1 - \alpha` quantiles of :math:`t^*`
+    are inverted to produce the interval. The construction mirrors the
+    classical t-distribution prediction interval, but makes no
+    parametric assumption on :math:`F`. See [ET93]_ (S6.5) for
+    details.
 
     """
     if num_threads == -1:
