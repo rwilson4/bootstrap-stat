@@ -280,7 +280,7 @@ def bootstrap_samples(
         corresponding to samples not including the ith value from the
         original dataset. (For jackknifing, only samples not including
         the ith datapoint can be used for inferences involving the ith
-        point.) See [ET93, S19.4] for details. Only returned if
+        point.) See [ET93]_ (S19.4) for details. Only returned if
         `jackknife` is True.
 
     See Also

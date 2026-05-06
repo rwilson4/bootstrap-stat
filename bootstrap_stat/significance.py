@@ -92,7 +92,7 @@ def bootstrap_asl(
     zero, ``dist`` should be built from a shifted copy of the data.
     The argument ``x`` is accepted but not used; it is present for
     consistency with :func:`percentile_asl` and :func:`bcanon_asl`.
-    See [ET93, S16.3] for details.
+    See [ET93]_ (S16.3) for details.
 
     """
     asl = 0
@@ -309,7 +309,7 @@ def bcanon_asl(
     :math:`\hat{a}`, which accounts for skewness in the sampling
     distribution of the statistic. The result is more accurate than
     the percentile ASL when the statistic is not symmetrically
-    distributed. See [ET93, S14.3] for details.
+    distributed. See [ET93]_ (S14.3) for details.
 
     """
     if theta_hat is None:

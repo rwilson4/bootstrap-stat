@@ -231,7 +231,7 @@ def jackknife_bias(
     where :math:`\hat{F}` is the empirical distribution. Moreover, it
     is only applicable when `t` is a smooth function. Notable
     exceptions include the median. The jackknife cannot be used to
-    estimate the bias of non-smooth estimators. See [ET93, S10.5] for
+    estimate the bias of non-smooth estimators. See [ET93]_ (S10.5) for
     details.
 
     """
@@ -322,7 +322,7 @@ def bias_corrected(
 
     Notes
     -----
-    Per [ET93, S10.6], bias-corrected estimators tend to have much
+    Per [ET93]_ (S10.6), bias-corrected estimators tend to have much
     higher variance than the non-corrected version. This should be
     assessed, for example, using the bootstrap to directly estimate
     the standard error of the corrected and uncorrected estimators.

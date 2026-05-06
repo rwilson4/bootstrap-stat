@@ -64,7 +64,7 @@ def jackknife_standard_error(
     distribution. Moreover, it is only applicable when t is a smooth
     function. Notable exceptions include the median. The jackknife
     cannot be used to estimate the standard error of non-smooth
-    estimators. See [ET93, S10.6]
+    estimators. See [ET93]_ (S10.6)
 
     """
     if isinstance(x, tuple):
@@ -130,7 +130,7 @@ def standard_error(
         as the original dataset.
      jackknife_after_bootstrap : boolean, optional
         If True, will estimate the variability of our estimate of
-        standard error. See [ET93, S19.4] for details.
+        standard error. See [ET93]_ (S19.4) for details.
      return_samples : boolean, optional
         If True, return the bootstrapped statistic values. Defaults to False.
      theta_star : array_like, optional
@@ -164,19 +164,19 @@ def standard_error(
     -----
     The bootstrap estimate of standard error draws B bootstrap samples
     from the empirical distribution, evaluates the statistic on each,
-    and returns the standard deviation of those B values. See [ET93,
-    S6.1] for details.
+    and returns the standard deviation of those B values. See [ET93]_
+    (S6.1) for details.
 
     By default the non-robust estimate is used. When `robustness` is
     specified, a percentile-based estimate is returned instead: the
     spread between the `robustness` and 1 - `robustness` quantiles of
     the bootstrap distribution, divided by the corresponding spread of
-    a standard normal. See [ET93, S10.3] for details.
+    a standard normal. See [ET93]_ (S10.3) for details.
 
     When `jackknife_after_bootstrap` is True, the function also
     returns `se_jack`, an estimate of the variability of `se` itself,
     which can be used to assess how stable the standard error estimate
-    is. See [ET93, S19.4] for details.
+    is. See [ET93]_ (S19.4) for details.
 
     """
     import scipy.stats as ss
@@ -270,7 +270,7 @@ def infinitesimal_jackknife(
     Notes
     -----
     The infinitesimal jackknife requires the statistic to be expressed
-    in "resampling form". See [ET93, S21] for details. The ith
+    in "resampling form". See [ET93]_ (S21) for details. The ith
     influence component is a type of derivative of the statistic with
     respect to the ith observation. This is computed by a finite
     difference method: we simply evaluate the statistic putting a

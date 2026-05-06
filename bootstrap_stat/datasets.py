@@ -8,7 +8,7 @@ import pandas as pd
 
 
 def mouse_data(dataset: Literal["control", "treatment"]) -> list[int]:
-    """Mouse data from [ET93], Table 2.2.
+    """Mouse data from [ET93]_, Table 2.2.
 
     Survival times in days of mice in a treatment/control experiment.
 
@@ -75,7 +75,7 @@ def law_data(full: bool = False) -> pd.DataFrame:
 
 
 def rainfall_data() -> pd.DataFrame:
-    """Rainfall data from [ET93], Table 4.2.
+    """Rainfall data from [ET93]_, Table 4.2.
 
     Yearly rainfall in inches in Nevada City, California, 1873 through
     1978. An example of time series data.
@@ -125,7 +125,7 @@ def spatial_test_data(
 
 
 def hormone_data() -> pd.DataFrame:
-    """Hormone data from [ET93], Table 9.1.
+    """Hormone data from [ET93]_, Table 9.1.
 
     Amount in milligrams of anti-inflammatory hormone remaining in 27
     devices after a certain number of hours of wear. Devices were
@@ -146,7 +146,7 @@ def hormone_data() -> pd.DataFrame:
 
 
 def patch_data() -> pd.DataFrame:
-    """Patch data from [ET93], Table 10.1.
+    """Patch data from [ET93]_, Table 10.1.
 
     Eight subjects wore medical patches designed to increase blood
     levels of a natural hormone. Each subject wore three patches: a
@@ -154,7 +154,7 @@ def patch_data() -> pd.DataFrame:
     patch from a newly opened plant. Derived columns: ``z`` =
     oldpatch - placebo, ``y`` = newpatch - oldpatch. The purpose of
     the experiment was to show equivalence between the two plants.
-    Chapter 25 of [ET93] has an extended analysis.
+    Chapter 25 of [ET93]_ has an extended analysis.
 
     Returns
     -------

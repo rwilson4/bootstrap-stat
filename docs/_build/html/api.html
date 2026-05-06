@@ -38,29 +38,15 @@
 <span id="api-reference"></span><h1>API Reference<a class="headerlink" href="#module-bootstrap_stat" title="Link to this heading">¶</a></h1>
 <p>Bootstrap methods for standard errors, confidence intervals, and more.</p>
 <p>This package implements bootstrap methods for statistical inference, based on
-Efron &amp; Tibshirani (1993). It provides standard error estimation, bias
+Efron &amp; Tibshirani <a class="reference internal" href="references.html#et93" id="id1"><span>[ET93]</span></a>. It provides standard error estimation, bias
 estimation, confidence intervals, prediction error estimation, and
 significance testing.</p>
-<p class="rubric">References</p>
-<dl class="simple">
-<dt>[ET93]  Bradley Efron and Robert J. Tibshirani, “An Introduction to the</dt><dd><p>Bootstrap”. Chapman &amp; Hall, 1993.</p>
-</dd>
-<dt>[Koh95] Ron Kohavi, “A Study of Cross-Validation and Bootstrap for</dt><dd><p>Accuracy Estimation and Model Selection”. International Joint
-Conference on Artificial Intelligence, 1995.</p>
-</dd>
-<dt>[ET97]  Bradley Efron and Robert Tibshirani, “Improvements on</dt><dd><p>Cross-Validation: The .632+ Bootstrap Method”. Journal of the
-American Statistical Association, Vol. 92, No. 438, June 1997,
-pp. 548–560.</p>
-</dd>
-<dt>[Arl10] Sylvain Arlot, “A Survey of Cross-Validation Procedures for</dt><dd><p>Model Selection”. Statistics Surveys, Vol. 4, 2010.</p>
-</dd>
-</dl>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">alpha</span></code> parameter in all interval functions controls the
 per-tail probability, so <code class="docutils literal notranslate"><span class="pre">alpha=0.05</span></code> produces a <strong>90%</strong> interval
 (5% excluded from each tail). This follows the convention in
-<a class="reference internal" href="references.html#et93" id="id1"><span>[ET93]</span></a>.</p>
+<a class="reference internal" href="references.html#et93" id="id2"><span>[ET93]</span></a>.</p>
 </div>
 <section id="module-bootstrap_stat.distributions">
 <span id="distributions"></span><h2>Distributions<a class="headerlink" href="#module-bootstrap_stat.distributions" title="Link to this heading">¶</a></h2>
@@ -396,7 +382,7 @@ element of the inner array will be those bootstrap statistics
 corresponding to samples not including the ith value from the
 original dataset. (For jackknifing, only samples not including
 the ith datapoint can be used for inferences involving the ith
-point.) See [ET93, S19.4] for details. Only returned if
+point.) See <a class="reference internal" href="references.html#et93" id="id3"><span>[ET93]</span></a> (S19.4) for details. Only returned if
 <cite>jackknife</cite> is True.</p></li>
 </ul>
 </p>
@@ -459,7 +445,7 @@ thread. Set to -1 to use all available cores.</p></li>
 distribution. Moreover, it is only applicable when t is a smooth
 function. Notable exceptions include the median. The jackknife
 cannot be used to estimate the standard error of non-smooth
-estimators. See [ET93, S10.6]</p>
+estimators. See <a class="reference internal" href="references.html#et93" id="id4"><span>[ET93]</span></a> (S10.6)</p>
 </dd></dl>
 
 <dl class="py function">
@@ -482,7 +468,7 @@ standard error.</p></li>
 Defaults to None, indicating the samples will be the same size
 as the original dataset.</p></li>
 <li><p><strong>jackknife_after_bootstrap</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If True, will estimate the variability of our estimate of
-standard error. See [ET93, S19.4] for details.</p></li>
+standard error. See <a class="reference internal" href="references.html#et93" id="id5"><span>[ET93]</span></a> (S19.4) for details.</p></li>
 <li><p><strong>return_samples</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If True, return the bootstrapped statistic values. Defaults to False.</p></li>
 <li><p><strong>theta_star</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Bootstrapped statistic values. Can be passed if they have
 already been calculated, which will speed this up
@@ -516,17 +502,17 @@ returned if <cite>jackknife_after_bootstrap</cite> is True.</p></li>
 <p class="rubric">Notes</p>
 <p>The bootstrap estimate of standard error draws B bootstrap samples
 from the empirical distribution, evaluates the statistic on each,
-and returns the standard deviation of those B values. See [ET93,
-S6.1] for details.</p>
+and returns the standard deviation of those B values. See <a class="reference internal" href="references.html#et93" id="id6"><span>[ET93]</span></a>
+(S6.1) for details.</p>
 <p>By default the non-robust estimate is used. When <cite>robustness</cite> is
 specified, a percentile-based estimate is returned instead: the
 spread between the <cite>robustness</cite> and 1 - <cite>robustness</cite> quantiles of
 the bootstrap distribution, divided by the corresponding spread of
-a standard normal. See [ET93, S10.3] for details.</p>
+a standard normal. See <a class="reference internal" href="references.html#et93" id="id7"><span>[ET93]</span></a> (S10.3) for details.</p>
 <p>When <cite>jackknife_after_bootstrap</cite> is True, the function also
 returns <cite>se_jack</cite>, an estimate of the variability of <cite>se</cite> itself,
 which can be used to assess how stable the standard error estimate
-is. See [ET93, S19.4] for details.</p>
+is. See <a class="reference internal" href="references.html#et93" id="id8"><span>[ET93]</span></a> (S19.4) for details.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -569,7 +555,7 @@ thread. Set to -1 to use all available cores.</p></li>
 </div>
 <p class="rubric">Notes</p>
 <p>The infinitesimal jackknife requires the statistic to be expressed
-in “resampling form”. See [ET93, S21] for details. The ith
+in “resampling form”. See <a class="reference internal" href="references.html#et93" id="id9"><span>[ET93]</span></a> (S21) for details. The ith
 influence component is a type of derivative of the statistic with
 respect to the ith observation. This is computed by a finite
 difference method: we simply evaluate the statistic putting a
@@ -720,7 +706,7 @@ plug-in statistic, that is, having the form <span class="math notranslate nohigh
 where <span class="math notranslate nohighlight">\(\hat{F}\)</span> is the empirical distribution. Moreover, it
 is only applicable when <cite>t</cite> is a smooth function. Notable
 exceptions include the median. The jackknife cannot be used to
-estimate the bias of non-smooth estimators. See [ET93, S10.5] for
+estimate the bias of non-smooth estimators. See <a class="reference internal" href="references.html#et93" id="id10"><span>[ET93]</span></a> (S10.5) for
 details.</p>
 </dd></dl>
 
@@ -782,7 +768,7 @@ and method == “jackknife”.</p></li>
 </dl>
 </div>
 <p class="rubric">Notes</p>
-<p>Per [ET93, S10.6], bias-corrected estimators tend to have much
+<p>Per <a class="reference internal" href="references.html#et93" id="id11"><span>[ET93]</span></a> (S10.6), bias-corrected estimators tend to have much
 higher variance than the non-corrected version. This should be
 assessed, for example, using the bootstrap to directly estimate
 the standard error of the corrected and uncorrected estimators.</p>
@@ -1063,7 +1049,7 @@ interval on theta.</p></li>
 </div>
 <p class="rubric">Notes</p>
 <p>Approximate Bootstrap Confidence (ABC) intervals require the
-statistic to be expressed in resampling form. See [ET93, S14.4]
+statistic to be expressed in resampling form. See <a class="reference internal" href="references.html#et93" id="id12"><span>[ET93]</span></a> (S14.4)
 for details. It only applies to statistics which are smooth
 functions of the data. A notable example where ABC does not apply
 is the sample median.</p>
@@ -1135,7 +1121,7 @@ interval, in most instances that results in a “double
 bootstrap”. For this reason, only <a class="reference internal" href="#bootstrap_stat.confidence.abcnon_interval" title="bootstrap_stat.confidence.abcnon_interval"><code class="xref py py-func docutils literal notranslate"><span class="pre">abcnon_interval()</span></code></a> intervals
 are currently supported. Moreover, from my limited experience calibration seems
 pretty finicky. I would consider this function to be illustrative
-but experimental. See [ET93, S18] for details.</p>
+but experimental. See <a class="reference internal" href="references.html#et93" id="id13"><span>[ET93]</span></a> (S18) for details.</p>
 <p>We compute the observed coverage for a range of points around the
 nominal <cite>alpha</cite> and 1-<cite>alpha</cite>. Then we fit a smoother (loess) to
 these data and invert to find the confidence point, lmbda, having
@@ -1208,7 +1194,7 @@ example, if the null hypothesis is that a population mean equals
 zero, <code class="docutils literal notranslate"><span class="pre">dist</span></code> should be built from a shifted copy of the data.
 The argument <code class="docutils literal notranslate"><span class="pre">x</span></code> is accepted but not used; it is present for
 consistency with <a class="reference internal" href="#bootstrap_stat.significance.percentile_asl" title="bootstrap_stat.significance.percentile_asl"><code class="xref py py-func docutils literal notranslate"><span class="pre">percentile_asl()</span></code></a> and <a class="reference internal" href="#bootstrap_stat.significance.bcanon_asl" title="bootstrap_stat.significance.bcanon_asl"><code class="xref py py-func docutils literal notranslate"><span class="pre">bcanon_asl()</span></code></a>.
-See [ET93, S16.3] for details.</p>
+See <a class="reference internal" href="references.html#et93" id="id14"><span>[ET93]</span></a> (S16.3) for details.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1344,7 +1330,7 @@ normal-quantile, shifts it by the bias-correction term
 <span class="math notranslate nohighlight">\(\hat{a}\)</span>, which accounts for skewness in the sampling
 distribution of the statistic. The result is more accurate than
 the percentile ASL when the statistic is not symmetrically
-distributed. See [ET93, S14.3] for details.</p>
+distributed. See <a class="reference internal" href="references.html#et93" id="id15"><span>[ET93]</span></a> (S14.3) for details.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1448,7 +1434,7 @@ selection. It is similar to cross validation. It adds a bias
 correction term to the apparent error (the accuracy of the
 predictor applied to the same dataset used to train the
 predictor). This bias correction term is called the optimism. See
-[ET93, S17] for details.</p>
+<a class="reference internal" href="references.html#et93" id="id16"><span>[ET93]</span></a> (S17) for details.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1508,15 +1494,15 @@ bootstrap sample, train a model on it, and then make predictions
 using that model on the original dataset. But we only care about
 the predictions on observations that are <em>not</em> part of the
 bootstrap sample. We then average those prediction errors across
-all bootstrap samples. See [ET93, S17.7] for details.</p>
+all bootstrap samples. See <a class="reference internal" href="references.html#et93" id="id17"><span>[ET93]</span></a> (S17.7) for details.</p>
 <p>The method is so-called because the estimated prediction error is
-.368 times the apparent error plus .632 times eps0. [ET93] reports
+.368 times the apparent error plus .632 times eps0. <a class="reference internal" href="references.html#et93" id="id18"><span>[ET93]</span></a> reports
 that this method performed better than leave-one-out cross
 validation in their simulations, having lower variance, but they
-themselves admit they had not thoroughly evaluated it. [Koh95]
+themselves admit they had not thoroughly evaluated it. <a class="reference internal" href="references.html#koh95" id="id19"><span>[Koh95]</span></a>
 reported that the .632 bootstrap performed quite poorly when
 overfitting is present. This led Efron and Tibshirani to propose
-the .632+ bootstrap in [ET97]. Finally, [Arl10] surveys various
+the .632+ bootstrap in <a class="reference internal" href="references.html#et97" id="id20"><span>[ET97]</span></a>. Finally, <a class="reference internal" href="references.html#arl10" id="id21"><span>[Arl10]</span></a> surveys various
 approaches to model selection, recommending 10-fold cross
 validation as the preferred method of model selection.</p>
 <p>Because the .632 bootstrap has apparently not withstood the test
@@ -1593,7 +1579,7 @@ distribution. This function returns such a <em>prediction interval</em>.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="bootstrap_stat.datasets.mouse_data">
 <span class="sig-prename descclassname"><span class="pre">bootstrap_stat.datasets.</span></span><span class="sig-name descname"><span class="pre">mouse_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'control'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'treatment'</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/bootstrap_stat/datasets.html#mouse_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bootstrap_stat.datasets.mouse_data" title="Link to this definition">¶</a></dt>
-<dd><p>Mouse data from [ET93], Table 2.2.</p>
+<dd><p>Mouse data from <a class="reference internal" href="references.html#et93" id="id22"><span>[ET93]</span></a>, Table 2.2.</p>
 <p>Survival times in days of mice in a treatment/control experiment.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1637,7 +1623,7 @@ return the sampled (n = 15) dataset.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="bootstrap_stat.datasets.rainfall_data">
 <span class="sig-prename descclassname"><span class="pre">bootstrap_stat.datasets.</span></span><span class="sig-name descname"><span class="pre">rainfall_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v3.0.2)"><span class="pre">DataFrame</span></a></span></span><a class="reference internal" href="_modules/bootstrap_stat/datasets.html#rainfall_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bootstrap_stat.datasets.rainfall_data" title="Link to this definition">¶</a></dt>
-<dd><p>Rainfall data from [ET93], Table 4.2.</p>
+<dd><p>Rainfall data from <a class="reference internal" href="references.html#et93" id="id23"><span>[ET93]</span></a>, Table 4.2.</p>
 <p>Yearly rainfall in inches in Nevada City, California, 1873 through
 1978. An example of time series data.</p>
 <dl class="field-list simple">
@@ -1673,7 +1659,7 @@ Bradley Efron and Robert J. Tibshirani.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="bootstrap_stat.datasets.hormone_data">
 <span class="sig-prename descclassname"><span class="pre">bootstrap_stat.datasets.</span></span><span class="sig-name descname"><span class="pre">hormone_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v3.0.2)"><span class="pre">DataFrame</span></a></span></span><a class="reference internal" href="_modules/bootstrap_stat/datasets.html#hormone_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bootstrap_stat.datasets.hormone_data" title="Link to this definition">¶</a></dt>
-<dd><p>Hormone data from [ET93], Table 9.1.</p>
+<dd><p>Hormone data from <a class="reference internal" href="references.html#et93" id="id24"><span>[ET93]</span></a>, Table 9.1.</p>
 <p>Amount in milligrams of anti-inflammatory hormone remaining in 27
 devices after a certain number of hours of wear. Devices were
 sampled from three manufacturing lots (A, B, C). Lot C appears to
@@ -1693,14 +1679,14 @@ and remaining hormone level.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="bootstrap_stat.datasets.patch_data">
 <span class="sig-prename descclassname"><span class="pre">bootstrap_stat.datasets.</span></span><span class="sig-name descname"><span class="pre">patch_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v3.0.2)"><span class="pre">DataFrame</span></a></span></span><a class="reference internal" href="_modules/bootstrap_stat/datasets.html#patch_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bootstrap_stat.datasets.patch_data" title="Link to this definition">¶</a></dt>
-<dd><p>Patch data from [ET93], Table 10.1.</p>
+<dd><p>Patch data from <a class="reference internal" href="references.html#et93" id="id25"><span>[ET93]</span></a>, Table 10.1.</p>
 <p>Eight subjects wore medical patches designed to increase blood
 levels of a natural hormone. Each subject wore three patches: a
 placebo, an “old” patch from an established plant, and a “new”
 patch from a newly opened plant. Derived columns: <code class="docutils literal notranslate"><span class="pre">z</span></code> =
 oldpatch - placebo, <code class="docutils literal notranslate"><span class="pre">y</span></code> = newpatch - oldpatch. The purpose of
 the experiment was to show equivalence between the two plants.
-Chapter 25 of [ET93] has an extended analysis.</p>
+Chapter 25 of <a class="reference internal" href="references.html#et93" id="id26"><span>[ET93]</span></a> has an extended analysis.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>df</strong> – DataFrame indexed by <code class="docutils literal notranslate"><span class="pre">subject</span></code> with columns <code class="docutils literal notranslate"><span class="pre">placebo</span></code>,

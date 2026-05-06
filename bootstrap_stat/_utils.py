@@ -80,7 +80,7 @@ def _adjust_percentiles(
     Notes
     -----
     Computes the adjusted percentiles for use with the BCa
-    algorithm. Taken from Eq. 14.10 in [ET93].
+    algorithm. Taken from Eq. 14.10 in [ET93]_.
 
     """
     z_alpha = ss.norm.ppf(alpha)
@@ -114,7 +114,7 @@ def _percentile(
 
     Notes
     -----
-    Uses the methodology recommended in S12.5 of [ET93]. When z is
+    Uses the methodology recommended in S12.5 of [ET93]_. When z is
     very large, sorting is inefficient and unnecessary. However, for
     modest B, doing a partial sort isn't actually any faster.
 

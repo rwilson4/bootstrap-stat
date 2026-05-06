@@ -2,23 +2,9 @@
 """Bootstrap methods for standard errors, confidence intervals, and more.
 
 This package implements bootstrap methods for statistical inference, based on
-Efron & Tibshirani (1993). It provides standard error estimation, bias
+Efron & Tibshirani [ET93]_. It provides standard error estimation, bias
 estimation, confidence intervals, prediction error estimation, and
 significance testing.
-
-References
-----------
-[ET93]  Bradley Efron and Robert J. Tibshirani, "An Introduction to the
-        Bootstrap". Chapman & Hall, 1993.
-[Koh95] Ron Kohavi, "A Study of Cross-Validation and Bootstrap for
-        Accuracy Estimation and Model Selection". International Joint
-        Conference on Artificial Intelligence, 1995.
-[ET97]  Bradley Efron and Robert Tibshirani, "Improvements on
-        Cross-Validation: The .632+ Bootstrap Method". Journal of the
-        American Statistical Association, Vol. 92, No. 438, June 1997,
-        pp. 548--560.
-[Arl10] Sylvain Arlot, "A Survey of Cross-Validation Procedures for
-        Model Selection". Statistics Surveys, Vol. 4, 2010.
 
 """
 

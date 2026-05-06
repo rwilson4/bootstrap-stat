@@ -574,7 +574,7 @@ def abcnon_interval(
     Notes
     -----
     Approximate Bootstrap Confidence (ABC) intervals require the
-    statistic to be expressed in resampling form. See [ET93, S14.4]
+    statistic to be expressed in resampling form. See [ET93]_ (S14.4)
     for details. It only applies to statistics which are smooth
     functions of the data. A notable example where ABC does not apply
     is the sample median.
@@ -700,7 +700,7 @@ def calibrate_interval(
     bootstrap". For this reason, only :func:`abcnon_interval` intervals
     are currently supported. Moreover, from my limited experience calibration seems
     pretty finicky. I would consider this function to be illustrative
-    but experimental. See [ET93, S18] for details.
+    but experimental. See [ET93]_ (S18) for details.
 
     We compute the observed coverage for a range of points around the
     nominal `alpha` and 1-`alpha`. Then we fit a smoother (loess) to
