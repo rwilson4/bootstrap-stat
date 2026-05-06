@@ -51,6 +51,7 @@ limitations relative to cross-validation. Full citations are on the
    :maxdepth: 2
    :caption: Contents:
 
+   standard_errors.rst
    guide.rst
    api.rst
    references.rst
