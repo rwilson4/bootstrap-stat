@@ -145,6 +145,7 @@ cd docs && uv run make html
 # 3. Stage sources and build artifacts together
 git add docs/<changed-source-files>
 git add -f docs/_build/html/   # -f needed for any new files
+git rm --cached docs/_build/html/.buildinfo.bak 2>/dev/null || true  # exclude ephemeral artifact
 
 # 4. Commit and push to master
 ```
