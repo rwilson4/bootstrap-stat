@@ -17,3 +17,6 @@ References
    Accuracy Estimation and Model Selection." In *Proceedings of the 14th
    International Joint Conference on Artificial Intelligence (IJCAI)*,
    Vol. 2, 1995, pp. 1137–1143.
+
+.. [SA22] Mårten Schultzberg and Sebastian Ankargren. "Resampling-Free
+   Bootstrap Inference for Quantiles." arXiv:2202.10992, 2022.
