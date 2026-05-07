@@ -10,6 +10,7 @@ import numpy.typing as npt
 from bootstrap_stat._utils import (
     ArrayLike,
     JackknifeValues,
+    RNGLike,
     Statistic,
     _influence_components,
 )
@@ -101,6 +102,7 @@ def standard_error(
     return_samples: bool = False,
     theta_star: npt.NDArray[np.float64] | None = None,
     num_threads: int = 1,
+    rng: RNGLike = None,
 ) -> (
     float
     | tuple[float, float]
@@ -190,10 +192,11 @@ def standard_error(
                 size=size,
                 jackknife=True,
                 num_threads=num_threads,
+                rng=rng,
             )
         else:
             theta_star = bootstrap_samples(
-                dist, stat, B, size=size, num_threads=num_threads
+                dist, stat, B, size=size, num_threads=num_threads, rng=rng
             )
 
     if robustness is None:

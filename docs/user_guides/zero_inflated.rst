@@ -87,12 +87,12 @@ purchase, with order values drawn from a lognormal distribution.
     import numpy as np
     import bootstrap_stat as bp
 
-    np.random.seed(42)
+    rng = np.random.default_rng(42)
     n = 50_000
-    nonzero_mask = np.random.binomial(1, 0.02, n).astype(bool)
+    nonzero_mask = rng.binomial(1, 0.02, n).astype(bool)
     data = np.zeros(n)
-    data[nonzero_mask] = np.random.lognormal(mean=4, sigma=1,
-                                             size=nonzero_mask.sum())
+    data[nonzero_mask] = rng.lognormal(mean=4, sigma=1,
+                                       size=nonzero_mask.sum())
 
     # m ≈ 994 (p̂ ≈ 0.0199), sample mean ≈ 1.84
 
@@ -129,16 +129,24 @@ The decomposition above translates into a small subclass:
 .. code-block:: python
 
     class ZeroInflatedDist(bp.EmpiricalDistribution):
-        def __init__(self, data):
-            super().__init__(data)
+        def __init__(self, data, rng=None):
+            super().__init__(data, rng=rng)
             self.nonzero = np.asarray(data)[np.asarray(data) != 0]
             self.m = len(self.nonzero)
             self.p_nonzero = self.m / self.n
 
         def sample(self, size=None, **kwargs):
             n = self.n if size is None else size
-            k = np.random.binomial(n, self.p_nonzero)
-            return np.random.choice(self.nonzero, size=k, replace=True)
+            k = self._rng.binomial(n, self.p_nonzero)
+            return self._rng.choice(self.nonzero, size=k, replace=True)
+
+The subclass forwards ``rng`` to the base class — which normalizes it
+via :func:`numpy.random.default_rng` and stores it on ``self._rng`` —
+and then draws from ``self._rng`` rather than the global
+``np.random``. This is the recommended pattern for any custom
+empirical distribution: it keeps results reproducible from a single
+``rng=`` argument and preserves the spawn-based parallelism the
+multithreaded paths rely on.
 
 The override returns the *compact* sample of non-zero values only.
 The statistic must accept this representation and account for the

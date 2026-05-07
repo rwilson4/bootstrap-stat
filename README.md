@@ -185,7 +185,18 @@ the variability of a statistic:
 
 Since the bootstrap involves random sampling, you will likely get a
 slightly different answer than above, but it should be within 1% or
-so.
+so. For reproducible draws, pass an `rng` argument when constructing
+the empirical distribution (anything `numpy.random.default_rng`
+accepts — an integer seed, a `Generator`, or a `SeedSequence`):
+
+```
+>>> dist = bp.EmpiricalDistribution(df, rng=0)
+>>> bp.standard_error(dist, statistic)
+```
+
+Most inference functions also accept `rng=` directly, which is useful
+when you want to drive a single call deterministically without binding
+the seed to the distribution.
 
 Or we can compute a confidence interval, a range of plausible values
 for the parameter consistent with the data.

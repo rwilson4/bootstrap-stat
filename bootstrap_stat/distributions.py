@@ -7,7 +7,7 @@ import numpy as np
 import numpy.typing as npt
 import pandas as pd
 
-from bootstrap_stat._utils import ArrayLike, Statistic
+from bootstrap_stat._utils import ArrayLike, RNGLike, Statistic
 
 
 class EmpiricalDistribution:
@@ -21,6 +21,11 @@ class EmpiricalDistribution:
     ----------
      data : array_like or pandas DataFrame
         The data.
+     rng : Generator, SeedSequence, int, or None, optional
+        Source of randomness for sampling. Anything ``np.random.default_rng``
+        accepts. Pass an integer or pre-built ``Generator`` for reproducible
+        bootstrap draws; pass ``None`` (default) for non-reproducible
+        randomness seeded from system entropy.
 
     Attributes
     ----------
@@ -55,11 +60,13 @@ class EmpiricalDistribution:
     data: ArrayLike
     n: int
     is_multi_sample: bool
+    _rng: np.random.Generator
 
-    def __init__(self, data: ArrayLike) -> None:
+    def __init__(self, data: ArrayLike, rng: RNGLike = None) -> None:
         self.data = data
         self.n = len(data)
         self.is_multi_sample = False
+        self._rng = np.random.default_rng(rng)
 
     @overload
     def sample(
@@ -117,7 +124,7 @@ class EmpiricalDistribution:
             s = size
 
         if return_indices:
-            ind = np.random.choice(range(self.n), size=s, replace=True)
+            ind = self._rng.choice(range(self.n), size=s, replace=True)
             try:
                 samples = self.data[ind]
             except KeyError:
@@ -129,13 +136,15 @@ class EmpiricalDistribution:
                 samples = d[ind]
             return samples, ind
         else:
-            try:
-                samples = np.random.choice(self.data, size=s, replace=True)
-            except ValueError:
-                samples = self.data.sample(s, replace=True)
+            # Generator.choice (unlike the legacy np.random.choice) accepts
+            # multi-dimensional arrays, so we explicitly route DataFrames /
+            # Series through pandas to preserve the original return type.
+            if isinstance(self.data, (pd.DataFrame, pd.Series)):
+                samples = self.data.sample(s, replace=True, random_state=self._rng)
                 if reset_index:
                     samples.reset_index(drop=True, inplace=True)
-            return samples
+                return samples
+            return self._rng.choice(self.data, size=s, replace=True)
 
     def calculate_parameter(self, t: Statistic) -> float:
         """Calculate a parameter of the distribution.
@@ -163,6 +172,10 @@ class MultiSampleEmpiricalDistribution(EmpiricalDistribution):
     ----------
      datasets : tuple of arrays or pandas DataFrames.
         Observed data sets.
+     rng : Generator, SeedSequence, int, or None, optional
+        Source of randomness. A statistically-independent child stream is
+        spawned for each underlying :class:`EmpiricalDistribution` so that
+        the per-sample draws are reproducible from a single ``rng``.
 
     See Also
     --------
@@ -220,11 +233,16 @@ class MultiSampleEmpiricalDistribution(EmpiricalDistribution):
     dists: list[EmpiricalDistribution]
     n: list[int]  # type: ignore[assignment]
 
-    def __init__(self, datasets: tuple[ArrayLike, ...]) -> None:
+    def __init__(self, datasets: tuple[ArrayLike, ...], rng: RNGLike = None) -> None:
         self.data = datasets
-        self.dists = [EmpiricalDistribution(d) for d in datasets]
+        parent_rng = np.random.default_rng(rng)
+        child_rngs = parent_rng.spawn(len(datasets))
+        self.dists = [
+            EmpiricalDistribution(d, rng=r) for d, r in zip(datasets, child_rngs)
+        ]
         self.n = [len(d) for d in datasets]
         self.is_multi_sample = True
+        self._rng = parent_rng
 
     def sample(  # type: ignore[override]
         self, size: tuple[int, ...] | list[int] | None = None

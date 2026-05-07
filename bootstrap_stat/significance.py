@@ -10,7 +10,9 @@ import scipy.stats as ss
 from bootstrap_stat._utils import (
     ArrayLike,
     JackknifeValues,
+    RNGLike,
     Statistic,
+    _apply_rng,
     _bca_acceleration,
 )
 from bootstrap_stat.distributions import EmpiricalDistribution
@@ -28,6 +30,7 @@ def bootstrap_asl(
     theta_hat: float | None = None,
     two_sided: bool = False,
     num_threads: int = 1,
+    rng: RNGLike = None,
 ) -> float | tuple[float, npt.NDArray[np.float64]]:
     """Achieved Significance Level, general bootstrap method
 
@@ -102,7 +105,7 @@ def bootstrap_asl(
 
     if theta_star is None:
         theta_star = bootstrap_samples(
-            dist, stat, B, size=size, num_threads=num_threads
+            dist, stat, B, size=size, num_threads=num_threads, rng=rng
         )
 
     if two_sided:
@@ -129,6 +132,7 @@ def percentile_asl(
     theta_hat: float | None = None,
     two_sided: bool = False,
     num_threads: int = 1,
+    rng: RNGLike = None,
 ) -> float | tuple[float, npt.NDArray[np.float64]]:
     r"""Achieved Significance Level, percentile method
 
@@ -207,7 +211,7 @@ def percentile_asl(
 
     if theta_star is None:
         theta_star = bootstrap_samples(
-            dist, stat, B, size=size, num_threads=num_threads
+            dist, stat, B, size=size, num_threads=num_threads, rng=rng
         )
 
     if theta_hat > theta_0:
@@ -238,6 +242,7 @@ def bcanon_asl(
     jv: JackknifeValues | None = None,
     two_sided: bool = False,
     num_threads: int = 1,
+    rng: RNGLike = None,
 ) -> float | tuple[float, npt.NDArray[np.float64], JackknifeValues | None]:
     r"""Achieved Significance Level, bcanon method
 
@@ -329,6 +334,7 @@ def bcanon_asl(
         theta_hat=theta_hat,
         two_sided=False,
         num_threads=num_threads,
+        rng=rng,
     )
     if a0 == 0 or a0 == 1:
         if return_samples:
@@ -392,6 +398,7 @@ def bootstrap_power(
     alpha: float = 0.05,
     size: int | tuple[int, ...] | None = None,
     P: int = 100,
+    rng: RNGLike = None,
     **kwargs: Any,
 ) -> float:
     """Bootstrap Power
@@ -443,10 +450,18 @@ def bootstrap_power(
     instance thereof. I recognize this is confusing!
 
     """
+    if rng is not None:
+        _apply_rng(alt_dist, rng)
+
+    # Spawn one rng per Monte Carlo trial so each sim_dist has its own
+    # independent stream while remaining reproducible from `rng`.
+    sim_rngs = alt_dist._rng.spawn(P)
+
     rejections = 0
     for i in range(P):
         sample = alt_dist.sample(size=size)
         sim_dist = null_dist(sample)
+        _apply_rng(sim_dist, sim_rngs[i])
         a = asl(sim_dist, stat, sample, **kwargs)
         if a <= alpha:
             rejections += 1

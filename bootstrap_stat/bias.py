@@ -9,7 +9,13 @@ import numpy as np
 import numpy.typing as npt
 from pathos.multiprocessing import ProcessPool as Pool
 
-from bootstrap_stat._utils import ArrayLike, Statistic, _resampling_vector
+from bootstrap_stat._utils import (
+    ArrayLike,
+    RNGLike,
+    Statistic,
+    _resampling_vector,
+    _spawn_rngs,
+)
 from bootstrap_stat.distributions import EmpiricalDistribution
 from bootstrap_stat.sampling import bootstrap_samples, jackknife_values
 
@@ -22,6 +28,7 @@ def bias(
     return_samples: bool = False,
     theta_star: npt.NDArray[np.float64] | None = None,
     num_threads: int = 1,
+    rng: RNGLike = None,
 ) -> float | tuple[float, npt.NDArray[np.float64]]:
     r"""Estimate of bias
 
@@ -82,7 +89,7 @@ def bias(
 
     """
     if theta_star is None:
-        theta_star = bootstrap_samples(dist, stat, B, num_threads=num_threads)
+        theta_star = bootstrap_samples(dist, stat, B, num_threads=num_threads, rng=rng)
 
     tF_hat = dist.calculate_parameter(t)
     bias_est = np.mean(theta_star) - tF_hat
@@ -99,6 +106,7 @@ def better_bootstrap_bias(
     B: int = 400,
     return_samples: bool = False,
     num_threads: int = 1,
+    rng: RNGLike = None,
 ) -> float | tuple[float, npt.NDArray[np.float64]]:
     r"""Better bootstrap bias.
 
@@ -150,22 +158,21 @@ def better_bootstrap_bias(
     if num_threads == -1:
         num_threads = mp.cpu_count()
 
-    def _bootstrap_sim(x, stat, batch_size, seed):
-        if seed is not None:
-            np.random.seed(seed)
+    parent_rng = np.random.default_rng(rng)
 
+    def _bootstrap_sim(x, stat, batch_size, worker_rng):
         n = len(x)
         sum_p = np.zeros((n,))
         theta_star = np.zeros((batch_size,))
         for i in range(batch_size):
-            p = _resampling_vector(n)
+            p = _resampling_vector(n, rng=worker_rng)
             sum_p += p
             theta_star[i] = stat(x, p)
 
         return theta_star, sum_p
 
     if num_threads == 1:
-        theta_star, sum_p = _bootstrap_sim(x, stat, B, None)
+        theta_star, sum_p = _bootstrap_sim(x, stat, B, parent_rng)
     else:
         pool = Pool(num_threads)
         try:
@@ -180,9 +187,9 @@ def better_bootstrap_bias(
         for i in range(extra):
             batch_sizes[i] += 1
 
-        seeds = np.random.randint(0, 2**32 - 1, num_threads)
-        for i, seed in enumerate(seeds):
-            r = pool.apipe(_bootstrap_sim, x, stat, batch_sizes[i], seed)
+        worker_rngs = _spawn_rngs(parent_rng, num_threads)
+        for i, worker_rng in enumerate(worker_rngs):
+            r = pool.apipe(_bootstrap_sim, x, stat, batch_sizes[i], worker_rng)
             results.append(r)
 
         theta_star = []
@@ -278,6 +285,7 @@ def bias_corrected(
     theta_star: npt.NDArray[np.float64] | None = None,
     jv: npt.NDArray[np.float64] | None = None,
     num_threads: int = 1,
+    rng: RNGLike = None,
 ) -> float | tuple[float, npt.NDArray[np.float64]]:
     """Bias-corrected estimator.
 
@@ -353,7 +361,7 @@ def bias_corrected(
         n = len(x)
         p0 = np.ones((n,)) / n
         b, theta_star = better_bootstrap_bias(
-            x, stat, B=B, return_samples=True, num_threads=num_threads
+            x, stat, B=B, return_samples=True, num_threads=num_threads, rng=rng
         )
         corrected = stat(x, p0) - b
         if return_samples:
@@ -372,6 +380,7 @@ def bias_corrected(
             theta_star=theta_star,
             return_samples=True,
             num_threads=num_threads,
+            rng=rng,
         )
         corrected = stat(x) - b
         if return_samples:

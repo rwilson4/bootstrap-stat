@@ -90,7 +90,7 @@ The library supports this directly:
 
 .. code-block:: python
 
-    dist = bp.EmpiricalDistribution(data)
+    dist = bp.EmpiricalDistribution(data, rng=rng)
 
     def p95(x):
         return float(np.quantile(x, 0.95))

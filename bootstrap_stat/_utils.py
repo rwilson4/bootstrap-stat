@@ -18,6 +18,38 @@ Statistic: TypeAlias = Callable[..., float]
 JackknifeValues: TypeAlias = (
     npt.NDArray[np.float64] | tuple[npt.NDArray[np.float64], ...]
 )
+# Anything that np.random.default_rng() will accept, plus a Generator.
+RNGLike: TypeAlias = (
+    np.random.Generator | np.random.SeedSequence | np.random.BitGenerator | int | None
+)
+
+
+def _spawn_rngs(rng: RNGLike, n: int) -> list[np.random.Generator]:
+    """Return n statistically-independent Generator objects derived from rng.
+
+    Uses ``SeedSequence.spawn`` (the recommended approach since NumPy 1.25)
+    so each child stream is independent and reproducible from the same
+    parent ``rng``.
+    """
+    seed_seq: np.random.SeedSequence
+    if isinstance(rng, np.random.Generator):
+        seed_seq = rng.bit_generator.seed_seq  # type: ignore[assignment]
+    else:
+        seed_seq = np.random.SeedSequence(rng)
+    return [np.random.default_rng(s) for s in seed_seq.spawn(n)]
+
+
+def _apply_rng(dist: Any, rng: RNGLike) -> None:
+    """Set ``dist._rng`` from ``rng``, propagating to child dists if multi-sample.
+
+    Child generators are spawned from the parent rng via
+    ``SeedSequence.spawn`` so each component samples from an independent stream.
+    """
+    dist._rng = np.random.default_rng(rng)
+    if getattr(dist, "is_multi_sample", False):
+        child_rngs = dist._rng.spawn(len(dist.dists))
+        for child_dist, child_rng in zip(dist.dists, child_rngs):
+            child_dist._rng = child_rng
 
 
 def _bca_acceleration(jv: JackknifeValues) -> float:
@@ -230,13 +262,15 @@ def loess(
     return intercept + slope * z0
 
 
-def _resampling_vector(n: int) -> npt.NDArray[np.float64]:
+def _resampling_vector(n: int, rng: RNGLike = None) -> npt.NDArray[np.float64]:
     """Resampling vector.
 
     Parameters
     ----------
      n : int
         Number of observations in dataset.
+     rng : Generator, SeedSequence, int, or None, optional
+        Source of randomness, normalized via ``np.random.default_rng``.
 
     Returns
     -------
@@ -253,8 +287,9 @@ def _resampling_vector(n: int) -> npt.NDArray[np.float64]:
     interpretation of being a proportion.
 
     """
+    rng = np.random.default_rng(rng)
     x = range(1, n + 1)
-    xStar = np.random.choice(x, n, replace=True)
+    xStar = rng.choice(x, n, replace=True)
     p = np.array([np.count_nonzero(xStar == i) for i in x], np.float64)
     return p / n
 

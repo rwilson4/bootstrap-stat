@@ -137,8 +137,8 @@ dev = [
 requires-dist = [
     { name = "black", marker = "extra == 'dev'", specifier = ">=23.0" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.0" },
-    { name = "numpy", specifier = ">=1.17" },
-    { name = "pandas", specifier = ">=0.25.1" },
+    { name = "numpy", specifier = ">=1.25" },
+    { name = "pandas", specifier = ">=1.4" },
     { name = "pathos", specifier = ">=0.2.5" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.0" },
