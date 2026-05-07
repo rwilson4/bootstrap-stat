@@ -358,6 +358,16 @@ data, :math:`q = 0.95`:
 Agreement is exact (to floating-point precision) — the two
 expressions are algebraically identical.
 
+End-to-end wall time matches the algebra: at :math:`n = 200{,}000`
+and :math:`B = 500`, the full BCa interval via the library default
+(internal jackknife of ``np.quantile``) takes about 5 minutes, more
+than 99% of which is the jackknife pass. Supplying the closed-form
+``theta_star`` and ``jv`` together drops the same call to about 35
+milliseconds — a roughly :math:`10^4`-fold speedup, with the
+interval matching to Monte Carlo noise. The percentile speedup
+shown earlier was three orders of magnitude; eliminating the
+jackknife adds the fourth.
+
 A general principle
 ^^^^^^^^^^^^^^^^^^^
 
