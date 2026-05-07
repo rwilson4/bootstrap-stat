@@ -2,7 +2,7 @@ Significance Tests
 ==================
 
 Confidence intervals and significance tests are two views of the same
-inferential machinery. A 100(1 − 2α)% confidence interval excludes
+inferential machinery. A 100(1 − α)% confidence interval excludes
 the null value θ\ :sub:`0` if and only if the corresponding test of
 H\ :sub:`0`: θ = θ\ :sub:`0` rejects at level α. Conversely, the
 *p*-value attached to a particular θ\ :sub:`0` is the smallest α at
