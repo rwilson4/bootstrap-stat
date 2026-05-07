@@ -1,5 +1,5 @@
-Zero-Inflated Data
-==================
+Zero-Inflated Bootstrap
+=======================
 
 Many real-world distributions are *zero-inflated*: most observations
 are exactly zero, and the inferentially interesting variation lives
@@ -16,8 +16,9 @@ construction and contribute nothing to most statistics. With
 :math:`n = 50{,}000` observations and a 2% non-zero rate, a single
 bootstrap sample takes about half a millisecond on modern hardware,
 of which roughly 99% is spent generating zeros. This guide describes
-a clean way to skip that work entirely. The trick is exact, not
-approximate, and integrates into the library through a small
+the *zero-inflated bootstrap*, a clean way to skip that work
+entirely. The trick is exact, not approximate, and integrates into
+the library through a small
 :class:`~bootstrap_stat.distributions.EmpiricalDistribution`
 subclass.
 

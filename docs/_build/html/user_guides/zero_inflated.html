@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Zero-Inflated Data &#8212; bootstrap-stat 0.2.4.3 documentation</title>
+    <title>Zero-Inflated Bootstrap &#8212; bootstrap-stat 0.2.4.3 documentation</title>
   
   
   
@@ -317,7 +317,7 @@
 <li class="toctree-l1"><a class="reference internal" href="prediction.html">Prediction Intervals</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bias.html">Bias</a></li>
 <li class="toctree-l1"><a class="reference internal" href="significance.html">Significance Tests</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Zero-Inflated Data</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Zero-Inflated Bootstrap</a></li>
 </ul>
 </div>
 </nav></div>
@@ -361,7 +361,7 @@
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">User Guides</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Zero-Inflated Data</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Zero-Inflated Bootstrap</span></li>
   </ul>
 </nav>
 </div>
@@ -378,8 +378,8 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="zero-inflated-data">
-<h1>Zero-Inflated Data<a class="headerlink" href="#zero-inflated-data" title="Link to this heading">#</a></h1>
+  <section id="zero-inflated-bootstrap">
+<h1>Zero-Inflated Bootstrap<a class="headerlink" href="#zero-inflated-bootstrap" title="Link to this heading">#</a></h1>
 <p>Many real-world distributions are <em>zero-inflated</em>: most observations
 are exactly zero, and the inferentially interesting variation lives
 in a small fraction of non-zero values. Customer revenue per
@@ -394,8 +394,9 @@ construction and contribute nothing to most statistics. With
 <span class="math notranslate nohighlight">\(n = 50{,}000\)</span> observations and a 2% non-zero rate, a single
 bootstrap sample takes about half a millisecond on modern hardware,
 of which roughly 99% is spent generating zeros. This guide describes
-a clean way to skip that work entirely. The trick is exact, not
-approximate, and integrates into the library through a small
+the <em>zero-inflated bootstrap</em>, a clean way to skip that work
+entirely. The trick is exact, not approximate, and integrates into
+the library through a small
 <a class="reference internal" href="../api.html#bootstrap_stat.distributions.EmpiricalDistribution" title="bootstrap_stat.distributions.EmpiricalDistribution"><code class="xref py py-class docutils literal notranslate"><span class="pre">EmpiricalDistribution</span></code></a>
 subclass.</p>
 <section id="the-trick">
