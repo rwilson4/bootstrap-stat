@@ -3,19 +3,37 @@ on:
   push:
     branches: [master]
     paths:
-      - 'docs/**'   # only fire when docs change
+      - 'docs/**'
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - name: Pull docs on droplet
-      uses: appleboy/ssh-action@v1.2.5
-      with:
-        host: ${{ secrets.PROD_HOST }}
-        username: ${{ secrets.PROD_USERNAME }}
-        key: ${{ secrets.PROD_SSHKEY }}
-        script: |
-          set -e
-          cd nginx-proxy/convexanalytics/bootstrap-stat
-          git pull --ff-only
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Install dependencies
+        run: uv sync --all-extras
+
+      - name: Build docs
+        run: cd docs && uv run make html
+
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "${{ secrets.DOCS_DEPLOY_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "${{ secrets.DOCS_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Deploy docs via rsync
+        run: |
+          rsync -az --delete \
+            -e "ssh -i ~/.ssh/deploy_key" \
+            docs/_build/html/ \
+            ${{ secrets.DOCS_USER }}@${{ secrets.DOCS_HOST }}:/srv/docs/convexanalytics/bootstrap-stat/.
