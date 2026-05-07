@@ -36,4 +36,4 @@ jobs:
           rsync -az --delete \
             -e "ssh -i ~/.ssh/deploy_key" \
             docs/_build/html/ \
-            ${{ secrets.DOCS_USER }}@${{ secrets.DOCS_HOST }}:/srv/docs/convexanalytics/bootstrap-stat/.
+            ${{ secrets.DOCS_USER }}@${{ secrets.DOCS_HOST }}:
