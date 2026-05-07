@@ -200,11 +200,11 @@ independent resampling of the marginals:
         """Empirical distribution with LSAT and GPA resampled independently."""
         def sample(self, size=None, **kwargs):
             m = self.n if size is None else size
-            lsat = np.random.choice(self.data["LSAT"].values, size=m, replace=True)
-            gpa  = np.random.choice(self.data["GPA"].values,  size=m, replace=True)
+            lsat = self._rng.choice(self.data["LSAT"].values, size=m, replace=True)
+            gpa  = self._rng.choice(self.data["GPA"].values,  size=m, replace=True)
             return pd.DataFrame({"LSAT": lsat, "GPA": gpa})
 
-    null_dist = IndependentDist(data)
+    null_dist = IndependentDist(data, rng=0)
     p = bp.bootstrap_asl(null_dist, correlation, data,
                          theta_hat=theta_hat, B=10000)
     # 0.0003   ~4 s   (H0: LSAT and GPA independent)
