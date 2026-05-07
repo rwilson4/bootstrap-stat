@@ -15,11 +15,14 @@ from pathos.multiprocessing import ProcessPool as Pool
 from bootstrap_stat._utils import (
     ArrayLike,
     JackknifeValues,
+    RNGLike,
     Statistic,
     _adjust_percentiles,
+    _apply_rng,
     _bca_acceleration,
     _influence_components,
     _percentile,
+    _spawn_rngs,
     loess,
 )
 from bootstrap_stat.distributions import EmpiricalDistribution
@@ -45,6 +48,7 @@ def t_interval(
     se_star: npt.NDArray[np.float64] | None = None,
     z_star: npt.NDArray[np.float64] | None = None,
     num_threads: int = 1,
+    rng: RNGLike = None,
 ) -> (
     tuple[float, float]
     | tuple[float, float, npt.NDArray[np.float64], npt.NDArray[np.float64]]
@@ -190,6 +194,9 @@ def t_interval(
     ...                              fast_std_err=fast_std_err)
 
     """
+    if rng is not None:
+        _apply_rng(dist, rng)
+
     if se_hat is None and not stabilize_variance:
         se_hat = standard_error(dist, stat, size=size, num_threads=num_threads)
 
@@ -216,13 +223,23 @@ def t_interval(
         if fast_std_err is not None:
             statistics["se_star"] = fast_std_err
         else:
-            statistics["se_star"] = lambda x: standard_error(
-                empirical_distribution(x), stat, B=Binner
-            )
+            # Share the outer rng with the inner empirical distribution so
+            # the nested bootstrap is reproducible from a single seed.
+            outer_rng = dist._rng
+
+            def _inner_se(x):
+                inner_dist = empirical_distribution(x)
+                inner_dist._rng = outer_rng
+                if getattr(inner_dist, "is_multi_sample", False):
+                    for child in inner_dist.dists:
+                        child._rng = outer_rng
+                return standard_error(inner_dist, stat, B=Binner)
+
+            statistics["se_star"] = _inner_se
 
         boot_stats = bootstrap_samples(
             dist, statistics, B, size=size, num_threads=num_threads
-        )
+        )  # rng already applied to dist above
 
         if stabilize_variance:
             # These values are used to estimate the
@@ -364,6 +381,7 @@ def percentile_interval(
     return_samples: bool = False,
     theta_star: npt.NDArray[np.float64] | None = None,
     num_threads: int = 1,
+    rng: RNGLike = None,
 ) -> tuple[float, float] | tuple[float, float, npt.NDArray[np.float64]]:
     r"""Percentile Intervals
 
@@ -430,7 +448,7 @@ def percentile_interval(
     """
     if theta_star is None:
         theta_star = bootstrap_samples(
-            dist, stat, B, size=size, num_threads=num_threads
+            dist, stat, B, size=size, num_threads=num_threads, rng=rng
         )
 
     p = _percentile(theta_star, [alpha, 1 - alpha])
@@ -452,6 +470,7 @@ def bcanon_interval(
     theta_hat: float | None = None,
     jv: JackknifeValues | None = None,
     num_threads: int = 1,
+    rng: RNGLike = None,
 ) -> (
     tuple[float, float] | tuple[float, float, npt.NDArray[np.float64], JackknifeValues]
 ):
@@ -538,7 +557,7 @@ def bcanon_interval(
 
     if theta_star is None:
         theta_star = bootstrap_samples(
-            dist, stat, B, size=size, num_threads=num_threads
+            dist, stat, B, size=size, num_threads=num_threads, rng=rng
         )
 
     zb = (theta_star < theta_hat).sum()
@@ -700,6 +719,7 @@ def calibrate_interval(
     B: int = 1000,
     return_confidence_points: bool = False,
     num_threads: int = 1,
+    rng: RNGLike = None,
 ) -> tuple[float, float] | tuple[float, float, float, float]:
     """Calibrated confidence interval
 
@@ -771,9 +791,11 @@ def calibrate_interval(
     logit_lmbdas = np.concatenate((logit_lmbdas, np.flip(-logit_lmbdas)))
     lmbdas = inv_logit(logit_lmbdas)
 
-    def _calc_p_hat(dist, stat, batch_size, lmbdas, theta_hat, seed):
-        if seed is not None:
-            np.random.seed(seed)
+    if rng is not None:
+        _apply_rng(dist, rng)
+
+    def _calc_p_hat(dist, stat, batch_size, lmbdas, theta_hat, worker_rng):
+        _apply_rng(dist, worker_rng)
 
         p_hat = np.zeros((len(lmbdas),))
         for i in range(batch_size):
@@ -786,7 +808,7 @@ def calibrate_interval(
         return p_hat
 
     if num_threads == 1:
-        p_hat = _calc_p_hat(dist, stat, B, lmbdas, theta_hat, None)
+        p_hat = _calc_p_hat(dist, stat, B, lmbdas, theta_hat, dist._rng)
     else:
         if num_threads == -1:
             num_threads = mp.cpu_count()
@@ -804,8 +826,8 @@ def calibrate_interval(
         for i in range(extra):
             batch_sizes[i] += 1
 
-        seeds = np.random.randint(0, 2**32 - 1, num_threads)
-        for i, seed in enumerate(seeds):
+        worker_rngs = _spawn_rngs(dist._rng, num_threads)
+        for i, worker_rng in enumerate(worker_rngs):
             r = pool.apipe(
                 _calc_p_hat,
                 dist,
@@ -813,7 +835,7 @@ def calibrate_interval(
                 batch_sizes[i],
                 lmbdas,
                 theta_hat,
-                seed,
+                worker_rng,
             )
             results.append(r)
 

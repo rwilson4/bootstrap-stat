@@ -10,7 +10,13 @@ import numpy.typing as npt
 import pandas as pd
 from pathos.multiprocessing import ProcessPool as Pool
 
-from bootstrap_stat._utils import ArrayLike, Statistic
+from bootstrap_stat._utils import (
+    ArrayLike,
+    RNGLike,
+    Statistic,
+    _apply_rng,
+    _spawn_rngs,
+)
 from bootstrap_stat.distributions import EmpiricalDistribution
 
 
@@ -135,6 +141,7 @@ def multithreaded_bootstrap_samples(
     size: int | tuple[int, ...] | None = None,
     jackknife: bool = False,
     num_threads: int = -1,
+    rng: RNGLike = None,
 ) -> npt.NDArray[np.float64] | dict[str, npt.NDArray[np.float64]]:
     """Generate bootstrap samples in parallel.
 
@@ -154,6 +161,11 @@ def multithreaded_bootstrap_samples(
      num_threads : int, optional
         Number of threads to use. Defaults to the number of available
         CPUs.
+     rng : Generator, SeedSequence, int, or None, optional
+        Source of randomness. If provided, ``num_threads`` independent
+        child streams are spawned via ``SeedSequence.spawn`` so each
+        worker draws from a statistically-independent stream. If not
+        provided, ``dist`` 's existing rng is used as the parent.
 
     Returns
     -------
@@ -176,13 +188,16 @@ def multithreaded_bootstrap_samples(
     if num_threads == -1:
         num_threads = mp.cpu_count()
 
-    def _bootstrap_sim(dist, stat, size, B, seed):
+    def _bootstrap_sim(dist, stat, size, B, worker_rng):
         if isinstance(stat, dict):
             theta_star = {k: np.empty((B,)) for k in stat}
         else:
             theta_star = np.empty((B,))
 
-        np.random.seed(seed)
+        # Each worker is a separate process; mutating `dist._rng` here
+        # only affects this worker's copy.
+        _apply_rng(dist, worker_rng)
+
         for i in range(B):
             x_star = dist.sample(size=size)
             if isinstance(stat, dict):
@@ -208,9 +223,10 @@ def multithreaded_bootstrap_samples(
     for i in range(extra):
         batch_sizes[i] += 1
 
-    seeds = np.random.randint(0, 2**32 - 1, num_threads)
-    for i, seed in enumerate(seeds):
-        r = pool.apipe(_bootstrap_sim, dist, stat, size, batch_sizes[i], seed)
+    parent_rng = np.random.default_rng(rng) if rng is not None else dist._rng
+    worker_rngs = _spawn_rngs(parent_rng, num_threads)
+    for i, worker_rng in enumerate(worker_rngs):
+        r = pool.apipe(_bootstrap_sim, dist, stat, size, batch_sizes[i], worker_rng)
         results.append(r)
 
     if isinstance(stat, dict):
@@ -235,6 +251,7 @@ def bootstrap_samples(
     size: int | tuple[int, ...] | None = None,
     jackknife: bool = False,
     num_threads: int = 1,
+    rng: RNGLike = None,
 ) -> (
     npt.NDArray[np.float64]
     | dict[str, npt.NDArray[np.float64]]
@@ -262,6 +279,11 @@ def bootstrap_samples(
         Number of threads to use for multicore processing. Defaults to
         1, meaning all calculations will be done in a single
         thread. Set to -1 to use all available cores.
+     rng : Generator, SeedSequence, int, or None, optional
+        Source of randomness. If provided, takes precedence over the
+        rng stored on ``dist``; the dist's rng is replaced with one
+        derived from this argument so subsequent calls remain
+        reproducible. If ``None`` (default), uses ``dist._rng`` as-is.
 
     Returns
     -------
@@ -313,6 +335,9 @@ def bootstrap_samples(
             "Continuing with 1 core"
         )
         num_threads = 1
+
+    if rng is not None:
+        _apply_rng(dist, rng)
 
     if num_threads > 1:
         return multithreaded_bootstrap_samples(

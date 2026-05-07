@@ -9,7 +9,13 @@ import numpy as np
 import numpy.typing as npt
 from pathos.multiprocessing import ProcessPool as Pool
 
-from bootstrap_stat._utils import ArrayLike, _percentile
+from bootstrap_stat._utils import (
+    ArrayLike,
+    RNGLike,
+    _apply_rng,
+    _percentile,
+    _spawn_rngs,
+)
 from bootstrap_stat.distributions import EmpiricalDistribution
 from bootstrap_stat.sampling import bootstrap_samples
 
@@ -23,6 +29,7 @@ def prediction_error_optimism(
     B: int = 200,
     apparent_error: float | None = None,
     num_threads: int = 1,
+    rng: RNGLike = None,
 ) -> float:
     """Prediction Error, Optimism Method
 
@@ -91,7 +98,7 @@ def prediction_error_optimism(
         optimism = err_orig - err_boot
         return optimism
 
-    optimism = bootstrap_samples(dist, stat, B, num_threads=num_threads)
+    optimism = bootstrap_samples(dist, stat, B, num_threads=num_threads, rng=rng)
     pe = apparent_error + np.mean(optimism)
     return pe
 
@@ -108,6 +115,7 @@ def prediction_error_632(
     gamma: float | None = None,
     no_inf_err_rate: Callable[[Any, ArrayLike], float] | None = None,
     num_threads: int = 1,
+    rng: RNGLike = None,
 ) -> float:
     """.632 Bootstrap
 
@@ -213,9 +221,11 @@ def prediction_error_632(
                 )
             gamma = no_inf_err_rate(pred, data)
 
-    def _bootstrap_sim(dist, data, train, predict, error, B, seed):
-        if seed is not None:
-            np.random.seed(seed)
+    if rng is not None:
+        _apply_rng(dist, rng)
+
+    def _bootstrap_sim(dist, data, train, predict, error, B, worker_rng):
+        _apply_rng(dist, worker_rng)
 
         n = len(data)
         # Total prediction error for each observation, over those
@@ -238,7 +248,7 @@ def prediction_error_632(
         return Bi, Qi
 
     if num_threads == 1:
-        Bi, Qi = _bootstrap_sim(dist, data, train, predict, error, B, None)
+        Bi, Qi = _bootstrap_sim(dist, data, train, predict, error, B, dist._rng)
     else:
         pool = Pool(num_threads)
         try:
@@ -253,8 +263,8 @@ def prediction_error_632(
         for i in range(extra):
             batch_sizes[i] += 1
 
-        seeds = np.random.randint(0, 2**32 - 1, num_threads)
-        for i, seed in enumerate(seeds):
+        worker_rngs = _spawn_rngs(dist._rng, num_threads)
+        for i, worker_rng in enumerate(worker_rngs):
             r = pool.apipe(
                 _bootstrap_sim,
                 dist,
@@ -263,7 +273,7 @@ def prediction_error_632(
                 predict,
                 error,
                 batch_sizes[i],
-                seed,
+                worker_rng,
             )
             results.append(r)
 
@@ -313,6 +323,7 @@ def prediction_interval(
     t_star: npt.NDArray[np.float64] | None = None,
     return_t_star: bool = False,
     num_threads: int = -1,
+    rng: RNGLike = None,
 ) -> tuple[float, float] | tuple[float, float, npt.NDArray[np.float64]]:
     r"""Prediction interval
 
@@ -398,9 +409,11 @@ def prediction_interval(
     x_bar = mean(x)
     s = std(x)
 
-    def _bootstrap_sim(dist, mean, std, batch_size, seed):
-        if seed is not None:
-            np.random.seed(seed)
+    if rng is not None:
+        _apply_rng(dist, rng)
+
+    def _bootstrap_sim(dist, mean, std, batch_size, worker_rng):
+        _apply_rng(dist, worker_rng)
 
         t_star = np.empty((batch_size,))
         for i in range(batch_size):
@@ -413,7 +426,7 @@ def prediction_interval(
 
     if t_star is None:
         if num_threads == 1:
-            t_star = _bootstrap_sim(dist, mean, std, B, None)
+            t_star = _bootstrap_sim(dist, mean, std, B, dist._rng)
         else:
             pool = Pool(num_threads)
             try:
@@ -428,9 +441,11 @@ def prediction_interval(
             for i in range(extra):
                 batch_sizes[i] += 1
 
-            seeds = np.random.randint(0, 2**32 - 1, num_threads)
-            for i, seed in enumerate(seeds):
-                r = pool.apipe(_bootstrap_sim, dist, mean, std, batch_sizes[i], seed)
+            worker_rngs = _spawn_rngs(dist._rng, num_threads)
+            for i, worker_rng in enumerate(worker_rngs):
+                r = pool.apipe(
+                    _bootstrap_sim, dist, mean, std, batch_sizes[i], worker_rng
+                )
                 results.append(r)
 
             t_star = np.hstack([res.get() for res in results])

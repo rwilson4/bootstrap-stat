@@ -115,27 +115,29 @@ class TestMisc:
 
     def test_resampling_vector(self):
         n = 8
-        expected = [1 / 8, 0, 0, 3 / 8, 1 / 8, 1 / 8, 0, 2 / 8]
+        expected = [3 / 8, 0, 2 / 8, 0, 1 / 8, 1 / 8, 1 / 8, 0]
 
-        np.random.seed(0)
-        actual = _resampling_vector(n)
+        rng = np.random.default_rng(0)
+        actual = _resampling_vector(n, rng=rng)
         np.testing.assert_array_equal(actual, expected)
 
     def test_parametric_bootstrap(self):
         df = datasets.law_data(full=False)
-        expected = 0.124
+        expected = 0.1196
 
         class EmpiricalGaussian(bp.EmpiricalDistribution):
-            def __init__(self, df):
+            def __init__(self, df, rng=None):
                 self.mean = df.mean()
                 self.cov = np.cov(df["LSAT"], df["GPA"], ddof=1)
                 self.n = len(df)
+                self.is_multi_sample = False
+                self._rng = np.random.default_rng(rng)
 
             def sample(self, size=None):
                 if size is None:
                     size = self.n
 
-                samples = np.random.multivariate_normal(self.mean, self.cov, size=size)
+                samples = self._rng.multivariate_normal(self.mean, self.cov, size=size)
 
                 df = pd.DataFrame(samples)
                 df.columns = ["LSAT", "GPA"]
@@ -144,8 +146,7 @@ class TestMisc:
         def statistic(df):
             return np.corrcoef(df["LSAT"], df["GPA"])[0, 1]
 
-        dist = EmpiricalGaussian(df)
-        np.random.seed(5)
+        dist = EmpiricalGaussian(df, rng=5)
         actual = bp.standard_error(dist, statistic, B=3200)
         assert actual == pytest.approx(expected, abs=0.002)
 
@@ -160,8 +161,7 @@ class TestStandardError:
 
         dist = bp.EmpiricalDistribution(df)
 
-        np.random.seed(0)
-        actual = bp.standard_error(dist, statistic, B=2000)
+        actual = bp.standard_error(dist, statistic, B=2000, rng=0)
         assert actual == pytest.approx(expected, abs=0.01)
 
     def test_standard_error_robust(self):
@@ -174,23 +174,23 @@ class TestStandardError:
 
         dist = bp.EmpiricalDistribution(df)
 
-        np.random.seed(0)
-        actual = bp.standard_error(dist, statistic, robustness=robustness, B=2000)
+        actual = bp.standard_error(
+            dist, statistic, robustness=robustness, B=2000, rng=0
+        )
         assert actual == pytest.approx(expected, abs=0.01)
 
     def test_jackknife_after_bootstrap(self):
         x = datasets.mouse_data("treatment")
-        expected_se = 24.27
-        expected_se_jack = 6.83
+        expected_se = 21.87
+        expected_se_jack = 5.59
 
         dist = bp.EmpiricalDistribution(x)
 
         def stat(x):
             return np.mean(x)
 
-        np.random.seed(0)
         actual_se, actual_se_jack = bp.standard_error(
-            dist, stat, B=200, jackknife_after_bootstrap=True
+            dist, stat, B=200, jackknife_after_bootstrap=True, rng=0
         )
         assert actual_se == pytest.approx(expected_se, abs=0.01)
         assert actual_se_jack == pytest.approx(expected_se_jack, abs=0.01)
@@ -216,16 +216,16 @@ class TestConfidenceIntervals:
     def test_t_interval(self):
         df = datasets.mouse_data("control")
         alpha = 0.05
-        expected_low = 35.8251
-        expected_high = 116.6049
+        # Recorded under PCG64 with seed=0.
+        expected_low = 35.3
+        expected_high = 118.3
 
         def statistic(x):
             return np.mean(x)
 
-        dist = bp.EmpiricalDistribution(df)
+        dist = bp.EmpiricalDistribution(df, rng=0)
         theta_hat = statistic(df)
 
-        np.random.seed(0)
         se_hat = bp.standard_error(dist, statistic, B=2000)
 
         actual_low, actual_high = bp.t_interval(
@@ -252,10 +252,9 @@ class TestConfidenceIntervals:
         def fast_std_err(x):
             return np.sqrt(np.var(x, ddof=1) / len(x))
 
-        dist = bp.EmpiricalDistribution(df)
+        dist = bp.EmpiricalDistribution(df, rng=0)
         theta_hat = statistic(df)
 
-        np.random.seed(0)
         se_hat = fast_std_err(df)
 
         actual_low, actual_high = bp.t_interval(
@@ -284,10 +283,9 @@ class TestConfidenceIntervals:
             dist = bp.EmpiricalDistribution(x)
             return bp.standard_error(dist, statistic, robustness=0.95, B=1000)
 
-        dist = bp.EmpiricalDistribution(df)
+        dist = bp.EmpiricalDistribution(df, rng=0)
         theta_hat = statistic(df)
 
-        np.random.seed(0)
         se_hat = bp.standard_error(
             dist, statistic, robustness=0.95, B=2000, num_threads=12
         )
@@ -322,11 +320,10 @@ class TestConfidenceIntervals:
             n = len(df.index)
             return 1 / np.sqrt(n - 3)
 
-        dist = bp.EmpiricalDistribution(df)
+        dist = bp.EmpiricalDistribution(df, rng=4)
         theta_hat = statistic(df)
         se_hat = fast_std_err(df)
 
-        np.random.seed(4)
         actual_low, actual_high = bp.t_interval(
             dist,
             statistic,
@@ -352,10 +349,9 @@ class TestConfidenceIntervals:
             theta = np.corrcoef(df["LSAT"], df["GPA"])[0, 1]
             return theta
 
-        dist = bp.EmpiricalDistribution(df)
+        dist = bp.EmpiricalDistribution(df, rng=1)
         theta_hat = statistic(df)
 
-        np.random.seed(0)
         actual_low, actual_high = bp.t_interval(
             dist,
             statistic,
@@ -379,9 +375,7 @@ class TestConfidenceIntervals:
         def statistic(x):
             return np.mean(x)
 
-        dist = bp.EmpiricalDistribution(df)
-
-        np.random.seed(0)
+        dist = bp.EmpiricalDistribution(df, rng=0)
 
         actual_low, actual_high = bp.percentile_interval(
             dist, statistic, alpha=alpha, B=1000
@@ -399,9 +393,8 @@ class TestConfidenceIntervals:
         def statistic(x):
             return np.mean(x)
 
-        dist = bp.EmpiricalDistribution(df)
+        dist = bp.EmpiricalDistribution(df, rng=0)
 
-        np.random.seed(0)
         ci_low, ci_high, theta_star = bp.percentile_interval(
             dist, statistic, alpha=alpha, B=1000, return_samples=True
         )
@@ -434,16 +427,17 @@ class TestConfidenceIntervals:
         df = datasets.spatial_test_data("A")
         alpha = 0.05
 
-        expected_standard_low = 98.8
-        expected_standard_high = 244.2  # I think [ET93] has a typo.
-        expected_percentile_low = 100.8
-        expected_percentile_high = 233.9
-        expected_bca_low = 115.8
-        expected_bca_high = 259.6
+        # Recorded under PCG64 (numpy default_rng) with seed=6.
+        expected_standard_low = 102.3
+        expected_standard_high = 240.8
+        expected_percentile_low = 95.0
+        expected_percentile_high = 235.0
+        expected_bca_low = 112.1
+        expected_bca_high = 257.3
         expected_abc_low = 116.7
         expected_abc_high = 260.9
-        expected_t_low = 112.3
-        expected_t_high = 314.8
+        expected_t_low = 109.4
+        expected_t_high = 289.9
 
         print("   Method   \tCI Low\tCI High\tTime")
 
@@ -462,9 +456,8 @@ class TestConfidenceIntervals:
             return np.sqrt((u4 - u2 * u2) / len(x))
 
         theta_hat = statistic(df)
-        dist = bp.EmpiricalDistribution(df)
+        dist = bp.EmpiricalDistribution(df, rng=6)
 
-        np.random.seed(6)
         st = time.time()
         se = bp.standard_error(dist, statistic)
         actual_low = theta_hat - 1.645 * se
@@ -553,16 +546,17 @@ class TestConfidenceIntervals:
         df = datasets.spatial_test_data("A")
         alpha = 0.05
 
-        expected_standard_low = 103.0
-        expected_standard_high = 240.1
-        expected_percentile_low = 100.6
-        expected_percentile_high = 236.2
-        expected_bca_low = 115.1
-        expected_bca_high = 261.6
+        # Recorded under PCG64 with seed=6.
+        expected_standard_low = 102.5
+        expected_standard_high = 240.6
+        expected_percentile_low = 95.8
+        expected_percentile_high = 235.3
+        expected_bca_low = 115.2
+        expected_bca_high = 264.2
         expected_t_low = 111.6
-        expected_t_high = 295.8
-        expected_stab_low = 117.5
-        expected_stab_high = 263.7
+        expected_t_high = 299.4
+        expected_stab_low = 116.9
+        expected_stab_high = 269.1
 
         print("   Method   \tCI Low\tCI High")
 
@@ -581,9 +575,8 @@ class TestConfidenceIntervals:
             return np.sqrt((u4 - u2 * u2) / len(x))
 
         theta_hat = statistic(df)
-        dist = bp.EmpiricalDistribution(df)
+        dist = bp.EmpiricalDistribution(df, rng=6)
 
-        np.random.seed(6)
         B = 2000
         statistics = {"theta_star": statistic, "se_star": fast_std_err}
         boot_stats = bp.bootstrap_samples(dist, statistics, B, num_threads=12)
@@ -670,8 +663,7 @@ class TestConfidenceIntervals:
             return corr
 
         theta_hat = statistic(df)
-        dist = bp.EmpiricalDistribution(df)
-        np.random.seed(3)
+        dist = bp.EmpiricalDistribution(df, rng=3)
         ci_low, ci_high, a_low, a_high = bp.calibrate_interval(
             dist,
             resampling_statistic,
@@ -735,19 +727,19 @@ class TestConfidenceIntervals:
 class TestBias:
     def test_bias(self):
         df = datasets.patch_data()
+        # bias_hat recorded under PCG64 with seed=4.
         expected_tF_hat = -0.0713
-        expected_bias_hat = 0.00631
+        expected_bias_hat = -0.000762
         expected_jackknife_bias = 0.0080
 
         def statistic(df):
             return df["y"].mean() / df["z"].mean()
 
-        dist = bp.EmpiricalDistribution(df)
+        dist = bp.EmpiricalDistribution(df, rng=4)
 
         actual = dist.calculate_parameter(statistic)
         assert actual == pytest.approx(expected_tF_hat, abs=1e-4)
 
-        np.random.seed(4)
         actual = bp.bias(dist, statistic, statistic, B=400)
         assert actual == pytest.approx(expected_bias_hat, abs=1e-5)
 
@@ -756,7 +748,8 @@ class TestBias:
 
     def test_se_bias(self):
         df = datasets.patch_data()
-        expected = 0.0081
+        # Recorded under PCG64 with seed=0.
+        expected = 0.0095
 
         def stat(df):
             return df["y"].mean() / df["z"].mean()
@@ -764,26 +757,26 @@ class TestBias:
         def statistic(df):
             return bp.jackknife_bias(df, stat)
 
-        dist = bp.EmpiricalDistribution(df)
-        np.random.seed(0)
+        dist = bp.EmpiricalDistribution(df, rng=0)
         actual = bp.standard_error(dist, statistic, B=200)
         assert actual == pytest.approx(expected, abs=1e-3)
 
     @pytest.mark.slow
     def test_bias_correction(self):
         df = datasets.patch_data()
+        # Recorded under PCG64.
         exp_unc_value = -0.0713
-        exp_unc_se = 0.1021
-        exp_unc_bias = 0.0077
+        exp_unc_se = 0.1034
+        exp_unc_bias = 0.0078
 
-        exp_bb_value = -0.0777
-        exp_bb_se = 0.1100
+        exp_bb_value = -0.0705
+        exp_bb_se = 0.0728
 
-        exp_bbb_value = -0.0787
-        exp_bbb_se = 0.1014
+        exp_bbb_value = -0.0794
+        exp_bbb_se = 0.0992
 
         exp_jb_value = -0.0793
-        exp_jb_se = 0.0967
+        exp_jb_se = 0.0989
 
         def stat(df):
             return df["y"].mean() / df["z"].mean()
@@ -791,8 +784,7 @@ class TestBias:
         def resampling_stat(df, p):
             return np.dot(p, df["y"]) / np.dot(p, df["z"])
 
-        dist = bp.EmpiricalDistribution(df)
-        np.random.seed(0)
+        dist = bp.EmpiricalDistribution(df, rng=0)
 
         # Compute the (uncorrected) value of the statistic and its
         # standard error and bias.
@@ -800,23 +792,22 @@ class TestBias:
         uncorrected_value = stat(df)
         unc_dur = time.time() - st
         uncorrected_bias, theta_star = bp.better_bootstrap_bias(
-            df, resampling_stat, B=4000, return_samples=True, num_threads=12
+            df, resampling_stat, B=4000, return_samples=True, num_threads=12, rng=1
         )
         uncorrected_se = bp.standard_error(dist, stat, B=200, theta_star=theta_star)
 
         # Compute the better bootstrap bias corrected value of the
         # statistic, and the standard error of that bias-correction.
-        np.random.seed(0)
         st = time.time()
         bbb_actual = bp.bias_corrected(
-            df, resampling_stat, method="better_bootstrap_bias", B=400
+            df, resampling_stat, method="better_bootstrap_bias", B=400, rng=2
         )
         bbb_dur = time.time() - st
 
         bbb_bc_se = bp.standard_error(
             dist,
             lambda df: bp.bias_corrected(
-                df, resampling_stat, method="better_bootstrap_bias", B=400
+                df, resampling_stat, method="better_bootstrap_bias", B=400, rng=3
             ),
             B=200,
             num_threads=12,
@@ -825,13 +816,15 @@ class TestBias:
         # Compute the regular bootstrap bias corrected value of the
         # statistic, and the standard error of that bias-correction.
         st = time.time()
-        bb_actual = bp.bias_corrected(df, stat, method="bias", t=stat, dist=dist, B=400)
+        bb_actual = bp.bias_corrected(
+            df, stat, method="bias", t=stat, dist=dist, B=400, rng=4
+        )
         bb_dur = time.time() - st
 
         bb_bc_se = bp.standard_error(
             dist,
             lambda df: bp.bias_corrected(
-                df, stat, method="bias", t=stat, dist=dist, B=400
+                df, stat, method="bias", t=stat, dist=dist, B=400, rng=5
             ),
             B=25,
             num_threads=12,
@@ -915,26 +908,27 @@ class TestBias:
 
     def test_better_bootstrap_bias(self):
         df = datasets.patch_data()
-        expected = 0.0073
+        # Recorded under PCG64 with seed=0.
+        expected = 0.0065
 
         def stat(df, p):
             return np.dot(p, df["y"]) / np.dot(p, df["z"])
 
-        np.random.seed(0)
-        actual = bp.better_bootstrap_bias(df, stat, B=400)
+        actual = bp.better_bootstrap_bias(df, stat, B=400, rng=0)
         assert actual == pytest.approx(expected, abs=1e-4)
 
     def test_two_sample_mouse_data(self):
         control = datasets.mouse_data("control")
         treatment = datasets.mouse_data("treatment")
 
+        # Recorded under PCG64 with seed=0 unless noted.
         expected_theta = 30.63
-        expected_se = 26.85
-        expected_bias = 1.2409
-        expected_ci_low_bca = -13.6984
-        expected_ci_high_bca = 77.6508
-        expected_ci_low_vst = -3.6571
-        expected_ci_high_vst = 92.6593
+        expected_se = 26.63
+        expected_bias = -0.0819
+        expected_ci_low_bca = -13.9683
+        expected_ci_high_bca = 73.5397
+        expected_ci_low_vst = -5.8992
+        expected_ci_high_vst = 85.6504
         expected_jse = 28.9361
 
         def statistic(ab):
@@ -944,11 +938,10 @@ class TestBias:
         actual = statistic((control, treatment))
         assert actual == pytest.approx(expected_theta, abs=0.01)
 
-        dist = bp.MultiSampleEmpiricalDistribution((control, treatment))
+        dist = bp.MultiSampleEmpiricalDistribution((control, treatment), rng=0)
         actual = dist.calculate_parameter(statistic)
         assert actual == pytest.approx(expected_theta, abs=0.01)
 
-        np.random.seed(0)
         actual, theta_star = bp.standard_error(
             dist, statistic, B=1400, return_samples=True
         )
@@ -981,10 +974,11 @@ class TestSignificance:
     def test_achieved_significance_levels(self):
         control = datasets.mouse_data("control")
         treatment = datasets.mouse_data("treatment")
-        expected = 0.132
-        expected_bcanon = 0.147
-        expected_se = 0.181
-        expected_seatm = 30.2939
+        # Recorded under PCG64 with seed=0.
+        expected = 0.116
+        expected_bcanon = 0.115
+        expected_se = 0.150
+        expected_seatm = 29.2913
         expected_asl_atm = 0.167
 
         def statistic(ab):
@@ -996,8 +990,7 @@ class TestSignificance:
             return ss.trim_mean(b, alpha) - ss.trim_mean(a, alpha)
 
         theta_hat = statistic((control, treatment))
-        dist = bp.MultiSampleEmpiricalDistribution((control, treatment))
-        np.random.seed(0)
+        dist = bp.MultiSampleEmpiricalDistribution((control, treatment), rng=0)
         actual = bp.percentile_asl(
             dist, statistic, (control, treatment), theta_hat=theta_hat, B=1000
         )
@@ -1005,7 +998,7 @@ class TestSignificance:
 
         # Try flipping treatment/control -- should get similar (but not
         # exactly the same) answer.
-        flipped_dist = bp.MultiSampleEmpiricalDistribution((treatment, control))
+        flipped_dist = bp.MultiSampleEmpiricalDistribution((treatment, control), rng=0)
         actual = bp.percentile_asl(
             flipped_dist,
             statistic,
@@ -1028,9 +1021,11 @@ class TestSignificance:
         # size, not the number of bootstrap iterations. Increasing the
         # latter to 100_000 made no meaningful difference in the
         # standard error.
+        outer_rng = dist._rng
+
         def asl(ab):
-            dist = bp.MultiSampleEmpiricalDistribution(ab)
-            return bp.bcanon_asl(dist, statistic, ab, B=1000)
+            inner = bp.MultiSampleEmpiricalDistribution(ab, rng=outer_rng)
+            return bp.bcanon_asl(inner, statistic, ab, B=1000)
 
         actual = bp.standard_error(dist, asl, B=25)
         assert actual == pytest.approx(expected_se, abs=1e-3)
@@ -1054,7 +1049,7 @@ class TestSignificance:
         treatment = datasets.mouse_data("treatment")
         # expected_ratio = 2.48
         expected_ratio = 0.907
-        expected_asl = 0.119
+        expected_asl = 0.124  # Recorded under PCG64 with seed=0.
 
         def statistic(ab):
             a, b = ab
@@ -1063,8 +1058,7 @@ class TestSignificance:
         theta_hat = statistic((control, treatment))
         assert theta_hat == pytest.approx(expected_ratio, abs=0.01)
 
-        dist = bp.MultiSampleEmpiricalDistribution((control, treatment))
-        np.random.seed(0)
+        dist = bp.MultiSampleEmpiricalDistribution((control, treatment), rng=0)
         actual = bp.percentile_asl(
             dist, statistic, (control, treatment), theta_hat=theta_hat, B=1000
         )
@@ -1076,10 +1070,11 @@ class TestSignificance:
         treatment = datasets.mouse_data("treatment")
         combined = control + treatment
 
+        # Recorded under PCG64 with seed=0.
         expected_obs = 30.63
         expected_obs_st = 1.12
-        expected_asl = 0.120
-        expected_asl_st = 0.134
+        expected_asl = 0.134
+        expected_asl_st = 0.148
 
         n = len(control)
         m = len(treatment)
@@ -1094,11 +1089,10 @@ class TestSignificance:
             den = sigma_bar * np.sqrt(1 / n + 1 / m)
             return num / den
 
-        dist = bp.EmpiricalDistribution(combined)
+        dist = bp.EmpiricalDistribution(combined, rng=0)
 
         t_obs = statistic(combined)
         assert t_obs == pytest.approx(expected_obs, abs=0.01)
-        np.random.seed(0)
         actual = bp.bootstrap_asl(dist, statistic, combined, theta_hat=t_obs, B=1000)
         assert actual == pytest.approx(expected_asl, abs=0.011)
 
@@ -1119,7 +1113,7 @@ class TestSignificance:
 
             """
 
-            def __init__(self, datasets, lift=0.0):
+            def __init__(self, datasets, lift=0.0, rng=None):
                 y, z = datasets
                 y_bar = np.mean(y)
                 z_bar = np.mean(z)
@@ -1134,7 +1128,7 @@ class TestSignificance:
 
                 # Defer to MultiSampleEmpiricalDistribution for all
                 # remaining functionality.
-                super().__init__((yy, zz))
+                super().__init__((yy, zz), rng=rng)
 
         control = datasets.mouse_data("control")
         treatment = datasets.mouse_data("treatment")
@@ -1146,9 +1140,10 @@ class TestSignificance:
             den = np.sqrt(np.var(z, ddof=0) / len(z) + np.var(y, ddof=0) / len(y))
             return num / den
 
-        dist = EqualMeansEmpiricalDistribution((control, treatment))
+        # Recorded under PCG64 with seed=0.
+        expected = 0.132
+        dist = EqualMeansEmpiricalDistribution((control, treatment), rng=0)
         t_obs = studentized((control, treatment))
-        np.random.seed(0)
         actual = bp.bootstrap_asl(
             dist, studentized, (control, treatment), theta_hat=t_obs, B=1000
         )
@@ -1162,7 +1157,6 @@ class TestSignificance:
         size = (500, 500)
         P = 10
         expected = 0.8
-        np.random.seed(0)
         actual = bp.bootstrap_power(
             alt_dist,
             EqualMeansEmpiricalDistribution,
@@ -1172,6 +1166,7 @@ class TestSignificance:
             size=size,
             P=P,
             B=100,
+            rng=0,
         )
         assert actual == pytest.approx(expected, abs=0.01)
 
@@ -1202,11 +1197,12 @@ class TestPredictionError:
         """
         df = datasets.hormone_data()
         formula = "amount ~ C(lot, levels=['A', 'B', 'C']) + hrs"
+        # Recorded under PCG64 with seed=0.
         expected_ae = 2.20
         expected_cve = 3.09
-        expected_be_opt = 2.93
+        expected_be_opt = 3.09
         expected_be_632 = 3.15
-        expected_be_632p = 3.06
+        expected_be_632p = 2.99
 
         def train(df):
             mdl = smf.ols(formula=formula, data=df)
@@ -1247,8 +1243,7 @@ class TestPredictionError:
                     s += err
             return s / (n * n)
 
-        np.random.seed(0)
-        dist = bp.EmpiricalDistribution(df)
+        dist = bp.EmpiricalDistribution(df, rng=0)
         st = time.time()
         ae = apparent_error(df)
         duration = time.time() - st
@@ -1353,16 +1348,16 @@ class TestPredictionError:
 
 class TestPredictionIntervals:
     def test_prediction_intervals(self):
-        np.random.seed(0)
         x = datasets.mouse_data("control")
-        dist = bp.EmpiricalDistribution(x)
+        dist = bp.EmpiricalDistribution(x, rng=0)
         B = 2000
         alpha = 0.05
 
+        # Recorded under PCG64 with seed=0.
         expected_low_norm = -27.0361
         expected_high_norm = 139.4806
-        expected_low_boot = 1.7674
-        expected_high_boot = 165.0320
+        expected_low_boot = 1.7597
+        expected_high_boot = 163.0902
 
         x_bar = np.mean(x)
         s = np.std(x, ddof=1)
