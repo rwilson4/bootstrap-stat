@@ -125,7 +125,7 @@ Example datasets for testing: `law_data()`, `mouse_data()`,
 
 - GitHub Actions runs tests on Python 3.10, 3.11, 3.12
 - PRs to master trigger build workflow (ruff, black check, tests)
-- Pushes to master trigger PyPI deployment via `uv publish`
+- Pushing a `v*` tag triggers PyPI deployment via trusted publishing
 
 ## Documentation deployment
 
