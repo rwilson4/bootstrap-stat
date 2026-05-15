@@ -280,7 +280,10 @@ class TestConfidenceIntervals:
             return np.mean(x)
 
         def robust_std_err(x):
-            dist = bp.EmpiricalDistribution(x)
+            # Seed the inner bootstrap so the nested SE is reproducible;
+            # t_interval's internal rng-sharing only kicks in when fast_std_err
+            # is None, so a user-supplied one has to seed itself.
+            dist = bp.EmpiricalDistribution(x, rng=0)
             return bp.standard_error(dist, statistic, robustness=0.95, B=1000)
 
         dist = bp.EmpiricalDistribution(df, rng=0)
